@@ -1,16 +1,18 @@
-using Distributions, Extremes
+using CSV, DataFrames, Distributions, Extremes
+
 pd = GeneralizedExtremeValue(0,1,.1)
 y = rand(pd,50)
 θ̂ = gevfit(y)
+θ̂ = Extremes.gevfitlmom(y)
+θ̂ = Extremes.gumbelfitpwmom(y)
 
 
-x = collect(0:.05:3)
-μ = 0 .+ 1*x
+data = CSV.read("/Users/jalbert/Desktop/montreal.csv")
 
-σ = 1
+y = convert(Array{Float64},data[:max])
+x = convert(Array{Float64},data[:co2])
 
-ξ = .1
+θ̂ = gevfit(data[:max])
+θ̂ = gevfit(data[:max],location_covariate = x )
 
-pd = GeneralizedExtremeValue.(μ,σ,ξ)
-y = rand.(pd)
-θ̂ =  gevfit(y, location_covariate=x)
+θ̂[:params]

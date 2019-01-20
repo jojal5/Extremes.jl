@@ -128,7 +128,11 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
             solution  = JuMP.solve(mle)
 
             if solution == :Optimal
-                θ = [getvalue(μ₀) getvalue(μ₁) exp(getvalue(ϕ)) getvalue(ξ)]
+                μ̃₀ = getvalue(μ₀)
+                μ̃₁ = getvalue(μ₁)
+                μ̂₀ = μ̃₀ -b/a*μ̃₁
+                μ̂₁ = μ̃₁/a
+                θ = [μ̂₀ μ̂₁ exp(getvalue(ϕ)) getvalue(ξ)]
                 logl = getobjectivevalue(mle)
                 bic = -2*logl + 4*log(length(y))
             else
