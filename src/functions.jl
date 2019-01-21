@@ -57,15 +57,15 @@ function gevfitlmom(x::Array{N,1} where N)
     return [μ, σ, ξ]
 end
 
-function checkinitialvalues(y::Array{T,1} where T, initialvalues::Array{T} where T, location_covariate::Array{T} where T)
+function checkinitialvalues(y::Array{T,1} where T, initialvalues::Array{Float64}; location_covariate::Array{Float64}=Float64[])
 
     if !isempty(location_covariate)
         μ = initialvalues[1] .+ location_covariate*initialvalues[2]
-        σ = initialvalues[3]
+        σ = exp(initialvalues[3])
         ξ = initialvalues[4]
     else
         μ = initialvalues[1]
-        σ = initialvalues[2]
+        σ = exp(initialvalues[2])
         ξ = initialvalues[3]
     end
 
@@ -76,26 +76,34 @@ function checkinitialvalues(y::Array{T,1} where T, initialvalues::Array{T} where
     return status_initalvalues
 end
 
-function getinitialvalues(y::Array{T,1} where T, location_covariate::Array{T} where T)
+function getinitialvalues(y::Array{T,1} where T; location_covariate::Array{Float64}=Float64[])
 
     θ₀ = gevfitlmom(y)
-
-    status_initalvalues = checkinitialvalues(y,θ₀,location_covariate)
-
-    if !status_initalvalues
-        θ₀ = [gumbelfitpwmom(y)...,0]
-    end
 
     if isempty(location_covariate)
         initialvalues = zeros(3)
         initialvalues[1] = θ₀[1]
         initialvalues[2] = log(θ₀[2])
         initialvalues[3] = θ₀[3]
+        status_initalvalues = checkinitialvalues(y,initialvalues,location_covariate=location_covariate)
+        if !status_initalvalues
+            θ₀ = [gumbelfitpwmom(y)...,0]
+            initialvalues = zeros(3)
+            initialvalues[1] = θ₀[1]
+            initialvalues[2] = log(θ₀[2])
+        end
     else
         initialvalues = zeros(4)
         initialvalues[1] = θ₀[1]
         initialvalues[3] = log(θ₀[2])
         initialvalues[4] = θ₀[3]
+        status_initalvalues = checkinitialvalues(y,initialvalues,location_covariate=location_covariate)
+        if !status_initalvalues
+            θ₀ = [gumbelfitpwmom(y)...,0]
+            initialvalues = zeros(4)
+            initialvalues[1] = θ₀[1]
+            initialvalues[3] = log(θ₀[2])
+        end
     end
 
     return initialvalues
@@ -109,12 +117,12 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
 
 
         if !isempty(initialvalues)
-            status_initalvalues = checkinitialvalues(y,initialvalues,location_covariate)
+            status_initalvalues = checkinitialvalues(y,initialvalues,location_covariate=location_covariate)
             if !status_initalvalues
-                initalvalues = getinitialvalues(y,location_covariate)
+                initialvalues = getinitialvalues(y,location_covariate=location_covariate)
             end
         else
-            initalvalues = getinitialvalues(y,location_covariate)
+            initialvalues = getinitialvalues(y,location_covariate=location_covariate)
         end
 
         if isempty(location_covariate)
