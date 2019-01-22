@@ -141,8 +141,8 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
                 logl = getobjectivevalue(mle)
                 bic = -2*logl + 3*log(length(y))
             else
-                #error("The algorithm did not find a solution.")
-                @warn "The algorithm did not find a solution."
+                error("The algorithm did not find a solution.")
+                # @warn "The algorithm did not find a solution."
             end
 
 
@@ -182,8 +182,8 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
                 logl = getobjectivevalue(mle)
                 bic = -2*logl + 4*log(length(y))
             else
-                #error("The algorithm did not find a solution.")
-                @warn "The algorithm did not find a solution."
+                error("The algorithm did not find a solution.")
+                # @warn "The algorithm did not find a solution."
             end
 
         end
