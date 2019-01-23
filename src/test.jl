@@ -24,6 +24,8 @@ x = convert(Array{Float64},data[:co2])
 θ̂ = gevfit(data[:max],location_covariate = x, initialvalues=[1.22222, 0.000749905, 0.397699, -0.00209455] )
 θ̂ = gevfit(data[:max],location_covariate = x)
 
+θ̂ = gevfit(data[:max], initialvalues=[2, 0.397699, -0.00209455])
+
 ini = Extremes.getinitialvalues(y,location_covariate=x)
 
 

@@ -136,13 +136,13 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
             @NLobjective(mle, Max, fobj(μ, ϕ, ξ) )
             solution  = JuMP.solve(mle)
 
-            if solution == :Optimal
-                θ = [getvalue(μ) exp(getvalue(ϕ)) getvalue(ξ)]
-                logl = getobjectivevalue(mle)
-                bic = -2*logl + 3*log(length(y))
-            else
-                error("The algorithm did not find a solution.")
-                # @warn "The algorithm did not find a solution."
+            θ = [getvalue(μ) exp(getvalue(ϕ)) getvalue(ξ)]
+            logl = getobjectivevalue(mle)
+            bic = -2*logl + 3*log(length(y))
+
+            if solution != :Optimal
+                # error("The algorithm did not find a solution.")
+                @warn "The algorithm did not find a solution. Maybe try with different initial values."
             end
 
 
@@ -173,17 +173,16 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
             @NLobjective(mle, Max, fobj_location(μ₀, μ₁, ϕ, ξ) )
             solution  = JuMP.solve(mle)
 
-            if solution == :Optimal
-                μ̃₀ = getvalue(μ₀)
-                μ̃₁ = getvalue(μ₁)
-                μ̂₀ = μ̃₀ -b/a*μ̃₁
-                μ̂₁ = μ̃₁/a
-                θ = [μ̂₀ μ̂₁ exp(getvalue(ϕ)) getvalue(ξ)]
-                logl = getobjectivevalue(mle)
-                bic = -2*logl + 4*log(length(y))
-            else
-                error("The algorithm did not find a solution.")
-                # @warn "The algorithm did not find a solution."
+            μ̃₀ = getvalue(μ₀)
+            μ̃₁ = getvalue(μ₁)
+            μ̂₀ = μ̃₀ - b/a*μ̃₁
+            μ̂₁ = μ̃₁/a
+            θ = [μ̂₀ μ̂₁ exp(getvalue(ϕ)) getvalue(ξ)]
+            logl = getobjectivevalue(mle)
+            bic = -2*logl + 4*log(length(y))
+
+            if solution != :Optimal
+                @warn "The algorithm did not find a solution. Maybe try with different initial values."
             end
 
         end
