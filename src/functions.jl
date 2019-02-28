@@ -111,6 +111,11 @@ function getinitialvalues(y::Array{T,1} where T; location_covariate::Array{Float
 end
 
 # function gevfit(y::Array{N,1} where N; method="ml", initialvalues=Float64[], location_covariate=Float64[], logscale_covariate =Float64[])
+"""
+    gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64}, location_covariate::Array{Float64})
+
+Fit GEV parameters over data y.
+"""
 function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64}=Float64[], location_covariate::Array{Float64}=Float64[])
 
     if method == "ml"
