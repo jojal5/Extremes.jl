@@ -128,19 +128,19 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
         if isempty(location_covariate)
 
             fobj(μ, ϕ, ξ) = sum(gevloglike.(y,μ,exp(ϕ),ξ))
-            mle = Model(solver=IpoptSolver(print_level=0,sb="yes"))
+            mle = Model(with_optimizer(Ipopt.Optimizer, print_level=0,sb="yes"))
             JuMP.register(mle,:fobj,3,fobj,autodiff=true)
             @variable(mle, μ, start = initialvalues[1])
             @variable(mle, ϕ, start = initialvalues[2])
             @variable(mle, ξ, start = initialvalues[3])
             @NLobjective(mle, Max, fobj(μ, ϕ, ξ) )
-            solution  = JuMP.solve(mle)
+            JuMP.optimize!(mle)
 
-            θ = [getvalue(μ) exp(getvalue(ϕ)) getvalue(ξ)]
+            θ = [JuMP.value(μ) exp(JuMP.value(ϕ)) JuMP.value(ξ)]
             logl = getobjectivevalue(mle)
             bic = -2*logl + 3*log(length(y))
 
-            if solution != :Optimal
+            if termination_status(mle) == MOI.OPTIMAL
                 # error("The algorithm did not find a solution.")
                 @warn "The algorithm did not find a solution. Maybe try with different initial values."
             end
@@ -163,7 +163,7 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
             x = (location_covariate .- b)./a
 
             fobj_location(μ₀, μ₁, ϕ, ξ) = sum(gevloglike.(y,μ₀ .+ μ₁*x,exp(ϕ),ξ))
-            mle = Model(solver=IpoptSolver(print_level=2, sb="yes"))
+            mle = Model(with_optimizer(Ipopt.Optimizer, print_level=2,sb="yes"))
             JuMP.register(mle,:fobj_location,4,fobj_location,autodiff=true)
             @variable(mle, μ₀, start=  initialvalues[1])
             @variable(mle, μ₁, start = initialvalues[2])
@@ -171,17 +171,17 @@ function gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64
             @variable(mle, ξ, start= initialvalues[4])
             # @NLconstraint(mle, my_constr[i = 1:n], ξ/exp(ϕ)*(y[i]-μ₀-μ₀*x[i]) >= -1)
             @NLobjective(mle, Max, fobj_location(μ₀, μ₁, ϕ, ξ) )
-            solution  = JuMP.solve(mle)
+            JuMP.optimize!(mle)
 
-            μ̃₀ = getvalue(μ₀)
-            μ̃₁ = getvalue(μ₁)
+            μ̃₀ = JuMP.value(μ₀)
+            μ̃₁ = JuMP.value(μ₁)
             μ̂₀ = μ̃₀ - b/a*μ̃₁
             μ̂₁ = μ̃₁/a
-            θ = [μ̂₀ μ̂₁ exp(getvalue(ϕ)) getvalue(ξ)]
+            θ = [μ̂₀ μ̂₁ exp(JuMP.value(ϕ)) JuMP.value(ξ)]
             logl = getobjectivevalue(mle)
             bic = -2*logl + 4*log(length(y))
 
-            if solution != :Optimal
+            if termination_status(mle) == MOI.OPTIMAL
                 @warn "The algorithm did not find a solution. Maybe try with different initial values."
             end
 
