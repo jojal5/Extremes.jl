@@ -7,8 +7,6 @@ y = rand(pd,50)
 pdfit = Extremes.gumbelfitpwmom(y)
 pdfit = Extremes.gevfitlmom(y)
 
-status = Extremes.checkinitialvalues(y[1], pdfit)
-
 ini = Extremes.getinitialvalues(y)
 
 gevfit(y)
@@ -32,10 +30,10 @@ fd = gevfit(y, x, initialvalues = ini)
 pd = GeneralizedPareto(0,1,.1)
 y = rand(pd,500)
 
-fd = Extremes.gpdfitmom(GeneralizedPareto(),y)
-fd = Extremes.gpdfitmom(GeneralizedPareto(),y, threshold = 0)
+fd = Extremes.gpdfitmom(y)
+fd = Extremes.gpdfitmom(y, threshold = 0)
 
 insupport(fd,y)
 
-fd = Extremes.gpdfit(GeneralizedPareto(),y)
-fd = Extremes.gpdfit(GeneralizedPareto(),y, threshold = 0)
+fd = Extremes.gpdfit(y)
+fd = Extremes.gpdfit(y, threshold = 0)
