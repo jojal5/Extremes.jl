@@ -101,7 +101,7 @@ function gevfit(y::Array{T,1} where T<:Real)
 
 end
 
-function gevfit(y::Array{Float64,1}, location_covariate::Array{Float64,1}; initialvalues::Array{Float64,1}=Float64[])
+function gevfit(y::Array{Float64,1}, location_covariate::Array{Float64,1}, initialvalues::Array{Float64,1}=Float64[])
 
     if !isempty(initialvalues)
         pd = GeneralizedExtremeValue.(initialvalues[1] .+ initialvalues[2]*location_covariate,initialvalues[3],initialvalues[4])
@@ -180,7 +180,7 @@ function gevhessian(y::Array{N,1} where N<:Real,μ::Real,σ::Real,ξ::Real)
 end
 
 
-function gpdfitmom(pd::GeneralizedPareto{Float64}, y::Array{T} where T<:Real; threshold::Real=0.0)
+function gpdfitmom(pd::GeneralizedPareto{Float64}, y::Array{T} where T<:Real, threshold::Real=0.0)
 
     ȳ = mean(y)
     s² = var(y)
@@ -192,7 +192,7 @@ function gpdfitmom(pd::GeneralizedPareto{Float64}, y::Array{T} where T<:Real; th
 
 end
 
-function gpdfit(pd::GeneralizedPareto{Float64}, y::Array{T} where T<:Real; threshold::Real=0.0)
+function gpdfit(pd::GeneralizedPareto{Float64}, y::Array{T} where T<:Real, threshold::Real=0.0)
 
     # get initial values
     fd = gpdfitmom(GeneralizedPareto(), y::Array{Float64})
