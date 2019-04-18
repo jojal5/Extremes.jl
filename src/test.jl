@@ -37,3 +37,9 @@ insupport(fd,y)
 
 fd = Extremes.gpdfit(y)
 fd = Extremes.gpdfit(y, threshold = 0)
+
+pd = GeneralizedPareto(10,1,.1)
+y = rand(pd,500)
+
+fd = Extremes.gpdfitmom(y, threshold = 10)
+fd = Extremes.gpdfit(y, threshold = 10)

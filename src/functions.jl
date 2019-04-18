@@ -182,8 +182,13 @@ end
 
 function gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
 
-    ȳ = mean(y)
-    s² = var(y)
+    if isapprox(threshold,0)
+        ȳ = mean(y)
+        s² = var(y)
+    else
+        ȳ = mean(y .- threshold)
+        s² = var(y .- threshold)
+    end
 
     ξ̂ = 1/2*(1-ȳ^2/s²)
     σ̂ = (1-ξ̂)*ȳ
@@ -195,18 +200,18 @@ end
 function gpdfit(y::Array{T} where T<:Real; threshold::Real=0.0)
 
     # get initial values
-    fd = gpdfitmom(y::Array{Float64})
+    fd = gpdfitmom(y::Array{Float64}, threshold=threshold)
     if all(insupport(fd,y))
         σ₀ = scale(fd)
         ξ₀ = Distributions.shape(fd)
     else
-        σ₀ = mean(y)
+        σ₀ = mean(y .- threshold)
         ξ₀ = 0.0
     end
 
 
     # fobj(ϕ, ξ) = sum(logpdf.(GeneralizedPareto(0,exp(ϕ),ξ),y))
-    fobj(ϕ, ξ) = loglikelihood(GeneralizedPareto(0,exp(ϕ),ξ),y)
+    fobj(ϕ, ξ) = loglikelihood(GeneralizedPareto(threshold,exp(ϕ),ξ),y)
     mle = Model(with_optimizer(Ipopt.Optimizer, print_level=0,sb="yes"))
     JuMP.register(mle,:fobj,2,fobj,autodiff=true)
     @variable(mle, ϕ, start = log(σ₀))
