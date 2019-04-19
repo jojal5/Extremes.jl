@@ -43,3 +43,10 @@ y = rand(pd,500)
 
 fd = Extremes.gpdfitmom(y, threshold = 10)
 fd = Extremes.gpdfit(y, threshold = 10)
+
+fd = Extremes.gevfitbayes(y)
+fd = Extremes.gevfitbayes(y, stepSize=[.025,.05,.08])
+fd = Extremes.gevfitbayes(y,niter=5000, stepSize=[.025,.05,.08])
+fd = Extremes.gevfitbayes(y,warmup=1000, niter=5000, stepSize=[.025,.05,.08])
+fd = Extremes.gevfitbayes(y,warmup=1000, thin=4, niter=5000, stepSize=[.025,.05,.08])
+fd = Extremes.gevfitbayes(y, warmup=10000, niter=5000, stepSize=[.025,.05,.08])

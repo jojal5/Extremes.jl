@@ -6,6 +6,6 @@ using SpecialFunctions, LinearAlgebra
 
 include("functions.jl")
 
-export gevfit, gpdfit
+export gevfit, gpdfit, gevfitbayes
 
 end # module
