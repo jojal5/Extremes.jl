@@ -1,4 +1,93 @@
 
+function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)
+
+    n = length(y)
+
+    clusterBegin = Int64[]
+    clusterLength = Int64[]
+    clusterMax = Float64[]
+    clusterSum = Float64[]
+
+    exceedancePosition = findall(y .> u₁)
+
+    clusterEnd = 0
+
+    for i in exceedancePosition
+
+            if i > clusterEnd
+
+               j = 1
+
+                while (i-j) > 0
+                    if y[i-j]>u₂
+                        j += 1
+                    else
+                        break
+                    end
+                end
+
+                k = 1
+
+                while (i+k) < (n+1)
+                    if y[i+k]>u₂
+                        k += 1
+                    else
+                        break
+                    end
+                end
+
+            ind = i-(j-1) : i+(k-1)
+
+            push!(clusterMax, maximum(y[ind]) )
+            push!(clusterSum, sum(y[ind]) )
+            push!(clusterLength, length(ind) )
+            push!(clusterBegin, ind[1] )
+
+            clusterEnd = ind[end]
+
+            end
+
+    end
+
+
+    P = clusterMax./clusterSum
+
+    cluster = DataFrame(Begin = clusterBegin, Length = clusterLength, Max = clusterMax, Sum = clusterSum, P = P)
+
+    return cluster
+
+end
+
+
+function getcluster(df::DataFrame, u₁::Real, u₂::Real=0)
+
+    coltype = colwise(eltype, df)
+
+    @assert coltype[1]==Date "The first dataframe row should be of type Date."
+    @assert coltype[2]<:Real "The second dataframe row should be of any subtypes of Real."
+
+    cluster = DataFrame(Begin = Int64[], Length = Int64[], Max = Float64[], Sum = Float64[], P = Float64[])
+
+    years = unique(year.(df[1]))
+
+    for yr in years
+
+        ind = year.(df[1]) .== yr
+        c = getcluster(df[ind,2], u₁, u₂)
+        c[:Begin] = findfirst(ind) .+ c[:Begin] .-1
+        append!(cluster, c)
+
+    end
+
+    d = df[1]
+    cluster[:Begin] = d[cluster[:Begin]]
+
+    return cluster
+
+end
+
+
+
 function gumbelfitpwmom(x::Array{T,1} where T<:Real)
 
     n = length(x)
@@ -269,24 +358,6 @@ function gevhessian(y::Array{N,1} where N<:Real,μ::Real,σ::Real,ξ::Real)
 
 end
 
-
-function gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
-
-    if isapprox(threshold,0)
-        ȳ = mean(y)
-        s² = var(y)
-    else
-        ȳ = mean(y .- threshold)
-        s² = var(y .- threshold)
-    end
-
-    ξ̂ = 1/2*(1-ȳ^2/s²)
-    σ̂ = (1-ξ̂)*ȳ
-
-    return GeneralizedPareto(threshold,σ̂,ξ̂)
-
-end
-
 function gpdfit(y::Array{T} where T<:Real; threshold::Real=0.0)
 
     # get initial values
@@ -318,5 +389,111 @@ function gpdfit(y::Array{T} where T<:Real; threshold::Real=0.0)
         end
 
     fd = GeneralizedPareto(threshold,σ̂,ξ̂)
-    
+
+end
+
+
+
+function gpdfitbayes(data::Array{Float64,1}; threshold::Real=0, niter::Int = 10000, warmup::Int = 5000,  thin::Int = 1, stepSize::Array{<:Real,1}=[.1,.1])
+
+    @assert niter>warmup "The total number of iterations should be larger than the number of warmup iterations."
+
+    if isapprox(threshold,0)
+        y = data
+    else
+        y = data .- threshold
+    end
+
+    fd = Extremes.gpdfit(y)
+    σ₀ = Distributions.scale(fd)
+    ξ₀ = Distributions.shape(fd)
+
+    ϕ = Array{Float64}(undef,niter)
+    ξ = Array{Float64}(undef,niter)
+
+    ϕ[1] = log(σ₀)
+    ξ[1] = ξ₀
+
+    acc = falses(niter,2)
+
+    lu = log.(rand(Uniform(),niter,2))
+    δ₁ = rand(Normal(),niter)*stepSize[1]
+    δ₂ = rand(Normal(),niter)*stepSize[2]
+
+    for i=2:niter
+
+
+        ϕ̃ = ϕ[i-1] + δ₁[i]
+
+        f = GeneralizedPareto( exp(ϕ[i-1]) , ξ[i-1] )
+        f̃ = GeneralizedPareto( exp(ϕ̃) , ξ[i-1] )
+
+        lr = loglikelihood(f̃,y) - loglikelihood(f,y)
+
+        if lr > lu[i,1]
+            ϕ[i] = ϕ̃
+            acc[i,1] = true
+        else
+            ϕ[i] = ϕ[i-1]
+        end
+
+
+        ξ̃ = ξ[i-1] + δ₂[i]
+
+        f = GeneralizedPareto( exp(ϕ[i]) , ξ[i-1] )
+        f̃ = GeneralizedPareto( exp(ϕ[i]) , ξ̃ )
+
+        lr = loglikelihood(f̃,y) - loglikelihood(f,y)
+
+        if lr > lu[i,2]
+            ξ[i] = ξ̃
+            acc[i,2] = true
+        else
+            ξ[i] = ξ[i-1]
+        end
+
+
+    end
+
+    acc = acc[warmup+1:niter,:]
+
+    accRate = [count(acc[:,i])/size(acc,1) for i=1:size(acc,2)]
+
+    println("Acceptation rate for ϕ is $(accRate[1])")
+    println("Acceptation rate for ξ is $(accRate[2])")
+
+
+    if any(accRate .< .4) | any(accRate .> .7)
+        @warn "Acceptation rates are $accRate for ϕ and ξ respectively. Consider changing the stepsizes to obtain acceptation rates between 0.4 and 0.7."
+    end
+
+
+    itr = (warmup+1):thin:niter
+
+    σ = exp.(ϕ[itr])
+    ξ = ξ[itr]
+
+    fd = GeneralizedPareto.(threshold, σ, ξ)
+
+    return fd
+
+end
+
+
+
+function gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
+
+    if isapprox(threshold,0)
+        ȳ = mean(y)
+        s² = var(y)
+    else
+        ȳ = mean(y .- threshold)
+        s² = var(y .- threshold)
+    end
+
+    ξ̂ = 1/2*(1-ȳ^2/s²)
+    σ̂ = (1-ξ̂)*ȳ
+
+    return GeneralizedPareto(threshold,σ̂,ξ̂)
+
 end

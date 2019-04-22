@@ -50,3 +50,17 @@ fd = Extremes.gevfitbayes(y,niter=5000, stepSize=[.025,.05,.08])
 fd = Extremes.gevfitbayes(y,warmup=1000, niter=5000, stepSize=[.025,.05,.08])
 fd = Extremes.gevfitbayes(y,warmup=1000, thin=4, niter=5000, stepSize=[.025,.05,.08])
 fd = Extremes.gevfitbayes(y, warmup=10000, niter=5000, stepSize=[.025,.05,.08])
+
+
+y = rand(Normal(),100)
+c = Extremes.getcluster(y,.2)
+c = Extremes.getcluster(y,.2,.1)
+
+threshold = 5
+σ = 1
+ξ = .1
+y = rand(GeneralizedPareto(threshold, σ, ξ),100)
+
+Extremes.gpdfitbayes(y)
+Extremes.gpdfitbayes(y, threshold=threshold)
+Extremes.gpdfitbayes(y, threshold=threshold, stepSize=[.2,.15])

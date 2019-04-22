@@ -1,11 +1,11 @@
 module Extremes
 
-using Distributions
+using Distributions, DataFrames
 using JuMP, Ipopt
 using SpecialFunctions, LinearAlgebra
 
 include("functions.jl")
 
-export gevfit, gpdfit, gevfitbayes
+export gevfit, gpdfit, gevfitbayes, gpdfitbayes, getcluster
 
 end # module
