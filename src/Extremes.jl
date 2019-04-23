@@ -1,6 +1,6 @@
 module Extremes
 
-using Distributions, DataFrames
+using Distributions, DataFrames, Dates
 using JuMP, Ipopt
 using SpecialFunctions, LinearAlgebra
 
