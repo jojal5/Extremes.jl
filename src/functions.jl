@@ -1,12 +1,17 @@
+"""
+    getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)
 
-function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)
+Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
+"""
+function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0.0)
 
     n = length(y)
 
-    clusterBegin = Int64[]
+    clusterBegin  = Int64[]
     clusterLength = Int64[]
-    clusterMax = Float64[]
-    clusterSum = Float64[]
+    clusterMax    = Float64[]
+    clusterPosMax = Int64[]
+    clusterSum    = Float64[]
 
     exceedancePosition = findall(y .> u₁)
 
@@ -19,7 +24,7 @@ function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)
                j = 1
 
                 while (i-j) > 0
-                    if y[i-j]>u₂
+                    if y[i-j] > u₂
                         j += 1
                     else
                         break
@@ -29,7 +34,7 @@ function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)
                 k = 1
 
                 while (i+k) < (n+1)
-                    if y[i+k]>u₂
+                    if y[i+k] > u₂
                         k += 1
                     else
                         break
@@ -38,7 +43,10 @@ function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)
 
             ind = i-(j-1) : i+(k-1)
 
-            push!(clusterMax, maximum(y[ind]) )
+            maxval, idxmax = findmax(y[ind])
+
+            push!(clusterMax, maxval)
+            push!(clusterPosMax, idxmax+ind[1]-1)
             push!(clusterSum, sum(y[ind]) )
             push!(clusterLength, length(ind) )
             push!(clusterBegin, ind[1] )
@@ -52,21 +60,25 @@ function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)
 
     P = clusterMax./clusterSum
 
-    cluster = DataFrame(Begin = clusterBegin, Length = clusterLength, Max = clusterMax, Sum = clusterSum, P = P)
+    cluster = DataFrame(Begin=clusterBegin, Length=clusterLength, Max=clusterMax, Position=clusterPosMax, Sum=clusterSum, P=P)
 
     return cluster
 
 end
 
+"""
+    getcluster(df::DataFrame, u₁::Real, u₂::Real=0)
 
-function getcluster(df::DataFrame, u₁::Real, u₂::Real=0)
+Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
+"""
+function getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)
 
-    coltype = colwise(eltype, df)
+    coltype = describe(df)[:eltype]#colwise(eltype, df)
 
-    @assert coltype[1]==Date "The first dataframe row should be of type Date."
-    @assert coltype[2]<:Real "The second dataframe row should be of any subtypes of Real."
+    @assert coltype[1]==Date || coltype[1]==DateTime "The first dataframe column should be of type Date."
+    @assert coltype[2]<:Real "The second dataframe column should be of any subtypes of Real."
 
-    cluster = DataFrame(Begin = Int64[], Length = Int64[], Max = Float64[], Sum = Float64[], P = Float64[])
+    cluster = DataFrame(Begin=Int64[], Length=Int64[], Max=Float64[], Position=Int64[], Sum=Float64[], P=Float64[])
 
     years = unique(year.(df[1]))
 
