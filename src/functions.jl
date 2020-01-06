@@ -99,7 +99,11 @@ function getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)
 end
 
 
+"""
+    gumbelfitpwmom(x::Array{T,1} where T<:Real)
 
+Fits a Gumbel distribution using ...
+"""
 function gumbelfitpwmom(x::Array{T,1} where T<:Real)
 
     n = length(x)
@@ -119,7 +123,11 @@ function gumbelfitpwmom(x::Array{T,1} where T<:Real)
     return pdfit
 end
 
+"""
+    gevfitbayes(y::Array{<:Real}; warmup::Int=0, niter::Int=1000, thin::Int=1, stepSize::Array{<:Real,1}=[.1,.1,.05])
 
+Fits a GEV...
+"""
 function gevfitbayes(y::Array{<:Real}; warmup::Int=0, niter::Int=1000, thin::Int=1, stepSize::Array{<:Real,1}=[.1,.1,.05])
 
     @assert niter>warmup "The total number of iterations should be larger than the number of warmup iterations."
@@ -208,7 +216,11 @@ function gevfitbayes(y::Array{<:Real}; warmup::Int=0, niter::Int=1000, thin::Int
 end
 
 
+"""
+    gevfitlmom(x::Array{T,1} where T<:Real)
 
+Fit a GEV distribution with L-Moment method.
+"""
 function gevfitlmom(x::Array{T,1} where T<:Real)
 
     n = length(x)
@@ -233,6 +245,11 @@ function gevfitlmom(x::Array{T,1} where T<:Real)
     return pdfit
 end
 
+"""
+    getinitialvalues(y::Array{T,1} where T<:Real)
+
+Get initial values of parameters.
+"""
 function getinitialvalues(y::Array{T,1} where T<:Real)
 
     pd = gevfitlmom(y)
@@ -263,7 +280,6 @@ gevfit(y::Array{N,1} where N; method="ml", initialvalues::Array{Float64}, locati
 
 Fit GEV parameters over data y.
 """
-
 function gevfit(y::Array{T,1} where T<:Real)
 
     initialvalues = getinitialvalues(y)
@@ -292,6 +308,12 @@ function gevfit(y::Array{T,1} where T<:Real)
 
 end
 
+"""
+
+    gevfit(y::Array{Float64,1}, location_covariate::Array{Float64,1}; initialvalues::Array{Float64,1}=Float64[])
+
+GEV fit...
+"""
 function gevfit(y::Array{Float64,1}, location_covariate::Array{Float64,1}; initialvalues::Array{Float64,1}=Float64[])
 
     if !isempty(initialvalues)
@@ -358,8 +380,11 @@ function gevfit(y::Array{Float64,1}, location_covariate::Array{Float64,1}; initi
 
 end
 
+"""
+    gevhessian(y::Array{N,1} where N<:Real,μ::Real,σ::Real,ξ::Real)
 
-
+Hessian matrix...
+"""
 function gevhessian(y::Array{N,1} where N<:Real,μ::Real,σ::Real,ξ::Real)
 
     #= Estimate the hessian matrix evaluated at (μ, σ, ξ) for the iid gev random sample y =#
@@ -370,6 +395,11 @@ function gevhessian(y::Array{N,1} where N<:Real,μ::Real,σ::Real,ξ::Real)
 
 end
 
+"""
+    gpdfit(y::Array{T} where T<:Real; threshold::Real=0.0)
+
+Fit a Generalized Pareto Distribution (GPD) over array y.
+"""
 function gpdfit(y::Array{T} where T<:Real; threshold::Real=0.0)
 
     # get initial values
@@ -404,8 +434,11 @@ function gpdfit(y::Array{T} where T<:Real; threshold::Real=0.0)
 
 end
 
+"""
+    gpdfitbayes(data::Array{Float64,1}; threshold::Real=0, niter::Int = 10000, warmup::Int = 5000,  thin::Int = 1, stepSize::Array{<:Real,1}=[.1,.1])
 
-
+Fits a Generalized Pareto Distribution (GPD) 
+"""
 function gpdfitbayes(data::Array{Float64,1}; threshold::Real=0, niter::Int = 10000, warmup::Int = 5000,  thin::Int = 1, stepSize::Array{<:Real,1}=[.1,.1])
 
     @assert niter>warmup "The total number of iterations should be larger than the number of warmup iterations."
@@ -491,8 +524,11 @@ function gpdfitbayes(data::Array{Float64,1}; threshold::Real=0, niter::Int = 100
 
 end
 
+"""
+    gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
 
-
+Fit a Generalized Pareto Distribution over y.
+"""
 function gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
 
     if isapprox(threshold,0)
