@@ -10,6 +10,6 @@ include("functions.jl")
 include("mle_functions.jl")
 include("bayes_functions.jl")
 
-export getcluster, gevfit, gpdfit, gevfitbayes, gpdfitbayes
+export getcluster, gevfit, gpdfit, gevfitbayes,gpdfitbayes
 
 end # module

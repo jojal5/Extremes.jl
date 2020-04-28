@@ -14,7 +14,7 @@ Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [compat]
-DataFrames = "0.17, 0.18, 0.19, 0.20"
-Distributions = "0.18, 0.19, 0.20, 0.21, 0.22, 0.23"
-SpecialFunctions = "0.8, 0.9"
+DataFrames = ">= 0.17"
+Distributions = ">= 0.18"
+SpecialFunctions = ">= 0.8"
 julia = "1"
