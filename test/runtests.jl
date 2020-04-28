@@ -8,42 +8,70 @@ y = rand(pd,50)
 pdfit = Extremes.gumbelfitpwmom(y)
 pdfit = Extremes.gevfitlmom(y)
 
-ini = Extremes.getinitialvalues(y)
+ini = Extremes.getinitialvalue(GeneralizedExtremeValue(),y)
 
-gevfit(y)
+fd = gevfit(y)
+fd = gevfit(y, initialvalues = [0.0,1.0,1e-4])
 
-x = collect(0:1/100:2)
-pd = GeneralizedExtremeValue.(x,1,.1)
+# Non-stationay part
+x = collect(0:300)
+μ = x*1/100
+pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
+data = Dict(:y => y, :x => x)
 
-# data = CSV.read("/Users/jalbert/Desktop/stat7_69.csv")
-# y = convert(Array{Float64},data[:max])
-# x = convert(Array{Float64},data[:co2])
+fd = gevfit(data, dataid=:y, initialvalues=[0, 0, .1])
+fd = gevfit(data, dataid=:y, initialvalues=[0, 0, .1])
+fd = gevfit(data, dataid=:y, locationid=:x)
+fd = gevfit(data, dataid=:y, locationid=:x, initialvalues=[0, 1/50, 0, .1])
+fd = gevfit(data, dataid=:y, logscaleid=:x)
+fd = gevfit(data, dataid=:y, logscaleid=:x, initialvalues=[0, 0, 0, .1])
+fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
+fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x, initialvalues=[0,1/50,0,0,.1])
 
-ini = Extremes.getinitialvalues(y)
-splice!(ini,2:1,0)
+# test for many datasets in a loop
+for i=1:1000
+    x = collect(0:300)
+    μ = x/100
+    pd = GeneralizedExtremeValue.(μ,1,.1)
+    y = rand.(pd)
+    data = Dict(:y => y, :x => x)
+    gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
+end
 
-fd = gevfit(y, x)
-fd = gevfit(y, x, initialvalues = ini)
+# Test for the GPD
 
-
-
-pd = GeneralizedPareto(0,1,.1)
-y = rand(pd,500)
+x = collect(0:300)
+σ = exp.(x/300)
+pd = GeneralizedPareto.(0,σ,.1)
+y = rand.(pd)
+data = Dict(:y => y, :x => x)
 
 fd = Extremes.gpdfitmom(y)
 fd = Extremes.gpdfitmom(y, threshold = 0)
 
-insupport(fd,y)
+fd = gpdfit(y)
+fd = gpdfit(y, threshold=-.5)
+fd = gpdfit(y, threshold=-.5, initialvalues=[1, .1])
+fd = gpdfit(data, dataid=:y)
+fd = gpdfit(data, dataid=:y, threshold=-.05)
+fd = gpdfit(data, dataid=:y, initialvalues=[1, .1])
+fd = gpdfit(data, dataid=:y, logscaleid=:x)
+fd = gpdfit(data, dataid=:y, logscaleid=:x, initialvalues=[1, 0, .1])
 
-fd = Extremes.gpdfit(y)
-fd = Extremes.gpdfit(y, threshold = 0)
+# test for many datasets in a loop
+for i=1:1000
+    x = collect(0:300)
+    σ = exp.(x/300)
+    pd = GeneralizedPareto.(0,σ,.1)
+    y = rand.(pd)
+    data = Dict(:y => y, :x => x)
+    gpdfit(data, dataid=:y, logscaleid=:x)
+end
 
-pd = GeneralizedPareto(10,1,.1)
-y = rand(pd,500)
 
-fd = Extremes.gpdfitmom(y, threshold = 10)
-fd = Extremes.gpdfit(y, threshold = 10)
+
+
 
 fd = Extremes.gevfitbayes(y)
 fd = Extremes.gevfitbayes(y, stepSize=[.025,.05,.08])

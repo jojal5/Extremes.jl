@@ -1,11 +1,15 @@
 module Extremes
 
 using Distributions, DataFrames, Dates
-using JuMP, Ipopt
+using Optim, NLSolversBase
 using SpecialFunctions, LinearAlgebra
 
-include("functions.jl")
+import Distributions.GeneralizedExtremeValue
 
-export gevfit, gpdfit, gevfitbayes, gpdfitbayes, getcluster
+include("functions.jl")
+include("mle_functions.jl")
+include("bayes_functions.jl")
+
+export getcluster, gevfit, gpdfit, gevfitbayes, gpdfitbayes
 
 end # module
