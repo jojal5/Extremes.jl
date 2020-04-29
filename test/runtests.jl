@@ -1,4 +1,4 @@
-using CSV, DataFrames
+using DataFrames
 using Distributions, Extremes
 using Test
 
@@ -78,7 +78,7 @@ fd = Extremes.gevfitbayes(y, stepSize=[.025,.05,.08])
 fd = Extremes.gevfitbayes(y,niter=5000, stepSize=[.025,.05,.08])
 fd = Extremes.gevfitbayes(y,warmup=1000, niter=5000, stepSize=[.025,.05,.08])
 fd = Extremes.gevfitbayes(y,warmup=1000, thin=4, niter=5000, stepSize=[.025,.05,.08])
-fd = Extremes.gevfitbayes(y, warmup=10000, niter=5000, stepSize=[.025,.05,.08])
+fd = Extremes.gevfitbayes(y, warmup=2000, niter=5000, stepSize=[.025,.05,.08])
 
 
 y = rand(Normal(),100)
