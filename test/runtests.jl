@@ -57,6 +57,14 @@ for i=1:1000
     gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
 end
 
+
+# Test non-optimal solution
+for i=1:100
+    pd = GeneralizedExtremeValue(0,1,.5)
+    y = rand(pd,5)
+    fd = gevfit(y)
+end
+
 # Test for the GPD
 
 x = collect(0:300)
@@ -66,7 +74,7 @@ y = rand.(pd)
 data = Dict(:y => y, :x => x)
 
 fd = Extremes.gpdfitmom(y)
-fd = Extremes.gpdfitmom(y, threshold = 0)
+fd = Extremes.gpdfitmom(y, threshold = -0.05)
 
 fd = gpdfit(y)
 fd = gpdfit(y, threshold=-.5)
@@ -90,6 +98,12 @@ for i=1:1000
     gpdfit(data, dataid=:y, logscaleid=:x)
 end
 
+# Test fo non-optimal solution
+for i=1:100
+    pd = GeneralizedExtremeValue(0,1,.5)
+    y = rand(pd,5)
+    fd = gevfit(y)
+end
 
 
 
