@@ -58,12 +58,6 @@ for i=1:1000
 end
 
 
-# Test non-optimal solution
-for i=1:100
-    pd = GeneralizedExtremeValue(0,1,.5)
-    y = rand(pd,5)
-    fd = gevfit(y)
-end
 
 # Test for the GPD
 
@@ -97,14 +91,6 @@ for i=1:1000
     data = Dict(:y => y, :x => x)
     gpdfit(data, dataid=:y, logscaleid=:x)
 end
-
-# Test fo non-optimal solution
-for i=1:100
-    pd = GeneralizedExtremeValue(0,1,.5)
-    y = rand(pd,5)
-    fd = gevfit(y)
-end
-
 
 
 
