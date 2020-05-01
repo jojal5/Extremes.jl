@@ -1,6 +1,20 @@
-using DataFrames
+using DataFrames, Dates
 using Distributions, Extremes
 using Test
+
+pd = Normal()
+y = rand(pd,1000)
+g = getcluster(y,1,0)
+
+x = collect(Date(2000,1,1):Day(1):Date(2010,12,31))
+y = rand(pd, length(x))
+df = DataFrame(Date = x, Y = y)
+g = getcluster(df,1,0)
+
+df = DataFrame(Y = y, Date = x)
+@test_throws AssertionError getcluster(df,1,0)
+df = DataFrame(Date = x, Y=x)
+@test_throws AssertionError getcluster(df,1,0)
 
 pd = GeneralizedExtremeValue(0,1,.1)
 y = rand(pd,50)
@@ -20,7 +34,7 @@ pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
 data = Dict(:y => y, :x => x)
 
-fd = gevfit(data, dataid=:y, initialvalues=[0, 0, .1])
+fd = gevfit(data, dataid=:y)
 fd = gevfit(data, dataid=:y, initialvalues=[0, 0, .1])
 fd = gevfit(data, dataid=:y, locationid=:x)
 fd = gevfit(data, dataid=:y, locationid=:x, initialvalues=[0, 1/50, 0, .1])
@@ -28,6 +42,10 @@ fd = gevfit(data, dataid=:y, logscaleid=:x)
 fd = gevfit(data, dataid=:y, logscaleid=:x, initialvalues=[0, 0, 0, .1])
 fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
 fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x, initialvalues=[0,1/50,0,0,.1])
+
+@test_throws AssertionError gevfit(data, dataid=:z)
+@test_throws AssertionError gevfit(data, dataid=:y, locationid=:z)
+@test_throws AssertionError gevfit(data, dataid=:y, logscaleid=:z)
 
 # test for many datasets in a loop
 for i=1:1000
@@ -58,6 +76,9 @@ fd = gpdfit(data, dataid=:y, threshold=-.05)
 fd = gpdfit(data, dataid=:y, initialvalues=[1, .1])
 fd = gpdfit(data, dataid=:y, logscaleid=:x)
 fd = gpdfit(data, dataid=:y, logscaleid=:x, initialvalues=[1, 0, .1])
+
+@test_throws AssertionError gpdfit(data, dataid=:z)
+@test_throws AssertionError gpdfit(data, dataid=:y, logscaleid=:z)
 
 # test for many datasets in a loop
 for i=1:1000
