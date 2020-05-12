@@ -1,10 +1,40 @@
 """
-    GeneralizedExtremeValue()
-
-Create a *standard* `GeneralizedExtremeValue` object.
+Compute the Hessian matrix of the fitted model by maximum likelihood.
 """
-function GeneralizedExtremeValue()
-    res = Distributions.GeneralizedExtremeValue(0,1,0)
+function computehessian(model::EVA)
+
+    @assert model.method=="ML" "maximum likelihood method should be used to compute the Hessian matrix"
+
+    logf(θ::DenseVector) = loglike(model, θ)
+
+    θ̂ = model.results
+
+    H = ForwardDiff.hessian(logf, θ̂)
+
+    return H
+
+end
+
+"""
+Establish the parameter as function of the corresponding covariates.
+"""
+function computeparamfunction(data::Dict, covariateid::Array{Symbol,1})
+    fun =
+    if isempty(covariateid)
+        function(β::Vector{<:Real})
+            return identity(β)
+        end
+    else
+        X = ones(data[:n])
+
+        for i=1:length(covariateid)
+            X = hcat(X, data[covariateid[i]])
+        end
+        function(β::Vector{<:Real})
+            return X*β
+        end
+    end
+    return fun
 end
 
 """
@@ -112,52 +142,86 @@ end
 Compute the initial values of the GEV parameters given the data `y`.
 
 """
-function getinitialvalue(dist::Distributions.GeneralizedExtremeValue,y::Vector{<:Real})
+function getinitialvalue(dist::Type,y::Vector{<:Real})
 
-    pd = Extremes.gevfitlmom(y)
+    if dist == GeneralizedExtremeValue
 
-    # check if initial values are in the domain of the GEV
-    valid_initialvalues = all(insupport(pd,y))
+        pd = Extremes.gevfitlmom(y)
 
-    if valid_initialvalues
-        μ₀ = location(pd)
-        σ₀ = scale(pd)
-        ξ₀ = Distributions.shape(pd)
-    else
-        pd = Extremes.gumbelfitpwmom(y)
-        μ₀ = location(pd)
-        σ₀ = scale(pd)
-        ξ₀ = 0.0
+        # check if initial values are in the domain of the GEV
+        valid_initialvalues = all(insupport(pd,y))
+
+        if valid_initialvalues
+            μ₀ = location(pd)
+            σ₀ = scale(pd)
+            ξ₀ = Distributions.shape(pd)
+        else
+            pd = Extremes.gumbelfitpwmom(y)
+            μ₀ = location(pd)
+            σ₀ = scale(pd)
+            ξ₀ = 0.0
+        end
+
+        initialvalues = [μ₀, σ₀, ξ₀]
+
+    elseif dist == GeneralizedPareto
+
+        fd = Extremes.gpdfitmom(y::Array{Float64}, threshold=0.0)
+
+        if all(insupport(fd,y))
+            σ₀ = scale(fd)
+            ξ₀ = Distributions.shape(fd)
+        else
+            σ₀ = mean(y)
+            ξ₀ = 0.0
+        end
+
+        initialvalues = [σ₀, ξ₀]
+
     end
-
-    initialvalues = [μ₀, σ₀, ξ₀]
 
     return initialvalues
 
 end
 
 """
-    getinitialvalue(dist::GeneralizedPareto,y::Vector{<:Real})
-
-Compute the initial values of the GPD parameters given the data `y`.
-The threshold is assumed to be 0.
-
+Get an initial values vector for the parameters of model
 """
-function getinitialvalue(dist::Distributions.GeneralizedPareto,y::Vector{<:Real})
+function getinitialvalue(model::EVA)
 
-    fd = Extremes.gpdfitmom(y::Array{Float64}, threshold=0.0)
+    dist = model.distribution
+    y = model.data[model.dataid]
 
-    if all(insupport(fd,y))
-        σ₀ = scale(fd)
-        ξ₀ = Distributions.shape(fd)
-    else
-        σ₀ = mean(y)
-        ξ₀ = 0.0
+    # Compute stationary initial values
+    μ₀,σ₀,ξ₀ = Extremes.getinitialvalue(dist,y)
+    # Store them in a dictionary
+    θ₀ = Dict(:μ => μ₀, :ϕ => log(σ₀), :ξ => ξ₀)
+
+    initialvalues = zeros(model.nparameters)
+    for param in [:μ, :ϕ, :ξ]
+        ind = model.paramindex[param][1]
+        initialvalues[ind] = θ₀[param]
     end
 
-    initialvalues = [σ₀, ξ₀]
-
     return initialvalues
+
+end
+
+"""
+Return the parameter number of the model
+"""
+function getparameternumber(Covariate::Dict)
+
+    # The number of parameters in the model without any covariates
+    nparameters = 3
+
+    for p in [:μ, :ϕ, :ξ]
+        if haskey(Covariate, p)
+            nparameters += length(Covariate[p])
+        end
+    end
+
+    return nparameters
 
 end
 
@@ -189,25 +253,6 @@ function gevfitlmom(x::Array{T,1} where T<:Real)
 
     return pdfit
 end
-
-
-
-
-# """
-#     gevhessian(y::Array{N,1} where N<:Real,μ::Real,σ::Real,ξ::Real)
-#
-# Hessian matrix...
-# """
-# function gevhessian(y::Array{T,1} where T<:Real,μ::Real,σ::Real,ξ::Real)
-#
-#     #= Estimate the hessian matrix evaluated at (μ, σ, ξ) for the iid gev random sample y =#
-#
-#     logl(θ) = loglikelihood(GeneralizedExtremeValue(θ...),y)
-#
-#     H = ForwardDiff.hessian(logl, [μ σ ξ])
-#
-# end
-#
 
 """
     gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
@@ -253,4 +298,69 @@ function gumbelfitpwmom(x::Array{T,1} where T<:Real)
     pdfit = Gumbel(μ̂,σ̂)
 
     return pdfit
+end
+
+"""
+Compute the model loglikelihood evaluated at θ.
+"""
+function loglike(model::EVA, θ::Vector{<:Real})
+
+    β₁ = θ[ model.paramindex[:μ] ]
+    β₂ = θ[ model.paramindex[:ϕ] ]
+    β₃ = θ[ model.paramindex[:ξ] ]
+
+    y = model.data[model.dataid]
+
+    distribution = model.distribution
+
+    μ = model.locationfun(β₁)
+    ϕ = model.logscalefun(β₂)
+    ξ = model.shapefun(β₃)
+
+    σ = exp.(ϕ)
+
+    pd = distribution.(μ, σ, ξ)
+
+    ll = sum(logpdf.(pd, y))
+
+    return ll
+
+end
+
+"""
+Compute the model loglikelihood evaluated at θ̂ if the maximul likelihood method has been used.
+"""
+function loglike(model::EVA)
+
+    @assert model.method=="ML" "The maximul likelihood method shoud be used"
+
+    θ = model.results
+
+    ll = loglike(model, θ)
+
+    return ll
+
+end
+
+"""
+Return the indexes of parameters belonging to the locationFunction,
+logscaleFunction and shapeFunction from a single vector.
+"""
+function paramindexing(Covariate::Dict)
+
+    params = [:μ, :ϕ, :ξ]
+
+    id = Symbol[]
+    for p in params
+        if haskey(Covariate,p)
+            append!(id, fill(p, 1+length(Covariate[p])))
+        else
+            push!(id, p)
+        end
+    end
+
+    paramindex = Dict(:μ => findall(id.==:μ), :ϕ => findall(id.==:ϕ), :ξ => findall(id.==:ξ))
+
+    return paramindex
+
 end

@@ -22,95 +22,127 @@ y = rand(pd,50)
 pdfit = Extremes.gumbelfitpwmom(y)
 pdfit = Extremes.gevfitlmom(y)
 
-ini = Extremes.getinitialvalue(GeneralizedExtremeValue(),y)
+ini = Extremes.getinitialvalue(GeneralizedExtremeValue,y)
 
-fd = gevfit(y)
-fd = gevfit(y, initialvalues = [0.0,1.0,1e-4])
+model = gevfit(y)
+Extremes.gevfit!(model)
+Extremes.computehessian(model)
 
-# Non-stationay part
-x = collect(0:300)
+
+# Non-stationay location parameter
+n = 300
+x = collect(1:n)
 μ = x*1/100
 pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
-data = Dict(:y => y, :x => x)
+data = Dict(:y => y, :x => x, :n => n)
+Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ =>Symbol[])
 
-fd = gevfit(data, dataid=:y)
-fd = gevfit(data, dataid=:y, initialvalues=[0, 0, .1])
-fd = gevfit(data, dataid=:y, locationid=:x)
-fd = gevfit(data, dataid=:y, locationid=:x, initialvalues=[0, 1/50, 0, .1])
-fd = gevfit(data, dataid=:y, logscaleid=:x)
-fd = gevfit(data, dataid=:y, logscaleid=:x, initialvalues=[0, 0, 0, .1])
-fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
-fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x, initialvalues=[0,1/50,0,0,.1])
+model = gevfit(data, :y, Covariate=Covariate)
+Extremes.gevfit!(model)
 
-@test_throws AssertionError gevfit(data, dataid=:z)
-@test_throws AssertionError gevfit(data, dataid=:y, locationid=:z)
-@test_throws AssertionError gevfit(data, dataid=:y, logscaleid=:z)
+Extremes.computehessian(model)
 
-# test for many datasets in a loop
-for i=1:1000
-    x = collect(0:300)
-    μ = x/100
-    pd = GeneralizedExtremeValue.(μ,1,.1)
-    y = rand.(pd)
-    data = Dict(:y => y, :x => x)
-    gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
-end
-
-
-
-# Test for the GPD
-
-x = collect(0:300)
-σ = exp.(x/300)
-pd = GeneralizedPareto.(0,σ,.1)
+# Non-stationay location and logscale parameters
+n = 300
+x = collect(1:n)
+μ = x*1/100
+ϕ = x*1/1000
+pd = GeneralizedExtremeValue.(μ,exp.(ϕ),.1)
 y = rand.(pd)
-data = Dict(:y => y, :x => x)
+data = Dict(:y => y, :x => x, :n => n)
+Covariate = Dict(:μ => [:x], :ϕ => [:x], :ξ =>Symbol[])
 
-fd = Extremes.gpdfitmom(y)
-fd = Extremes.gpdfitmom(y, threshold = -0.05)
+model = gevfit(data, :y, Covariate=Covariate)
+Extremes.gevfit!(model)
 
-fd = gpdfit(y)
-fd = gpdfit(y, threshold=-.5)
-fd = gpdfit(y, threshold=-.5, initialvalues=[1, .1])
-fd = gpdfit(data, dataid=:y)
-fd = gpdfit(data, dataid=:y, threshold=-.05)
-fd = gpdfit(data, dataid=:y, initialvalues=[1, .1])
-fd = gpdfit(data, dataid=:y, logscaleid=:x)
-fd = gpdfit(data, dataid=:y, logscaleid=:x, initialvalues=[1, 0, .1])
+Extremes.computehessian(model)
 
-@test_throws AssertionError gpdfit(data, dataid=:z)
-@test_throws AssertionError gpdfit(data, dataid=:y, logscaleid=:z)
+# Bayesian
+pd = GeneralizedExtremeValue(0,1,.1)
+y = rand(pd,50)
+model = gevfitbayes(y)
+gevfitbayes!(model)
 
-# test for many datasets in a loop
-for i=1:1000
-    x = collect(0:300)
-    σ = exp.(x/300)
-    pd = GeneralizedPareto.(0,σ,.1)
-    y = rand.(pd)
-    data = Dict(:y => y, :x => x)
-    gpdfit(data, dataid=:y, logscaleid=:x)
-end
-
-
-
-fd = Extremes.gevfitbayes(y)
-fd = Extremes.gevfitbayes(y, stepSize=[.025,.05,.08])
-fd = Extremes.gevfitbayes(y,niter=5000, stepSize=[.025,.05,.08])
-fd = Extremes.gevfitbayes(y,warmup=1000, niter=5000, stepSize=[.025,.05,.08])
-fd = Extremes.gevfitbayes(y,warmup=1000, thin=4, niter=5000, stepSize=[.025,.05,.08])
-fd = Extremes.gevfitbayes(y, warmup=2000, niter=5000, stepSize=[.025,.05,.08])
-
-
-y = rand(Normal(),100)
-c = Extremes.getcluster(y,.2)
-c = Extremes.getcluster(y,.2,.1)
-
-threshold = 5
-σ = 1
-ξ = .1
-y = rand(GeneralizedPareto(threshold, σ, ξ),100)
-
-Extremes.gpdfitbayes(y)
-Extremes.gpdfitbayes(y, threshold=threshold)
-Extremes.gpdfitbayes(y, threshold=threshold, stepSize=[.2,.15])
+# fd = gevfit(data, dataid=:y)
+# fd = gevfit(data, dataid=:y, initialvalues=[0, 0, .1])
+# fd = gevfit(data, dataid=:y, locationid=:x)
+# fd = gevfit(data, dataid=:y, locationid=:x, initialvalues=[0, 1/50, 0, .1])
+# fd = gevfit(data, dataid=:y, logscaleid=:x)
+# fd = gevfit(data, dataid=:y, logscaleid=:x, initialvalues=[0, 0, 0, .1])
+# fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
+# fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x, initialvalues=[0,1/50,0,0,.1])
+#
+# @test_throws AssertionError gevfit(data, dataid=:z)
+# @test_throws AssertionError gevfit(data, dataid=:y, locationid=:z)
+# @test_throws AssertionError gevfit(data, dataid=:y, logscaleid=:z)
+#
+# # test for many datasets in a loop
+# for i=1:1000
+#     x = collect(0:300)
+#     μ = x/100
+#     pd = GeneralizedExtremeValue.(μ,1,.1)
+#     y = rand.(pd)
+#     data = Dict(:y => y, :x => x)
+#     gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
+# end
+#
+#
+#
+# # Test for the GPD
+#
+# x = collect(0:300)
+# σ = exp.(x/300)
+# pd = GeneralizedPareto.(0,σ,.1)
+# y = rand.(pd)
+# data = Dict(:y => y, :x => x)
+#
+# fd = Extremes.gpdfitmom(y)
+# fd = Extremes.gpdfitmom(y, threshold = -0.05)
+#
+# ini = Extremes.getinitialvalue(GeneralizedPareto,y)
+#
+# fd = gpdfit(y)
+# fd = gpdfit(y, threshold=-.5)
+# fd = gpdfit(y, threshold=-.5, initialvalues=[1, .1])
+# fd = gpdfit(data, dataid=:y)
+# fd = gpdfit(data, dataid=:y, threshold=-.05)
+# fd = gpdfit(data, dataid=:y, initialvalues=[1, .1])
+# fd = gpdfit(data, dataid=:y, logscaleid=:x)
+# fd = gpdfit(data, dataid=:y, logscaleid=:x, initialvalues=[1, 0, .1])
+#
+# @test_throws AssertionError gpdfit(data, dataid=:z)
+# @test_throws AssertionError gpdfit(data, dataid=:y, logscaleid=:z)
+#
+# # test for many datasets in a loop
+# for i=1:1000
+#     x = collect(0:300)
+#     σ = exp.(x/300)
+#     pd = GeneralizedPareto.(0,σ,.1)
+#     y = rand.(pd)
+#     data = Dict(:y => y, :x => x)
+#     gpdfit(data, dataid=:y, logscaleid=:x)
+# end
+#
+#
+#
+# fd = Extremes.gevfitbayes(y)
+# fd = Extremes.gevfitbayes(y, stepSize=[.025,.05,.08])
+# fd = Extremes.gevfitbayes(y,niter=5000, stepSize=[.025,.05,.08])
+# fd = Extremes.gevfitbayes(y,warmup=1000, niter=5000, stepSize=[.025,.05,.08])
+# fd = Extremes.gevfitbayes(y,warmup=1000, thin=4, niter=5000, stepSize=[.025,.05,.08])
+# fd = Extremes.gevfitbayes(y, warmup=2000, niter=5000, stepSize=[.025,.05,.08])
+#
+#
+# y = rand(Normal(),100)
+# c = Extremes.getcluster(y,.2)
+# c = Extremes.getcluster(y,.2,.1)
+#
+# threshold = 5
+# σ = 1
+# ξ = .1
+# y = rand(GeneralizedPareto(threshold, σ, ξ),100)
+#
+# Extremes.gpdfitbayes(y)
+# Extremes.gpdfitbayes(y, threshold=threshold)
+# Extremes.gpdfitbayes(y, threshold=threshold, stepSize=[.2,.15])
