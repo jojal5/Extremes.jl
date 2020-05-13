@@ -1,4 +1,15 @@
-function gevfitbayes(y, niter::Int=5000, warmup::Int=2000)
+"""
+    gevfitbayes(y::DenseArray; niter::Int=5000, warmup::Int=2000)
+
+Fit the Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data `y`.
+
+Data is a dictionary with Symbol as keys.
+
+A random sample of the posterior distribution is generated using the NUTS algortihm.
+
+Only flat prior is now supported.
+"""
+function gevfitbayes(y::DenseArray; niter::Int=5000, warmup::Int=2000)
 
     data = Dict(:y => y)
     dataid = :y
@@ -11,6 +22,99 @@ function gevfitbayes(y, niter::Int=5000, warmup::Int=2000)
     gevfitbayes!(model, niter=niter, warmup=warmup)
 
     return model
+end
+
+"""
+    gevfitbayes(data::Dict, dataid::Symbol; niter::Int=5000, warmup::Int=2000)
+
+Fit the Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data contains in the dictionary `data`under the key `dataid`.
+
+Data is a dictionary with Symbol as keys.
+
+A random sample of the posterior distribution is generated using the NUTS algortihm.
+
+Only flat prior is now supported.
+"""
+function gevfitbayes(data::Dict, dataid::Symbol; niter::Int=5000, warmup::Int=2000)
+
+    Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
+    paramindex = paramindexing(Covariate)
+    nparameters = getparameternumber(Covariate)
+
+    model = EVA(GeneralizedExtremeValue, "Bayesian", data, dataid, Covariate, nparameters, identity, identity, identity, paramindex, Float64[])
+
+    gevfitbayes!(model)
+
+    return model
+
+end
+
+"""
+    gevfitbayes(data::Dict, dataid::Symbol, Covariate::Dict)
+
+Fit a non-stationary Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data contains in the disctionary `data`under the key `dataid`.
+
+Covariate is a dictionary containing the covariates identifyer for each parameter (μ, ϕ, ξ).
+
+The location parameter μ is a linear function using the covariates in `data` identified by the symbols in Covariate[:μ].
+The logscale parameter ϕ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ϕ].
+The location parameter ξ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ξ].
+
+The covariate may be standardized to facilitate the estimation.
+
+A random sample of the posterior distribution is generated using the NUTS algortihm.
+
+Only flat prior is now supported.
+
+Example with a non-stationary location parameter:
+```julia
+# Sample size
+n = 300
+
+# Covariate
+x = collect(1:n)
+
+# Location as function of the covariate
+μ = x*1/100
+
+# Sample from the non-stationary GEV distribution
+pd = GeneralizedExtremeValue.(μ,1,.1)
+y = rand.(pd)
+
+# Put the data in a dictionary
+data = Dict(:y => y, :x => x, :n => n)
+
+# Put the covariate identifier in a dictionary
+Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ => Symbol[] )
+
+# Estimate the parameters
+gevfitbayes(data, :y, Covariate=Covariate)
+```
+
+"""
+function gevfitbayes(data::Dict, dataid::Symbol ; Covariate::Dict, niter::Int=5000, warmup::Int=2000)
+
+    # Put empty Symbol array to stationary parameters
+    for k in [:μ, :ϕ, :ξ]
+        if !(haskey(Covariate,k))
+            Covariate[k] = Symbol[]
+        end
+    end
+
+    paramindex = paramindexing(Covariate)
+    nparameters = getparameternumber(Covariate)
+
+    locationfun = computeparamfunction(data, Covariate[:μ])
+    logscalefun = computeparamfunction(data, Covariate[:ϕ])
+    shapefun = computeparamfunction(data, Covariate[:ξ])
+
+    model = EVA(GeneralizedExtremeValue, "Bayesian", data, dataid, Covariate, nparameters,
+        locationfun, logscalefun, shapefun, paramindex, Float64[])
+
+    gevfitbayes!(model)
+
+    return model
+
 end
 
 """

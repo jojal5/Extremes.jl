@@ -1,7 +1,7 @@
 """
     gevfit(y::DenseVector)
 
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data y.
+Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
 """
 function gevfit(y::DenseVector)
 
@@ -13,9 +13,9 @@ function gevfit(y::DenseVector)
 
     model = EVA(GeneralizedExtremeValue, "ML", data, dataid, Covariate, nparameters, identity, identity, identity, paramindex, Float64[])
 
-    res = gevfit!(model)
+    gevfit!(model)
 
-    return res
+    return model
 
 end
 
@@ -25,6 +25,8 @@ end
 Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contains in the dictionary `data`under the key `dataid`.
 
 - `gevfit(data, dataid=:y)`: Fits the GEV distribution to the data stored in the dictionary `data`under the key `dataid`.
+
+Data is a dictionary with Symbol as keys.
 """
 function gevfit(data::Dict, dataid::Symbol)
 
@@ -34,26 +36,59 @@ function gevfit(data::Dict, dataid::Symbol)
 
     model = EVA(GeneralizedExtremeValue, "ML", data, dataid, Covariate, nparameters, identity, identity, identity, paramindex, Float64[])
 
-    res = gevfit!(model)
+    gevfit!(model)
 
-    return res
+    return model
 
 end
 
 """
     gevfit(data::Dict, dataid::Symbol, Covariate::Dict)
 
-Fit the non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contains in the disctionary `data`under the key `dataid`.
-The keys of the covariates are in the Covariate dictionary:
-Covariate[:μ]::Symbol[]
-Covariate[:ϕ]::Symbol[]
-Covariate[:ξ]::Symbol[]
+Fit a non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contains in the disctionary `data`under the key `dataid`.
+
+Covariate is a dictionary containing the covariates identifyer for each parameter (μ, ϕ, ξ).
+
+The location parameter μ is a linear function using the covariates in `data` identified by the symbols in Covariate[:μ].
+The logscale parameter ϕ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ϕ].
+The location parameter ξ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ξ].
+
+Example with a non-stationary location parameter:
+```julia
+# Sample size
+n = 300
+
+# Covariate
+x = collect(1:n)
+
+# Location as function of the covariate
+μ = x*1/100
+
+# Sample from the non-stationary GEV distribution
+pd = GeneralizedExtremeValue.(μ,1,.1)
+y = rand.(pd)
+
+# Put the data in a dictionary
+data = Dict(:y => y, :x => x, :n => n)
+
+# Put the covariate identifier in a dictionary
+Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ => Symbol[] )
+
+# Estimate the parameters
+gevfit(data, :y, Covariate=Covariate)
+```
 
 The covariate may be standardized to facilitate the estimation.
 
-- `gevfit(data, dataid=:y, Covariate=Covariate)`: Fits the GEV distribution to the data stored in the dictionary `data`under the key `dataid`.
 """
 function gevfit(data::Dict, dataid::Symbol ; Covariate::Dict)
+
+    # Put empty Symbol array to stationary parameters
+    for k in [:μ, :ϕ, :ξ]
+        if !(haskey(Covariate,k))
+            Covariate[k] = Symbol[]
+        end
+    end
 
     paramindex = paramindexing(Covariate)
     nparameters = getparameternumber(Covariate)
@@ -65,9 +100,9 @@ function gevfit(data::Dict, dataid::Symbol ; Covariate::Dict)
     model = EVA(GeneralizedExtremeValue, "ML", data, dataid, Covariate, nparameters,
         locationfun, logscalefun, shapefun, paramindex, Float64[])
 
-    res = gevfit!(model)
+    gevfit!(model)
 
-    return res
+    return model
 
 end
 
