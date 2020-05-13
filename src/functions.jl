@@ -364,3 +364,13 @@ function paramindexing(Covariate::Dict)
     return paramindex
 
 end
+
+function Base.show(io::IO, obj::EVA)
+  println(io, "Extreme value model")
+  println(io, "Model: $(obj.distribution)")
+  println(io, "Method: "*obj.method)
+  println(io, "Covariates:")
+  println(io, "    μ => $(obj.covariate[:μ])")
+  println(io, "    ϕ   => $(obj.covariate[:ϕ])")
+  println(io, "    ξ => $(obj.covariate[:ξ])")
+end
