@@ -1,19 +1,3 @@
-"""
-Compute the Hessian matrix of the fitted model by maximum likelihood.
-"""
-function computehessian(model::EVA)
-
-    @assert model.method=="ML" "maximum likelihood method should be used to compute the Hessian matrix"
-
-    logf(θ::DenseVector) = loglike(model, θ)
-
-    θ̂ = model.results
-
-    H = ForwardDiff.hessian(logf, θ̂)
-
-    return H
-
-end
 
 """
 Establish the parameter as function of the corresponding covariates.
@@ -142,45 +126,72 @@ end
 Compute the initial values of the GEV parameters given the data `y`.
 
 """
-function getinitialvalue(dist::Type,y::Vector{<:Real})
+function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})
 
-    if dist == GeneralizedExtremeValue
+    pd = Extremes.gevfitlmom(y)
 
-        pd = Extremes.gevfitlmom(y)
+    # check if initial values are in the domain of the GEV
+    valid_initialvalues = all(insupport(pd,y))
 
-        # check if initial values are in the domain of the GEV
-        valid_initialvalues = all(insupport(pd,y))
-
-        if valid_initialvalues
-            μ₀ = location(pd)
-            σ₀ = scale(pd)
-            ξ₀ = Distributions.shape(pd)
-        else
-            pd = Extremes.gumbelfitpwmom(y)
-            μ₀ = location(pd)
-            σ₀ = scale(pd)
-            ξ₀ = 0.0
-        end
-
-        initialvalues = [μ₀, σ₀, ξ₀]
-
-    elseif dist == GeneralizedPareto
-
-        fd = Extremes.gpdfitmom(y::Array{Float64}, threshold=0.0)
-
-        if all(insupport(fd,y))
-            σ₀ = scale(fd)
-            ξ₀ = Distributions.shape(fd)
-        else
-            σ₀ = mean(y)
-            ξ₀ = 0.0
-        end
-
-        initialvalues = [σ₀, ξ₀]
-
+    if valid_initialvalues
+        μ₀ = location(pd)
+        σ₀ = scale(pd)
+        ξ₀ = Distributions.shape(pd)
+    else
+        pd = Extremes.gumbelfitpwmom(y)
+        μ₀ = location(pd)
+        σ₀ = scale(pd)
+        ξ₀ = 0.0
     end
 
+    initialvalues = [μ₀, σ₀, ξ₀]
+
     return initialvalues
+
+end
+
+function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})
+
+    fd = Extremes.gpdfitmom(y::Array{Float64}, threshold=0.0)
+
+    if all(insupport(fd,y))
+        σ₀ = scale(fd)
+        ξ₀ = Distributions.shape(fd)
+    else
+        σ₀ = mean(y)
+        ξ₀ = 0.0
+    end
+
+    initialvalues = [σ₀, ξ₀]
+
+    return initialvalues
+
+end
+
+"""
+    getdistribution(model::EVA, θ::Vector{<:Real})
+
+Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
+"""
+function getdistribution(model::EVA, θ::Vector{<:Real})
+
+    dist = model.distribution
+
+    μ = model.locationfun(θ[model.paramindex[:μ]])
+    ϕ = model.logscalefun(θ[model.paramindex[:ϕ]])
+    ξ = model.shapefun(θ[model.paramindex[:ξ]])
+
+    σ = exp.(ϕ)
+
+    fd = dist.(μ, σ, ξ)
+
+    if length(fd) == 1
+        res = fd[1]
+    else
+        res = fd
+    end
+
+    return res
 
 end
 
@@ -305,21 +316,9 @@ Compute the model loglikelihood evaluated at θ.
 """
 function loglike(model::EVA, θ::Vector{<:Real})
 
-    β₁ = θ[ model.paramindex[:μ] ]
-    β₂ = θ[ model.paramindex[:ϕ] ]
-    β₃ = θ[ model.paramindex[:ξ] ]
-
     y = model.data[model.dataid]
 
-    distribution = model.distribution
-
-    μ = model.locationfun(β₁)
-    ϕ = model.logscalefun(β₂)
-    ξ = model.shapefun(β₃)
-
-    σ = exp.(ϕ)
-
-    pd = distribution.(μ, σ, ξ)
+    pd = getdistribution(model, θ)
 
     ll = sum(logpdf.(pd, y))
 
@@ -328,18 +327,29 @@ function loglike(model::EVA, θ::Vector{<:Real})
 end
 
 """
-Compute the model loglikelihood evaluated at θ̂ if the maximul likelihood method has been used.
+Compute the model loglikelihood evaluated at θ̂ if the maximum likelihood method has been used.
 """
-function loglike(model::EVA)
+function loglike(fd::MaximumLikelihoodEVA)
 
-    @assert model.method=="ML" "The maximul likelihood method shoud be used"
+    θ̂ = fd.results
 
-    θ = model.results
-
-    ll = loglike(model, θ)
+    ll = loglike(fd.model, θ̂)
 
     return ll
 
+end
+
+"""
+    parametervar(fm::Extremes.MaximumLikelihoodEVA)
+
+Compute the covariance parameters estimate of the fitted model `fm`.
+"""
+function parametervar(fm::Extremes.MaximumLikelihoodEVA)
+
+    # Compute the parameters covariance matrix
+    V = inv(fm.H)
+
+    return V
 end
 
 """
@@ -365,12 +375,91 @@ function paramindexing(Covariate::Dict)
 
 end
 
+"""
+Compute the quantile of level `p` from the fitted model for the data at index = `index, in case of non-stationarity
+"""
+function quantile(model::MaximumLikelihoodEVA, p::Real)
+
+    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
+
+    fd = getdistribution(model)
+
+    r = quantile.(fd, p)
+
+    return r
+
+end
+
+"""
+Compute the quantile of level `p` from the fitted model. If the model is non-stationary, then the effective quantile are returned.
+"""
+function quantile(model::EVA, θ::Vector{<:Real}, p::Real)
+
+    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
+
+    pd = getdistribution(model, θ)
+
+    r = quantile.(pd, p)
+
+    return r
+
+end
+
+
+"""
+    quantilevar(fd::Extremes.MaximumLikelihoodEVA, level::Real)
+
+Compute the variance of quantile of level `level`from the fitted model `fd.
+"""
+function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)
+
+    θ̂ = fm.θ̂
+    H = fm.H
+
+    q = quantile(fm, level)
+
+    V = zeros(length(q))
+
+    for i=1:length(q)
+
+        f(θ::DenseVector) = quantile(fm.model,θ,level)[i]
+        Δf(θ::DenseVector) = ForwardDiff.gradient(f, θ)
+        G = Δf(θ̂)
+
+        V[i] = G'/H*G
+
+    end
+
+    if isa(q, Real)
+        res = V[1]
+    else
+        res = V
+    end
+
+    return res
+
+end
+
+
 function Base.show(io::IO, obj::EVA)
   println(io, "Extreme value model")
   println(io, "Model: $(obj.distribution)")
-  println(io, "Method: "*obj.method)
-  println(io, "Covariates:")
-  println(io, "    μ => $(obj.covariate[:μ])")
-  println(io, "    ϕ   => $(obj.covariate[:ϕ])")
-  println(io, "    ξ => $(obj.covariate[:ξ])")
+  println(io, "    "*showparamfun(obj,:μ))
+  println(io, "    "*showparamfun(obj,:ϕ))
+  println(io, "    "*showparamfun(obj,:ξ))
+end
+
+function Base.show(io::IO, obj::MaximumLikelihoodEVA)
+    show(io, obj.model)
+    println(io, "Maximum likelihood estimates")
+    println(io, "θ̂ = $(obj.θ̂)")
+end
+
+function showparamfun(model::Extremes.EVA,param::Symbol)
+
+    covariate = [" + $x" for x in model.covariate[param]]
+    res = string("$param ~ 1", covariate...)
+
+    return res
+
 end

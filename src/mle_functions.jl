@@ -1,9 +1,25 @@
 """
+    getdistribution(fittedmodel::MaximumLikelihoodEVA)
+
+Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
+"""
+function getdistribution(fittedmodel::MaximumLikelihoodEVA)
+
+    model = fittedmodel.model
+    θ̂ = fittedmodel.θ̂
+
+    res = getdistribution(model, θ̂)
+
+    return res
+
+end
+
+"""
     gevfit(y::DenseVector)
 
 Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
 """
-function gevfit(y::DenseVector)
+function gevfit(y::Vector{<:Real})
 
     data = Dict(:y => y)
     dataid = :y
@@ -11,11 +27,11 @@ function gevfit(y::DenseVector)
     paramindex = paramindexing(Covariate)
     nparameters = getparameternumber(Covariate)
 
-    model = EVA(GeneralizedExtremeValue, "ML", data, dataid, Covariate, nparameters, identity, identity, identity, paramindex, Float64[])
+    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
 
-    gevfit!(model)
+    fittedmodel = gevfit(model)
 
-    return model
+    return fittedmodel
 
 end
 
@@ -34,11 +50,11 @@ function gevfit(data::Dict, dataid::Symbol)
     paramindex = paramindexing(Covariate)
     nparameters = getparameternumber(Covariate)
 
-    model = EVA(GeneralizedExtremeValue, "ML", data, dataid, Covariate, nparameters, identity, identity, identity, paramindex, Float64[])
+    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
 
-    gevfit!(model)
+    fittedmodel = gevfit(model)
 
-    return model
+    return fittedmodel
 
 end
 
@@ -55,6 +71,8 @@ The location parameter ξ is a linear function using the covariates in `data` id
 
 Example with a non-stationary location parameter:
 ```julia
+using Extremes, Distributions
+
 # Sample size
 n = 300
 
@@ -97,12 +115,12 @@ function gevfit(data::Dict, dataid::Symbol ; Covariate::Dict)
     logscalefun = computeparamfunction(data, Covariate[:ϕ])
     shapefun = computeparamfunction(data, Covariate[:ξ])
 
-    model = EVA(GeneralizedExtremeValue, "ML", data, dataid, Covariate, nparameters,
-        locationfun, logscalefun, shapefun, paramindex, Float64[])
+    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters,
+        locationfun, logscalefun, shapefun, paramindex)
 
-    gevfit!(model)
+    fittedmodel = gevfit(model)
 
-    return model
+    return fittedmodel
 
 end
 
@@ -112,7 +130,7 @@ end
 Fit the non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood of the EVA model `model`.
 
 """
-function gevfit!(model::EVA)
+function gevfit(model::EVA)
 
     initialvalues = getinitialvalue(model)
 
@@ -121,15 +139,22 @@ function gevfit!(model::EVA)
     res = optimize(fobj, initialvalues)
 
     if Optim.converged(res)
-        model.results = Optim.minimizer(res)
+        θ̂ = Optim.minimizer(res)
     else
         @warn "The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values."
-        model.results = initialvalues
+        θ̂ = initialvalues
     end
 
-    return model
+    H = ForwardDiff.hessian(fobj, θ̂)
+
+    fittedmodel = MaximumLikelihoodEVA(model, θ̂, H)
+
+    return fittedmodel
 
 end
+
+
+
 
 
 # function gevfit(data::Dict; dataid=nothing, locationid=nothing, logscaleid=nothing,

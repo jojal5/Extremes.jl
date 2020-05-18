@@ -2,20 +2,6 @@ using DataFrames, Dates
 using Distributions, Extremes
 using Test
 
-pd = Normal()
-y = rand(pd,1000)
-g = getcluster(y,1,0)
-
-x = collect(Date(2000,1,1):Day(1):Date(2010,12,31))
-y = rand(pd, length(x))
-df = DataFrame(Date = x, Y = y)
-g = getcluster(df,1,0)
-
-df = DataFrame(Y = y, Date = x)
-@test_throws AssertionError getcluster(df,1,0)
-df = DataFrame(Date = x, Y=x)
-@test_throws AssertionError getcluster(df,1,0)
-
 pd = GeneralizedExtremeValue(0,1,.1)
 y = rand(pd,50)
 
@@ -24,9 +10,23 @@ pdfit = Extremes.gevfitlmom(y)
 
 ini = Extremes.getinitialvalue(GeneralizedExtremeValue,y)
 
-model = gevfit(y)
-Extremes.gevfit!(model)
-Extremes.computehessian(model)
+fd = gevfit(y)
+Extremes.getdistribution(fd)
+Extremes.getdistribution(fd.model,[0,0,0])
+Extremes.quantile(fd.model, [0,0,0], .95)
+Extremes.quantile(fd, .95)
+Extremes.parametervar(fd)
+Extremes.quantilevar(fd,.95)
+
+data = Dict(:y => y)
+dataid = :y
+Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
+paramindex = Extremes.paramindexing(Covariate)
+nparameters = Extremes.getparameternumber(Covariate)
+model = Extremes.EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
+Extremes.getdistribution(model, [0,0,0,0])
+
+fd = gevfit(model)
 
 
 # Non-stationay location parameter
@@ -37,11 +37,17 @@ pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
 data = Dict(:y => y, :x => x, :n => n)
 Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ =>Symbol[])
+fd = gevfit(data, :y, Covariate=Covariate)
+Extremes.getdistribution(fd)
+Extremes.getdistribution(fd.model,[0,0,0,0])
+Extremes.quantile(fd.model, [0,0,0,0], .95)
+Extremes.quantile(fd, .95)
+Extremes.parametervar(fd)
+Extremes.quantilevar(fd,.95)
 
-model = gevfit(data, :y, Covariate=Covariate)
-Extremes.gevfit!(model)
+model = Extremes.EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
+fittedmodel = gevfit(model)
 
-Extremes.computehessian(model)
 
 # Non-stationay location and logscale parameters
 n = 300
@@ -53,10 +59,16 @@ y = rand.(pd)
 data = Dict(:y => y, :x => x, :n => n)
 Covariate = Dict(:μ => [:x], :ϕ => [:x], :ξ =>Symbol[])
 
-model = gevfit(data, :y, Covariate=Covariate)
-Extremes.gevfit!(model)
+fd = gevfit(data, :y, Covariate=Covariate)
+Extremes.getdistribution(fd)
+Extremes.getdistribution(fd.model,[0,0,0,0,0])
+Extremes.quantile(fd.model, [0,0,0,0,0], .95)
+Extremes.quantile(fd, .95)
+Extremes.parametervar(fd)
+Extremes.quantilevar(fd,.95)
 
-Extremes.computehessian(model)
+
+
 
 # Bayesian
 pd = GeneralizedExtremeValue(0,1,.1)
@@ -91,6 +103,20 @@ gevfitbayes!(model)
 #
 # # Test for the GPD
 #
+# pd = Normal()
+# y = rand(pd,1000)
+# g = getcluster(y,1,0)
+#
+# x = collect(Date(2000,1,1):Day(1):Date(2010,12,31))
+# y = rand(pd, length(x))
+# df = DataFrame(Date = x, Y = y)
+# g = getcluster(df,1,0)
+#
+# df = DataFrame(Y = y, Date = x)
+# @test_throws AssertionError getcluster(df,1,0)
+# df = DataFrame(Date = x, Y=x)
+# @test_throws AssertionError getcluster(df,1,0)
+
 # x = collect(0:300)
 # σ = exp.(x/300)
 # pd = GeneralizedPareto.(0,σ,.1)
