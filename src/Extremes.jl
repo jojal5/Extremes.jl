@@ -29,6 +29,13 @@ struct MaximumLikelihoodEVA
     H::Array{Float64}
 end
 
+struct BayesianEVA
+    "Extreme value model definition"
+    model::EVA
+    "MCMC outputs"
+    sim::Mamba.Chains
+end
+
 include("functions.jl")
 include("mle_functions.jl")
 include("bayes_functions.jl")

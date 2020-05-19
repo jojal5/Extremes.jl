@@ -73,8 +73,8 @@ Extremes.quantilevar(fd,.95)
 # Bayesian
 pd = GeneralizedExtremeValue(0,1,.1)
 y = rand(pd,50)
-model = gevfitbayes(y)
-gevfitbayes!(model)
+fm = gevfitbayes(y)
+
 
 # fd = gevfit(data, dataid=:y)
 # fd = gevfit(data, dataid=:y, initialvalues=[0, 0, .1])

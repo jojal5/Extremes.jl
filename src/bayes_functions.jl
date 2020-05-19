@@ -17,11 +17,12 @@ function gevfitbayes(y::DenseArray; niter::Int=5000, warmup::Int=2000)
     paramindex = paramindexing(Covariate)
     nparameters = getparameternumber(Covariate)
 
-    model = EVA(GeneralizedExtremeValue, "Bayesian", data, dataid, Covariate, nparameters, identity, identity, identity, paramindex, Float64[])
+    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
 
-    gevfitbayes!(model, niter=niter, warmup=warmup)
+    fittedmodel = gevfitbayes(model, niter=niter, warmup=warmup)
 
-    return model
+    return fittedmodel
+
 end
 
 """
@@ -33,7 +34,7 @@ Data is a dictionary with Symbol as keys.
 
 A random sample of the posterior distribution is generated using the NUTS algortihm.
 
-Only flat prior is now supported.
+Only flat prior is supported for now.
 """
 function gevfitbayes(data::Dict, dataid::Symbol; niter::Int=5000, warmup::Int=2000)
 
@@ -41,11 +42,11 @@ function gevfitbayes(data::Dict, dataid::Symbol; niter::Int=5000, warmup::Int=20
     paramindex = paramindexing(Covariate)
     nparameters = getparameternumber(Covariate)
 
-    model = EVA(GeneralizedExtremeValue, "Bayesian", data, dataid, Covariate, nparameters, identity, identity, identity, paramindex, Float64[])
+    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
 
-    gevfitbayes!(model)
+    fittedmodel = gevfitbayes(model, niter=niter, warmup=warmup)
 
-    return model
+    return fittedmodel
 
 end
 
@@ -108,12 +109,11 @@ function gevfitbayes(data::Dict, dataid::Symbol ; Covariate::Dict, niter::Int=50
     logscalefun = computeparamfunction(data, Covariate[:ϕ])
     shapefun = computeparamfunction(data, Covariate[:ξ])
 
-    model = EVA(GeneralizedExtremeValue, "Bayesian", data, dataid, Covariate, nparameters,
-        locationfun, logscalefun, shapefun, paramindex, Float64[])
+    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, locationfun, logscalefun, shapefun, paramindex)
 
-    gevfitbayes!(model)
+    fittedmodel = gevfitbayes(model, niter=niter, warmup=warmup)
 
-    return model
+    return fittedmodel
 
 end
 
@@ -122,7 +122,7 @@ end
 
 Fits a non-stationary GEV distribution using the NUTS algorithm.
 """
-function gevfitbayes!(model::EVA; niter::Int=5000, warmup::Int=2000)
+function gevfitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)
 
     logf(θ::DenseVector) = loglike(model,θ)
     Δlogf(θ::DenseVector) = ForwardDiff.gradient(logf, θ)
@@ -132,7 +132,9 @@ function gevfitbayes!(model::EVA; niter::Int=5000, warmup::Int=2000)
         return ll, g
     end
 
-    initialvalues = gevfit!(model).results
+    ml = gevfit(model)
+
+    initialvalues = ml.θ̂
 
     paramnames = String[]
     m = length(model.paramindex[:μ])
@@ -152,9 +154,9 @@ function gevfitbayes!(model::EVA; niter::Int=5000, warmup::Int=2000)
         end
     end
 
-    model.results = sim
+    fittedmodel = BayesianEVA(model, sim)
 
-    return model
+    return fittedmodel
 
 end
 
