@@ -36,9 +36,12 @@ struct BayesianEVA
     sim::Mamba.Chains
 end
 
+Base.Broadcast.broadcastable(obj::Extremes.EVA) = Ref(obj)
+
 include("functions.jl")
 include("mle_functions.jl")
 include("bayes_functions.jl")
+include("utils.jl")
 
 export getcluster, gevfit, gevfitbayes
 

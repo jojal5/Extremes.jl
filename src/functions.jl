@@ -376,22 +376,24 @@ function paramindexing(Covariate::Dict)
 end
 
 """
-Compute the quantile of level `p` from the fitted model for the data at index = `index, in case of non-stationarity
+Compute the quantile of level `p` from the fitted model by maximum likelihood. In the case of non-stationarity, the effective quantiles are returned.
 """
-function quantile(model::MaximumLikelihoodEVA, p::Real)
+function quantile(fm::MaximumLikelihoodEVA, p::Real)
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
-    fd = getdistribution(model)
+    fd = getdistribution(fm)
 
-    r = quantile.(fd, p)
+    q = quantile.(fd, p)
 
-    return r
+    return q
 
 end
 
 """
-Compute the quantile of level `p` from the fitted model. If the model is non-stationary, then the effective quantile are returned.
+    quantile(model::EVA, θ::Vector{<:Real}, p::Real)
+
+Compute the quantile of level `p` from the model evaluated at `θ"". If the model is non-stationary, then the effective quantiles are returned.
 """
 function quantile(model::EVA, θ::Vector{<:Real}, p::Real)
 
@@ -399,9 +401,35 @@ function quantile(model::EVA, θ::Vector{<:Real}, p::Real)
 
     pd = getdistribution(model, θ)
 
-    r = quantile.(pd, p)
+    q = quantile.(pd, p)
 
-    return r
+    return q
+
+end
+
+"""
+    quantile(fm::Extremes.BayesianEVA,p::Real)
+
+Compute the quantile of level `p` from the fitted Bayesian model `fm`. If the
+model is stationary, then a quantile is returned for each MCMC steps. If the
+model is non-stationary, a matrix of quantiles is returned, where each row
+corresponds to a MCMC step and each column to a covariate.
+"""
+function quantile(fm::Extremes.BayesianEVA,p::Real)
+
+    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
+
+    θ = slicematrix(fm.sim.value[:,:,1], dims=2)
+
+    fd = Extremes.getdistribution.(fm.model, θ)
+
+    if !(typeof(fd) <: Vector{<:Distribution})
+        fd = unslicematrix(fd)
+    end
+
+    q = quantile.(fd, p)
+
+    return q
 
 end
 
@@ -409,7 +437,7 @@ end
 """
     quantilevar(fd::Extremes.MaximumLikelihoodEVA, level::Real)
 
-Compute the variance of quantile of level `level`from the fitted model `fd.
+Compute the variance of the quantile of level `level` from the fitted model `fm`.
 """
 function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)
 
