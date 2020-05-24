@@ -2,21 +2,24 @@ module Extremes
 
 using Distributions, DataFrames, Dates
 using Optim, NLSolversBase, ForwardDiff
-using SpecialFunctions, LinearAlgebra
+using SpecialFunctions, LinearAlgebra, Statistics
 using Mamba, ProgressMeter
 
 import Distributions.quantile
 import Statistics.var
 
-struct EVA
+
+abstract type EVA end
+
+struct BlockMaxima <: EVA
     distribution::Type
     data::Dict
     dataid::Symbol
     covariate::Dict
-    nparameters::Int
     locationfun::Function
     logscalefun::Function
     shapefun::Function
+    nparameter::Int
     paramindex::Dict
 end
 

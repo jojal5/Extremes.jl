@@ -2,20 +2,19 @@ using DataFrames, Dates
 using Distributions, Extremes
 using Test
 
-pd = GeneralizedExtremeValue(0,1,.1)
-y = rand(pd,50)
-
+pd = GeneralizedExtremeValue(0, 1, 0.1)
+y = rand(pd, 50)
 
 # Testing the utility functions
 pdfit = Extremes.gumbelfitpwmom(y)
 pdfit = Extremes.gevfitlmom(y)
-Extremes.getinitialvalue(GeneralizedExtremeValue,y)
+Extremes.getinitialvalue(GeneralizedExtremeValue, y)
 
-A = rand(5,10)
+A = rand(5, 10)
 B = Extremes.slicematrix(A)
 Ã = Extremes.unslicematrix(B)
 
-B = Extremes.slicematrix(A, dims=2)
+B = Extremes.slicematrix(A, dims = 2)
 Ã = Extremes.unslicematrix(B)
 
 
@@ -23,81 +22,102 @@ Ã = Extremes.unslicematrix(B)
 
 fd = gevfit(y)
 Extremes.getdistribution(fd)
-Extremes.getdistribution(fd.model,[0,0,0])
-Extremes.quantile(fd.model, [0,0,0], .95)
-Extremes.quantile(fd, .95)
+Extremes.getdistribution(fd.model, [0, 0, 0])
+Extremes.quantile(fd.model, [0, 0, 0], 0.95)
+Extremes.quantile(fd, 0.95)
 Extremes.parametervar(fd)
-Extremes.quantilevar(fd,.95)
+Extremes.quantilevar(fd, 0.95)
 
 data = Dict(:y => y)
 dataid = :y
 Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-paramindex = Extremes.paramindexing(Covariate)
-nparameters = Extremes.getparameternumber(Covariate)
-model = Extremes.EVA(GeneralizedExtremeValue, data, dataid, Covariate,
-    nparameters, identity, identity, identity, paramindex)
-Extremes.getdistribution(model, [0,0,0,0])
+paramindex = Extremes.paramindexing(Covariate, [:μ, :ϕ, :ξ])
+nparameter = Extremes.getparameternumber(Covariate)
+model = Extremes.BlockMaxima(
+    GeneralizedExtremeValue,
+    data,
+    dataid,
+    Covariate,
+    identity,
+    identity,
+    identity,
+    nparameter,
+    paramindex,
+)
+Extremes.getdistribution(model, [0, 0, 0])
 
 fd = gevfit(model)
 
 # Testing non-stationary GEV fit (only location) with maximum likelihood
 n = 300
 x = collect(1:n)
-μ = x*1/100
-pd = GeneralizedExtremeValue.(μ,1,.1)
+μ = x * 1 / 100
+pd = GeneralizedExtremeValue.(μ, 1, 0.1)
 y = rand.(pd)
 data = Dict(:y => y, :x => x, :n => n)
-Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ =>Symbol[])
-fd = gevfit(data, :y, Covariate=Covariate)
+Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ => Symbol[])
+fd = gevfit(data, :y, Covariate = Covariate)
 Extremes.getdistribution(fd)
-Extremes.getdistribution(fd.model,[0,0,0,0])
-Extremes.quantile(fd.model, [0,0,0,0], .95)
-Extremes.quantile(fd, .95)
+Extremes.getdistribution(fd.model, [0, 0, 0, 0])
+Extremes.quantile(fd.model, [0, 0, 0, 0], 0.95)
+Extremes.quantile(fd, 0.95)
 Extremes.parametervar(fd)
-Extremes.quantilevar(fd,.95)
+Extremes.quantilevar(fd, 0.95)
 
-model = Extremes.EVA(GeneralizedExtremeValue, data, dataid, Covariate,
-    nparameters, identity, identity, identity, paramindex)
+model = Extremes.BlockMaxima(
+    GeneralizedExtremeValue,
+    data,
+    dataid,
+    Covariate,
+    identity,
+    identity,
+    identity,
+    nparameter,
+    paramindex,
+)
 fittedmodel = gevfit(model)
 
 
 # Testing non-stationary GEV fit (location and scale) with maximum likelihood
 n = 300
 x = collect(1:n)
-μ = x*1/100
-ϕ = x*1/1000
-pd = GeneralizedExtremeValue.(μ,exp.(ϕ),.1)
+μ = x * 1 / 100
+ϕ = x * 1 / 1000
+pd = GeneralizedExtremeValue.(μ, exp.(ϕ), 0.1)
 y = rand.(pd)
 data = Dict(:y => y, :x => x, :n => n)
-Covariate = Dict(:μ => [:x], :ϕ => [:x], :ξ =>Symbol[])
+Covariate = Dict(:μ => [:x], :ϕ => [:x], :ξ => Symbol[])
 
-fd = gevfit(data, :y, Covariate=Covariate)
+fd = gevfit(data, :y, Covariate = Covariate)
 Extremes.getdistribution(fd)
-Extremes.getdistribution(fd.model,[0,0,0,0,0])
-Extremes.quantile(fd.model, [0,0,0,0,0], .95)
-Extremes.quantile(fd, .95)
+Extremes.getdistribution(fd.model, [0, 0, 0, 0, 0])
+Extremes.quantile(fd.model, [0, 0, 0, 0, 0], 0.95)
+Extremes.quantile(fd, 0.95)
 Extremes.parametervar(fd)
-Extremes.quantilevar(fd,.95)
+Extremes.quantilevar(fd, 0.95)
 
 
 
 
 # Testing stationary GEV fit with non-informative Bayesian
-pd = GeneralizedExtremeValue(0,1,.1)
-y = rand(pd,300)
+pd = GeneralizedExtremeValue(0, 1, 0.1)
+y = rand(pd, 300)
 fm = gevfitbayes(y)
-Extremes.quantile(fm,.95)
+Extremes.quantile(fm, 0.95)
 
 # Testing non-stationary GEV (only location) fit (only location) with maximum likelihood
 n = 300
 x = collect(1:n)
-μ = x*1/100
-pd = GeneralizedExtremeValue.(μ,1,.1)
+μ = x * 1 / 100
+pd = GeneralizedExtremeValue.(μ, 1, 0.1)
 y = rand.(pd)
 data = Dict(:y => y, :x => x, :n => n)
-Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ =>Symbol[])
-fm = gevfitbayes(data, :y, Covariate=Covariate, niter = 1000, warmup = 500)
-Extremes.quantile(fm,.95)
+Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ => Symbol[])
+fm = gevfitbayes(data, :y, Covariate = Covariate, niter = 1000, warmup = 500)
+Extremes.quantile(fm, 0.95)
+
+
+
 
 
 println("End of tests")

@@ -1,20 +1,4 @@
 """
-    getdistribution(fittedmodel::MaximumLikelihoodEVA)
-
-Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
-"""
-function getdistribution(fittedmodel::MaximumLikelihoodEVA)
-
-    model = fittedmodel.model
-    θ̂ = fittedmodel.θ̂
-
-    res = getdistribution(model, θ̂)
-
-    return res
-
-end
-
-"""
     gevfit(y::DenseVector)
 
 Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
@@ -24,10 +8,10 @@ function gevfit(y::Vector{<:Real})
     data = Dict(:y => y)
     dataid = :y
     Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-    paramindex = paramindexing(Covariate)
-    nparameters = getparameternumber(Covariate)
+    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
+    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
 
-    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
+    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
 
     fittedmodel = gevfit(model)
 
@@ -47,10 +31,10 @@ Data is a dictionary with Symbol as keys.
 function gevfit(data::Dict, dataid::Symbol)
 
     Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-    paramindex = paramindexing(Covariate)
-    nparameters = getparameternumber(Covariate)
+    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
+    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
 
-    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
+    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
 
     fittedmodel = gevfit(model)
 
@@ -108,15 +92,15 @@ function gevfit(data::Dict, dataid::Symbol ; Covariate::Dict)
         end
     end
 
-    paramindex = paramindexing(Covariate)
-    nparameters = getparameternumber(Covariate)
+    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
+    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
 
     locationfun = computeparamfunction(data, Covariate[:μ])
     logscalefun = computeparamfunction(data, Covariate[:ϕ])
     shapefun = computeparamfunction(data, Covariate[:ξ])
 
-    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters,
-        locationfun, logscalefun, shapefun, paramindex)
+    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate,
+        locationfun, logscalefun, shapefun, nparameter, paramindex)
 
     fittedmodel = gevfit(model)
 
@@ -131,6 +115,19 @@ Fit the non-stationary Generalized Extreme Value (GEV) distribution by maximum l
 
 """
 function gevfit(model::EVA)
+
+    fit(model)
+
+end
+
+
+"""
+    fit(model::EVA)
+
+Fit the extreme value model by maximum likelihood.
+
+"""
+function fit(model::EVA)
 
     initialvalues = getinitialvalue(model)
 

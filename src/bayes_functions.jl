@@ -9,15 +9,15 @@ A random sample of the posterior distribution is generated using the NUTS algort
 
 Only flat prior is now supported.
 """
-function gevfitbayes(y::DenseArray; niter::Int=5000, warmup::Int=2000)
+function gevfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000)
 
     data = Dict(:y => y)
     dataid = :y
     Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-    paramindex = paramindexing(Covariate)
-    nparameters = getparameternumber(Covariate)
+    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
+    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
 
-    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
+    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
 
     fittedmodel = gevfitbayes(model, niter=niter, warmup=warmup)
 
@@ -39,10 +39,10 @@ Only flat prior is supported for now.
 function gevfitbayes(data::Dict, dataid::Symbol; niter::Int=5000, warmup::Int=2000)
 
     Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-    paramindex = paramindexing(Covariate)
-    nparameters = getparameternumber(Covariate)
+    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
+    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
 
-    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, identity, identity, identity, paramindex)
+    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
 
     fittedmodel = gevfitbayes(model, niter=niter, warmup=warmup)
 
@@ -102,14 +102,14 @@ function gevfitbayes(data::Dict, dataid::Symbol ; Covariate::Dict, niter::Int=50
         end
     end
 
-    paramindex = paramindexing(Covariate)
-    nparameters = getparameternumber(Covariate)
+    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
+    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
 
     locationfun = computeparamfunction(data, Covariate[:μ])
     logscalefun = computeparamfunction(data, Covariate[:ϕ])
     shapefun = computeparamfunction(data, Covariate[:ξ])
 
-    model = EVA(GeneralizedExtremeValue, data, dataid, Covariate, nparameters, locationfun, logscalefun, shapefun, paramindex)
+    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, locationfun, logscalefun, shapefun, nparameter, paramindex)
 
     fittedmodel = gevfitbayes(model, niter=niter, warmup=warmup)
 
@@ -144,7 +144,7 @@ function gevfitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)
     m = length(model.paramindex[:ξ])
     append!(paramnames, ["β₃[$i]" for i=1:m])
 
-    sim = Chains(niter, model.nparameters, start = (warmup + 1), names = paramnames)
+    sim = Chains(niter, model.nparameter, start = (warmup + 1), names = paramnames)
     θ = NUTSVariate(initialvalues, logfgrad)
     # θ = AMWGVariate(initialvalues, 1.0, logf)
     @showprogress for i in 1:niter

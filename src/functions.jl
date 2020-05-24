@@ -169,11 +169,36 @@ function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})
 end
 
 """
+Get an initial values vector for the parameters of model
+"""
+function getinitialvalue(model::BlockMaxima)
+
+    dist = model.distribution
+    y = model.data[model.dataid]
+
+    # Compute stationary initial values
+    μ₀,σ₀,ξ₀ = Extremes.getinitialvalue(dist,y)
+    # Store them in a dictionary
+    θ₀ = Dict(:μ => μ₀, :ϕ => log(σ₀), :ξ => ξ₀)
+
+    initialvalues = zeros(model.nparameter)
+    for param in [:μ, :ϕ, :ξ]
+        ind = model.paramindex[param][1]
+        initialvalues[ind] = θ₀[param]
+    end
+
+    return initialvalues
+
+end
+
+"""
     getdistribution(model::EVA, θ::Vector{<:Real})
 
 Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
 """
-function getdistribution(model::EVA, θ::Vector{<:Real})
+function getdistribution(model::BlockMaxima, θ::Vector{<:Real})
+
+    @assert length(θ)==model.nparameter "The length of the parameter vector should be equal to the model number of parameters."
 
     dist = model.distribution
 
@@ -196,25 +221,18 @@ function getdistribution(model::EVA, θ::Vector{<:Real})
 end
 
 """
-Get an initial values vector for the parameters of model
+    getdistribution(fittedmodel::MaximumLikelihoodEVA)
+
+Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
 """
-function getinitialvalue(model::EVA)
+function getdistribution(fittedmodel::MaximumLikelihoodEVA)
 
-    dist = model.distribution
-    y = model.data[model.dataid]
+    model = fittedmodel.model
+    θ̂ = fittedmodel.θ̂
 
-    # Compute stationary initial values
-    μ₀,σ₀,ξ₀ = Extremes.getinitialvalue(dist,y)
-    # Store them in a dictionary
-    θ₀ = Dict(:μ => μ₀, :ϕ => log(σ₀), :ξ => ξ₀)
+    res = getdistribution(model, θ̂)
 
-    initialvalues = zeros(model.nparameters)
-    for param in [:μ, :ϕ, :ξ]
-        ind = model.paramindex[param][1]
-        initialvalues[ind] = θ₀[param]
-    end
-
-    return initialvalues
+    return res
 
 end
 
@@ -233,6 +251,23 @@ function getparameternumber(Covariate::Dict)
     end
 
     return nparameters
+
+end
+
+"""
+Return the number of covariates.
+"""
+function getcovariatenumber(Covariate::Dict, params::Vector{Symbol})
+
+    ncovariate = 0
+
+    for p in params
+        if haskey(Covariate, p)
+            ncovariate += length(Covariate[p])
+        end
+    end
+
+    return ncovariate
 
 end
 
@@ -356,9 +391,9 @@ end
 Return the indexes of parameters belonging to the locationFunction,
 logscaleFunction and shapeFunction from a single vector.
 """
-function paramindexing(Covariate::Dict)
+function paramindexing(Covariate::Dict, params::Vector{Symbol})
 
-    params = [:μ, :ϕ, :ξ]
+    # params = [:μ, :ϕ, :ξ]
 
     id = Symbol[]
     for p in params
@@ -369,7 +404,11 @@ function paramindexing(Covariate::Dict)
         end
     end
 
-    paramindex = Dict(:μ => findall(id.==:μ), :ϕ => findall(id.==:ϕ), :ξ => findall(id.==:ξ))
+    paramindex = Dict{Symbol,Vector{<:Int}}()
+
+    for p in params
+        paramindex[p] = findall(id.==p)
+    end
 
     return paramindex
 
