@@ -13,7 +13,7 @@ function gevfit(y::Vector{<:Real})
 
     model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
 
-    fittedmodel = gevfit(model)
+    fittedmodel = fit(model)
 
     return fittedmodel
 
@@ -36,7 +36,7 @@ function gevfit(data::Dict, dataid::Symbol)
 
     model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
 
-    fittedmodel = gevfit(model)
+    fittedmodel = fit(model)
 
     return fittedmodel
 
@@ -102,7 +102,7 @@ function gevfit(data::Dict, dataid::Symbol ; Covariate::Dict)
     model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate,
         locationfun, logscalefun, shapefun, nparameter, paramindex)
 
-    fittedmodel = gevfit(model)
+    fittedmodel = fit(model)
 
     return fittedmodel
 
@@ -115,6 +115,84 @@ Fit the non-stationary Generalized Extreme Value (GEV) distribution by maximum l
 
 """
 function gevfit(model::EVA)
+
+    fit(model)
+
+end
+
+"""
+    gpfit(y::Vector{<:Real})
+
+Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
+"""
+function gpfit(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+
+    data = Dict(:y => y)
+    dataid = :y
+    Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
+    paramindex = paramindexing(Covariate, [:ϕ, :ξ])
+    nparameter = 2 + getcovariatenumber(Covariate, [:ϕ, :ξ])
+
+    threshold = [0]
+
+    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, identity, identity, nparameter, paramindex)
+
+    fittedmodel = fit(model)
+
+    return fittedmodel
+
+end
+
+"""
+    gpfit(y::Vector{<:Real})
+
+Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
+"""
+function gpfit(data::Dict, dataid::Symbol ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+
+    Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
+    paramindex = paramindexing(Covariate, [:ϕ, :ξ])
+    nparameter = 2 + getcovariatenumber(Covariate, [:ϕ, :ξ])
+
+    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, identity, identity, nparameter, paramindex)
+
+    fittedmodel = fit(model)
+
+    return fittedmodel
+
+end
+
+
+function gpfit(data::Dict, dataid::Symbol ; Covariate::Dict, threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+
+    # Put empty Symbol array to stationary parameters
+    for k in [:ϕ, :ξ]
+        if !(haskey(Covariate,k))
+            Covariate[k] = Symbol[]
+        end
+    end
+
+    paramindex = paramindexing(Covariate, [:ϕ, :ξ])
+    nparameter = 2 + getcovariatenumber(Covariate, [:ϕ, :ξ])
+
+    logscalefun = computeparamfunction(data, Covariate[:ϕ])
+    shapefun = computeparamfunction(data, Covariate[:ξ])
+
+    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun, nparameter, paramindex)
+
+    fittedmodel = fit(model)
+
+    return fittedmodel
+
+end
+
+"""
+    gpfit(model::EVA)
+
+Fit the Generalized Pareto (GP) distribution by maximum likelihood to the EVA model.
+
+"""
+function gpfit(model::EVA)
 
     fit(model)
 

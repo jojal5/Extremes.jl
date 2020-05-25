@@ -117,6 +117,26 @@ fm = gevfitbayes(data, :y, Covariate = Covariate, niter = 1000, warmup = 500)
 Extremes.quantile(fm, 0.95)
 
 
+pd = GeneralizedPareto(0,1,.1)
+y = rand(pd, 300)
+
+fm = Extremes.gpfit(y)
+fm = Extremes.gpfit(y, threshold = [0], nobsperblock = 1)
+Extremes.getdistribution(fm)
+Extremes.getdistribution(fm.model, [0, 0])
+Extremes.quantile(fm.model, [0, 0], 0.95)
+Extremes.quantile(fm, 0.95)
+Extremes.parametervar(fm)
+Extremes.quantilevar(fm, 0.95)
+
+data = Dict(:y => y)
+dataid = :y
+Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
+
+fm = gpfit(data, :y)
+
+fm = Extremes.gpfit(fm.model)
+
 
 
 

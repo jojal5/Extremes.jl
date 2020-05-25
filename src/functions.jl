@@ -192,6 +192,29 @@ function getinitialvalue(model::BlockMaxima)
 end
 
 """
+Get an initial values vector for the parameters of model
+"""
+function getinitialvalue(model::PeaksOverThreshold)
+
+    dist = model.distribution
+    y = model.data[model.dataid]
+
+    # Compute stationary initial values
+    σ₀,ξ₀ = Extremes.getinitialvalue(dist,y)
+    # Store them in a dictionary
+    θ₀ = Dict(:ϕ => log(σ₀), :ξ => ξ₀)
+
+    initialvalues = zeros(model.nparameter)
+    for param in [:ϕ, :ξ]
+        ind = model.paramindex[param][1]
+        initialvalues[ind] = θ₀[param]
+    end
+
+    return initialvalues
+
+end
+
+"""
     getdistribution(model::EVA, θ::Vector{<:Real})
 
 Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
@@ -209,6 +232,34 @@ function getdistribution(model::BlockMaxima, θ::Vector{<:Real})
     σ = exp.(ϕ)
 
     fd = dist.(μ, σ, ξ)
+
+    if length(fd) == 1
+        res = fd[1]
+    else
+        res = fd
+    end
+
+    return res
+
+end
+
+"""
+    getdistribution(model::EVA, θ::Vector{<:Real})
+
+Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
+"""
+function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})
+
+    @assert length(θ)==model.nparameter "The length of the parameter vector should be equal to the model number of parameters."
+
+    dist = model.distribution
+
+    ϕ = model.logscalefun(θ[model.paramindex[:ϕ]])
+    ξ = model.shapefun(θ[model.paramindex[:ξ]])
+
+    σ = exp.(ϕ)
+
+    fd = dist.(σ, ξ)
 
     if length(fd) == 1
         res = fd[1]
@@ -508,10 +559,17 @@ function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)
 end
 
 
-function Base.show(io::IO, obj::EVA)
+function Base.show(io::IO, obj::BlockMaxima)
   println(io, "Extreme value model")
   println(io, "Model: $(obj.distribution)")
   println(io, "    "*showparamfun(obj,:μ))
+  println(io, "    "*showparamfun(obj,:ϕ))
+  println(io, "    "*showparamfun(obj,:ξ))
+end
+
+function Base.show(io::IO, obj::PeaksOverThreshold)
+  println(io, "Extreme value model")
+  println(io, "Model: $(obj.distribution)")
   println(io, "    "*showparamfun(obj,:ϕ))
   println(io, "    "*showparamfun(obj,:ξ))
 end

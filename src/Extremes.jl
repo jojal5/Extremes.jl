@@ -23,6 +23,19 @@ struct BlockMaxima <: EVA
     paramindex::Dict
 end
 
+struct PeaksOverThreshold <: EVA
+    distribution::Type
+    data::Dict
+    dataid::Symbol
+    nobsperblock::Int
+    covariate::Dict
+    threshold::Vector{<:Real}
+    logscalefun::Function
+    shapefun::Function
+    nparameter::Int
+    paramindex::Dict
+end
+
 struct MaximumLikelihoodEVA
     "Extreme value model definition"
     model::EVA
