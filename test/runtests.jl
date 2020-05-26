@@ -114,3 +114,10 @@ y = rand(GeneralizedPareto(threshold, σ, ξ),100)
 Extremes.gpdfitbayes(y)
 Extremes.gpdfitbayes(y, threshold=threshold)
 Extremes.gpdfitbayes(y, threshold=threshold, stepSize=[.2,.15])
+
+# Data tests
+@test_throws ErrorException load("throw")
+
+data = load("portpirie")
+@assert size(data, 1) == 65
+@assert size(data, 2) == 2
