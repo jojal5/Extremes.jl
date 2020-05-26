@@ -5,6 +5,7 @@ using Optim, NLSolversBase, ForwardDiff
 using SpecialFunctions, LinearAlgebra, Statistics
 using Mamba, ProgressMeter
 
+import CSV
 import Distributions.quantile
 import Statistics.var
 
@@ -58,7 +59,8 @@ include("functions.jl")
 include("mle_functions.jl")
 include("bayes_functions.jl")
 include("utils.jl")
+include("data_functions.jl")
 
-export getcluster, gevfit, gevfitbayes
+export getcluster, gevfit, gevfitbayes, load
 
 end # module
