@@ -4,5 +4,9 @@
 Returns the data associated with the name.
 """
 function load(name::String)
-    return "TODO"
+    filename = joinpath(dirname(@__FILE__), "..", "data", string(name, ".csv"))
+    if isfile(filename)
+        return CSV.read(filename)
+    end
+    error("There is no dataset with the name '$name'")
 end

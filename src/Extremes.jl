@@ -4,6 +4,7 @@ using Distributions, DataFrames, Dates
 using Optim, NLSolversBase
 using SpecialFunctions, LinearAlgebra
 
+import CSV
 import Distributions.GeneralizedExtremeValue
 
 include("functions.jl")
