@@ -20,29 +20,6 @@ function gevfit(y::Vector{<:Real})
 end
 
 """
-    gevfit(data::Dict, dataid::Symbol)
-
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contains in the dictionary `data`under the key `dataid`.
-
-- `gevfit(data, dataid=:y)`: Fits the GEV distribution to the data stored in the dictionary `data`under the key `dataid`.
-
-Data is a dictionary with Symbol as keys.
-"""
-function gevfit(data::Dict, dataid::Symbol)
-
-    Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
-    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
-
-    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
-
-    fittedmodel = fit(model)
-
-    return fittedmodel
-
-end
-
-"""
     gevfit(data::Dict, dataid::Symbol, Covariate::Dict)
 
 Fit a non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contains in the disctionary `data`under the key `dataid`.
@@ -83,7 +60,8 @@ gevfit(data, :y, Covariate=Covariate)
 The covariate may be standardized to facilitate the estimation.
 
 """
-function gevfit(data::Dict, dataid::Symbol ; Covariate::Dict)
+function gevfit(data::Dict, dataid::Symbol ;
+    Covariate::Dict=Dict{Symbol,Vector{Symbol}}())
 
     # Put empty Symbol array to stationary parameters
     for k in [:μ, :ϕ, :ξ]

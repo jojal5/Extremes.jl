@@ -31,7 +31,7 @@ Extremes.quantilevar(fd, 0.95)
 data = Dict(:y => y)
 dataid = :y
 gevfit(data, :y)
-fit(fd.model)
+Extremes.fit(fd.model)
 
 # Testing non-stationary GEV fit (only location) with maximum likelihood
 n = 300
