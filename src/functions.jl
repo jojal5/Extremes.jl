@@ -465,20 +465,6 @@ function paramindexing(Covariate::Dict, params::Vector{Symbol})
 
 end
 
-"""
-Compute the quantile of level `p` from the fitted model by maximum likelihood. In the case of non-stationarity, the effective quantiles are returned.
-"""
-function quantile(fm::MaximumLikelihoodEVA, p::Real)
-
-    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
-
-    fd = getdistribution(fm)
-
-    q = quantile.(fd, p)
-
-    return q
-
-end
 
 """
     quantile(model::EVA, θ::Vector{<:Real}, p::Real)
@@ -498,6 +484,19 @@ function quantile(model::EVA, θ::Vector{<:Real}, p::Real)
 end
 
 """
+Compute the quantile of level `p` from the fitted model by maximum likelihood. In the case of non-stationarity, the effective quantiles are returned.
+"""
+function quantile(fm::MaximumLikelihoodEVA, p::Real)
+
+    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
+
+    q = quantile(fm.model, fm.θ̂, p)
+
+    return q
+
+end
+
+"""
     quantile(fm::Extremes.BayesianEVA,p::Real)
 
 Compute the quantile of level `p` from the fitted Bayesian model `fm`. If the
@@ -511,13 +510,11 @@ function quantile(fm::Extremes.BayesianEVA,p::Real)
 
     θ = slicematrix(fm.sim.value[:,:,1], dims=2)
 
-    fd = Extremes.getdistribution.(fm.model, θ)
+    q = quantile.(fm.model, θ, p)
 
-    if !(typeof(fd) <: Vector{<:Distribution})
-        fd = unslicematrix(fd)
+    if !(typeof(q) <: Vector{<:Real})
+        q = unslicematrix(q)
     end
-
-    q = quantile.(fd, p)
 
     return q
 
@@ -580,7 +577,7 @@ function Base.show(io::IO, obj::MaximumLikelihoodEVA)
     println(io, "θ̂ = $(obj.θ̂)")
 end
 
-function showparamfun(model::Extremes.EVA,param::Symbol)
+function showparamfun(model::Extremes.EVA, param::Symbol)
 
     covariate = [" + $x" for x in model.covariate[param]]
     res = string("$param ~ 1", covariate...)
