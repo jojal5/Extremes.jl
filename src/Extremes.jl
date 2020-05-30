@@ -37,6 +37,13 @@ struct PeaksOverThreshold <: EVA
     paramindex::Dict
 end
 
+struct pwmEVA
+    "Extreme value model definition"
+    model::EVA
+    "Maximum likelihood estimate"
+    θ̂::Vector{Float64}
+end
+
 struct MaximumLikelihoodEVA
     "Extreme value model definition"
     model::EVA
@@ -60,6 +67,7 @@ include("mle_functions.jl")
 include("bayes_functions.jl")
 include("utils.jl")
 include("data_functions.jl")
+include("pwm_functions.jl")
 
 export getcluster, gevfit, gevfitbayes, load
 

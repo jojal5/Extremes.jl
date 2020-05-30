@@ -128,19 +128,25 @@ Compute the initial values of the GEV parameters given the data `y`.
 """
 function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})
 
-    pd = Extremes.gevfitlmom(y)
+    # Fit the model with by the probability weigthed moments
+    fm = Extremes.gevfitpwm(y)
+
+    # Convert to fitted model in a Distribution object
+    fd = Extremes.getdistribution(fm.model, fm.θ̂)
 
     # check if initial values are in the domain of the GEV
-    valid_initialvalues = all(insupport(pd,y))
+    valid_initialvalues = all(insupport(fd,y))
 
+    #= If one at least one value does not lie in the support, then the initial
+     values are replaced by the Gumbel initial values. =#
     if valid_initialvalues
-        μ₀ = location(pd)
-        σ₀ = scale(pd)
-        ξ₀ = Distributions.shape(pd)
+        μ₀ = location(fd)
+        σ₀ = scale(fd)
+        ξ₀ = Distributions.shape(fd)
     else
-        pd = Extremes.gumbelfitpwmom(y)
-        μ₀ = location(pd)
-        σ₀ = scale(pd)
+        fm = Extremes.gumbelfitpwm(y)
+        μ₀ = fm.θ̂[1]
+        σ₀ = fm.θ̂[2]
         ξ₀ = 0.0
     end
 
@@ -152,7 +158,11 @@ end
 
 function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})
 
-    fd = Extremes.gpdfitmom(y::Array{Float64}, threshold=0.0)
+    # Fit the model with by the probability weigthed moments
+    fm = Extremes.gpfitpwm(y::Array{Float64})
+
+    # Convert to fitted model in a Distribution object
+    fd = Extremes.getdistribution(fm.model, fm.θ̂)
 
     if all(insupport(fd,y))
         σ₀ = scale(fd)
@@ -322,80 +332,80 @@ function getcovariatenumber(Covariate::Dict, params::Vector{Symbol})
 
 end
 
-"""
-    gevfitlmom(x::Array{T,1} where T<:Real)
-
-Fit a GEV distribution with L-Moment method.
-"""
-function gevfitlmom(x::Array{T,1} where T<:Real)
-
-    n = length(x)
-    y = sort(x)
-    r = 1:n
-
-    #     L-Moments estimations (Cunnane, 1989)
-    b₀ = mean(y)
-    b₁ = sum( (r .- 1).*y )/n/(n-1)
-    b₂ = sum( (r .- 1).*(r .- 2).*y ) /n/(n-1)/(n-2)
-
-    # GEV parameters estimations
-    c = (2b₁ - b₀)/(3b₂ - b₀) - log(2)/log(3)
-    k = 7.859c + 2.9554c^2
-    σ̂ = k *( 2b₁-b₀ ) /(1-2^(-k))/gamma(1+k)
-    μ̂ = b₀ - σ̂/k*( 1-gamma(1+k) )
-
-    ξ̂ = -k
-
-    pdfit = GeneralizedExtremeValue(μ̂,σ̂,ξ̂)
-
-    return pdfit
-end
-
-"""
-    gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
-
-Fit a Generalized Pareto Distribution over y.
-"""
-function gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
-
-    if isapprox(threshold,0)
-        ȳ = mean(y)
-        s² = var(y)
-    else
-        ȳ = mean(y .- threshold)
-        s² = var(y .- threshold)
-    end
-
-    ξ̂ = 1/2*(1-ȳ^2/s²)
-    σ̂ = (1-ξ̂)*ȳ
-
-    return GeneralizedPareto(threshold,σ̂,ξ̂)
-
-end
-
-"""
-    gumbelfitpwmom(x::Array{T,1} where T<:Real)
-
-Fits a Gumbel distribution using ...
-"""
-function gumbelfitpwmom(x::Array{T,1} where T<:Real)
-
-    n = length(x)
-    y = sort(x)
-    r = 1:n
-
-    # Probability weighted moments
-    b₀ = mean(y)
-    b₁ = 1/n/(n-1)*sum( y[i]*(n-i) for i=1:n)
-
-    # Gumbel parameters estimations
-    σ̂ = (b₀ - 2*b₁)/log(2)
-    μ̂ = b₀ - Base.MathConstants.eulergamma*σ̂
-
-    pdfit = Gumbel(μ̂,σ̂)
-
-    return pdfit
-end
+# """
+#     gevfitlmom(x::Array{T,1} where T<:Real)
+#
+# Fit a GEV distribution with L-Moment method.
+# """
+# function gevfitlmom(x::Array{T,1} where T<:Real)
+#
+#     n = length(x)
+#     y = sort(x)
+#     r = 1:n
+#
+#     #     L-Moments estimations (Cunnane, 1989)
+#     b₀ = mean(y)
+#     b₁ = sum( (r .- 1).*y )/n/(n-1)
+#     b₂ = sum( (r .- 1).*(r .- 2).*y ) /n/(n-1)/(n-2)
+#
+#     # GEV parameters estimations
+#     c = (2b₁ - b₀)/(3b₂ - b₀) - log(2)/log(3)
+#     k = 7.859c + 2.9554c^2
+#     σ̂ = k *( 2b₁-b₀ ) /(1-2^(-k))/gamma(1+k)
+#     μ̂ = b₀ - σ̂/k*( 1-gamma(1+k) )
+#
+#     ξ̂ = -k
+#
+#     pdfit = GeneralizedExtremeValue(μ̂,σ̂,ξ̂)
+#
+#     return pdfit
+# end
+#
+# """
+#     gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
+#
+# Fit a Generalized Pareto Distribution over y.
+# """
+# function gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
+#
+#     if isapprox(threshold,0)
+#         ȳ = mean(y)
+#         s² = var(y)
+#     else
+#         ȳ = mean(y .- threshold)
+#         s² = var(y .- threshold)
+#     end
+#
+#     ξ̂ = 1/2*(1-ȳ^2/s²)
+#     σ̂ = (1-ξ̂)*ȳ
+#
+#     return GeneralizedPareto(threshold,σ̂,ξ̂)
+#
+# end
+#
+# """
+#     gumbelfitpwmom(x::Array{T,1} where T<:Real)
+#
+# Fits a Gumbel distribution using ...
+# """
+# function gumbelfitpwmom(x::Array{T,1} where T<:Real)
+#
+#     n = length(x)
+#     y = sort(x)
+#     r = 1:n
+#
+#     # Probability weighted moments
+#     b₀ = mean(y)
+#     b₁ = 1/n/(n-1)*sum( y[i]*(n-i) for i=1:n)
+#
+#     # Gumbel parameters estimations
+#     σ̂ = (b₀ - 2*b₁)/log(2)
+#     μ̂ = b₀ - Base.MathConstants.eulergamma*σ̂
+#
+#     pdfit = Gumbel(μ̂,σ̂)
+#
+#     return pdfit
+# end
 
 """
 Compute the model loglikelihood evaluated at θ.

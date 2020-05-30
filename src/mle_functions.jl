@@ -111,8 +111,6 @@ function gpfit(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::I
     paramindex = paramindexing(Covariate, [:ϕ, :ξ])
     nparameter = 2 + getcovariatenumber(Covariate, [:ϕ, :ξ])
 
-    threshold = [0]
-
     model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, identity, identity, nparameter, paramindex)
 
     fittedmodel = fit(model)

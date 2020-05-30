@@ -6,8 +6,8 @@ pd = GeneralizedExtremeValue(0, 1, 0.1)
 y = rand(pd, 50)
 
 # Testing the utility functions
-pdfit = Extremes.gumbelfitpwmom(y)
-pdfit = Extremes.gevfitlmom(y)
+pdfit = Extremes.gumbelfitpwm(y)
+pdfit = Extremes.gevfitpwm(y)
 Extremes.getinitialvalue(GeneralizedExtremeValue, y)
 
 A = rand(5, 10)
