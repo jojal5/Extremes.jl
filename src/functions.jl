@@ -132,7 +132,7 @@ function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})
     fm = Extremes.gevfitpwm(y)
 
     # Convert to fitted model in a Distribution object
-    fd = Extremes.getdistribution(fm.model, fm.θ̂)
+    fd = Extremes.getdistribution(fm.model, fm.θ̂)[]
 
     # check if initial values are in the domain of the GEV
     valid_initialvalues = all(insupport(fd,y))
@@ -162,7 +162,7 @@ function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})
     fm = Extremes.gpfitpwm(y::Array{Float64})
 
     # Convert to fitted model in a Distribution object
-    fd = Extremes.getdistribution(fm.model, fm.θ̂)
+    fd = Extremes.getdistribution(fm.model, fm.θ̂)[]
 
     if all(insupport(fd,y))
         σ₀ = scale(fd)
@@ -243,13 +243,15 @@ function getdistribution(model::BlockMaxima, θ::Vector{<:Real})
 
     fd = dist.(μ, σ, ξ)
 
-    if length(fd) == 1
-        res = fd[1]
-    else
-        res = fd
-    end
+    return fd
 
-    return res
+    # if length(fd) == 1
+    #     res = fd[1]
+    # else
+    #     res = fd
+    # end
+    #
+    # return res
 
 end
 
@@ -271,13 +273,15 @@ function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})
 
     fd = dist.(σ, ξ)
 
-    if length(fd) == 1
-        res = fd[1]
-    else
-        res = fd
-    end
+    return fd
 
-    return res
+    # if length(fd) == 1
+    #     res = fd[1]
+    # else
+    #     res = fd
+    # end
+    #
+    # return res
 
 end
 

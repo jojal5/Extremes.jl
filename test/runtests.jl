@@ -8,6 +8,9 @@ y = rand(pd, 50)
 # Testing the utility functions
 pdfit = Extremes.gumbelfitpwm(y)
 pdfit = Extremes.gevfitpwm(y)
+
+fd = Extremes.getdistribution(pdfit.model, pdfit.θ̂)
+
 Extremes.getinitialvalue(GeneralizedExtremeValue, y)
 
 A = rand(5, 10)
@@ -96,6 +99,9 @@ Extremes.quantile(fm, 0.95)
 
 pd = GeneralizedPareto(0,1,.1)
 y = rand(pd, 300)
+
+fm = Extremes.gpfitpwm(y)
+Extremes.getdistribution(fm.model, fm.θ̂)
 
 fm = Extremes.gpfit(y)
 fm = Extremes.gpfit(y, threshold = [0], nobsperblock = 1)
