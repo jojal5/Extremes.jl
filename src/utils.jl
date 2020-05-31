@@ -34,6 +34,8 @@ Convert a Matrix in a Vector of Vector. The slicing dimension can be defined wit
 """
 function slicematrix(A::AbstractMatrix{T}; dims::Int=1) where T
 
+    @assert dims∈(1,2) "dims should be either 1 or 2."
+
     n, m = size(A)
 
     if dims==1
@@ -57,7 +59,9 @@ end
 
 Convert a Vector of Vector in a Matrix. The vectors within each vector should be of the same length.
 """
-function unslicematrix(B::Array{Array{T,1},1}) where T
+function unslicematrix(B::Array{Array{T,1},1}; dims::Int=1) where T
+
+    @assert dims∈(1,2) "dims should be either 1 or 2."
 
     m = length.(B)
 
@@ -67,11 +71,24 @@ function unslicematrix(B::Array{Array{T,1},1}) where T
 
     m = m[1]
 
-    A = Matrix{T}(undef, n, m)
+    if dims == 1
 
-    for i in 1:n
-        A[i,:] .= B[i]
+        A = Matrix{T}(undef, m, n)
+
+        for i in 1:n
+            A[:,i] = B[i]
+        end
+
+    else
+
+        A = Matrix{T}(undef, n, m)
+
+        for i in 1:n
+            A[i,:] = B[i]
+        end
+
     end
+
 
     return A
 
