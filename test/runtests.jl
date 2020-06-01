@@ -1,6 +1,7 @@
 using DataFrames, Dates, SpecialFunctions
 using Distributions, Extremes
 using Test
+using LinearAlgebra
 
 
 @testset "Test of getdistribution" begin
