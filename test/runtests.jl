@@ -136,5 +136,5 @@ end
 include("bayesian.jl")
 include("maximumlikelihood.jl")
 include("probabilityweightedmoment.jl")
-include("reproducingColesResults")
+include("reproducingColesResults.jl")
 include("utils.jl")
