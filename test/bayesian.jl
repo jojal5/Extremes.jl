@@ -15,7 +15,7 @@
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
-      @test θ̂ ≈ θ atol = 0.05
+      @test θ̂ ≈ θ rtol = .1
 
 end
 
@@ -44,7 +44,7 @@ end
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
-      @test θ̂ ≈ θ atol = 0.05
+      @test θ̂ ≈ θ rtol = .1
 
 end
 
@@ -72,7 +72,7 @@ end
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
-      @test θ̂ ≈ θ atol = 0.05
+      @test θ̂ ≈ θ rtol = 0.1
 
 end
 
@@ -100,7 +100,7 @@ end
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
-      @test θ̂ ≈ θ atol = 0.05
+      @test θ̂ ≈ θ rtol = 0.1
 
 end
 
@@ -127,7 +127,7 @@ end
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
-      @test θ̂ ≈ θ atol = 0.1
+      @test θ̂ ≈ θ rtol = 0.1
 
 end
 
@@ -151,7 +151,7 @@ end
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
-      @test θ̂ ≈ θ atol = 0.1
+      @test θ̂ ≈ θ rtol = 0.1
 
 end
 
@@ -178,7 +178,7 @@ end
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
-      @test θ̂ ≈ θ atol = 0.1
+      @test θ̂ ≈ θ rtol = 0.1
 
 end
 
@@ -206,6 +206,6 @@ end
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
-      @test θ̂ ≈ θ atol = 0.1
+      @test θ̂ ≈ θ rtol = 0.1
 
 end
