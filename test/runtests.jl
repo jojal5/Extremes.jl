@@ -2,240 +2,139 @@ using DataFrames, Dates, SpecialFunctions
 using Distributions, Extremes
 using Test
 
+
+@testset "Test of getdistribution" begin
+
+      # Model BlockMaxima - stationary
+      n = 100
+
+      μ = 0.0
+      σ = 1.0
+      ξ = 0.1
+      ϕ = log(σ)
+
+      θ = [μ; ϕ; ξ]
+
+      pd = GeneralizedExtremeValue(μ, σ, ξ)
+      y = rand(pd, n)
+
+      data = Dict(:y => y, :n => n)
+      dataid = :y
+      Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
+
+      paramindex = Extremes.paramindexing(Covariate, [:μ, :ϕ, :ξ])
+      nparameter = 3 + Extremes.getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
+
+      locationfun = Extremes.computeparamfunction(data, Covariate[:μ])
+      logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ])
+      shapefun = Extremes.computeparamfunction(data, Covariate[:ξ])
+
+      model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate,
+            locationfun, logscalefun, shapefun, nparameter, paramindex)
+
+      fd = Extremes.getdistribution(model, θ)[]
+
+      @test fd == pd
+
+      # BlockMaxima model - non-stationary
+
+      n = 10000
+
+      x₁ = randn(n)
+      x₂ = randn(n)/3
+      x₃ = randn(n)/10
+
+      θ = [5.0 ; 1.0 ; -.5 ; 1.0 ; 0.0 ; 1.0]
+
+      μ = θ[1] .+ θ[2] * x₁
+      ϕ = θ[3] .+ θ[4] * x₂
+      ξ = θ[5] .+ θ[6] * x₃
+
+      pd = GeneralizedExtremeValue.(μ, exp.(ϕ), ξ)
+
+      y = rand.(pd)
+
+      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :x₃ => x₃, :n => n)
+      dataid = :y
+      Covariate = Dict(:μ => [:x₁], :ϕ => [:x₂], :ξ => [:x₃])
+
+      paramindex = Extremes.paramindexing(Covariate, [:μ, :ϕ, :ξ])
+      nparameter = 3 + Extremes.getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
+
+      locationfun = Extremes.computeparamfunction(data, Covariate[:μ])
+      logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ])
+      shapefun = Extremes.computeparamfunction(data, Covariate[:ξ])
+
+      model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate,
+            locationfun, logscalefun, shapefun, nparameter, paramindex)
+
+      fd = Extremes.getdistribution(model, θ)
+
+      @test pd == fd
+
+
+      # PeaksOverThreshold model - stationary
+
+      n = 100
+
+      σ = 1.0
+      ξ = .1
+      ϕ = log(σ)
+
+      θ = [ϕ ; ξ]
+
+      pd = GeneralizedPareto(σ, ξ)
+      y = rand(pd,n)
+
+      data = Dict(:y => y)
+      dataid = :y
+      Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
+      paramindex = Extremes.paramindexing(Covariate, [:ϕ, :ξ])
+      nparameter = 2 + Extremes.getcovariatenumber(Covariate, [:ϕ, :ξ])
+
+      model = PeaksOverThreshold(GeneralizedPareto, data, dataid, 1, Covariate, [0], identity, identity, nparameter, paramindex)
+
+      fd = Extremes.getdistribution(model, θ)[]
+
+      @test fd == pd
+
+      # PeaksOverThreshold model - non-stationary
+
+      n = 100
+
+      x₁ = randn(n)/3
+      x₂ = randn(n)/3
+      x₃ = randn(n)/10
+
+      θ = [-.5 ; 1.0 ; 1.0 ; 0 ; 1.0]
+
+      ϕ = θ[1] .+ θ[2] * x₁ .+ θ[3] * x₂
+      ξ = θ[4] .+ θ[5] * x₃
+
+      σ = exp.(ϕ)
+
+      pd = GeneralizedPareto.(σ, ξ)
+      y = rand.(pd)
+
+      data = Dict(:y => y, :n => n, :x₁ => x₁, :x₂ => x₂, :x₃ => x₃)
+      dataid = :y
+      Covariate = Dict(:ϕ => [:x₁, :x₂], :ξ => [:x₃])
+      paramindex = Extremes.paramindexing(Covariate, [:ϕ, :ξ])
+      nparameter = 2 + Extremes.getcovariatenumber(Covariate, [:ϕ, :ξ])
+
+      logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ])
+      shapefun = Extremes.computeparamfunction(data, Covariate[:ξ])
+
+      model = PeaksOverThreshold(GeneralizedPareto, data, dataid, 1, Covariate, [0], logscalefun, shapefun, nparameter, paramindex)
+
+      fd = Extremes.getdistribution(model, θ)
+
+      @test fd == pd
+
+end
+
+include("bayesian.jl")
+include("maximumlikelihood.jl")
+include("probabilityweightedmoment.jl")
+include("reproducingColesResults")
 include("utils.jl")
-include("pwm.jl")
-include("ML.jl")
-include("Bayes.jl")
-
-# TO DO
-# Test clustering
-# Test quantile and quantilevar
-
-
-# pd = GeneralizedExtremeValue(0, 1, 0.1)
-# y = rand(pd, 50)
-#
-# # Testing the utility functions
-# pdfit = Extremes.gumbelfitpwm(y)
-# pdfit = Extremes.gevfitpwm(y)
-#
-# fd = Extremes.getdistribution(pdfit.model, pdfit.θ̂)
-#
-# Extremes.getinitialvalue(GeneralizedExtremeValue, y)
-#
-# A = rand(5, 10)
-# B = Extremes.slicematrix(A)
-# Ã = Extremes.unslicematrix(B)
-#
-# B = Extremes.slicematrix(A, dims = 2)
-# Ã = Extremes.unslicematrix(B)
-#
-#
-# # Testing stationary GEV fit with maximum likelihood
-#
-# fd = gevfit(y)
-# Extremes.getdistribution(fd)
-# Extremes.getdistribution(fd.model, [0, 0, 0])
-# Extremes.quantile(fd.model, [0, 0, 0], 0.95)
-# Extremes.quantile(fd, 0.95)
-# Extremes.parametervar(fd)
-# Extremes.quantilevar(fd, 0.95)
-#
-# data = Dict(:y => y)
-# dataid = :y
-# gevfit(data, :y)
-# Extremes.fit(fd.model)
-#
-# # Testing non-stationary GEV fit (only location) with maximum likelihood
-# n = 300
-# x = collect(1:n)
-# μ = x * 1 / 100
-# pd = GeneralizedExtremeValue.(μ, 1, 0.1)
-# y = rand.(pd)
-# data = Dict(:y => y, :x => x, :n => n)
-# Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ => Symbol[])
-# fd = gevfit(data, :y, Covariate = Covariate)
-# Extremes.getdistribution(fd)
-# Extremes.getdistribution(fd.model, [0, 0, 0, 0])
-# Extremes.quantile(fd.model, [0, 0, 0, 0], 0.95)
-# Extremes.quantile(fd, 0.95)
-# Extremes.parametervar(fd)
-# Extremes.quantilevar(fd, 0.95)
-#
-#
-#
-# # Testing non-stationary GEV fit (location and scale) with maximum likelihood
-# n = 300
-# x = collect(1:n)
-# μ = x * 1 / 100
-# ϕ = x * 1 / 1000
-# pd = GeneralizedExtremeValue.(μ, exp.(ϕ), 0.1)
-# y = rand.(pd)
-# data = Dict(:y => y, :x => x, :n => n)
-# Covariate = Dict(:μ => [:x], :ϕ => [:x], :ξ => Symbol[])
-#
-# fd = gevfit(data, :y, Covariate = Covariate)
-# Extremes.getdistribution(fd)
-# Extremes.getdistribution(fd.model, [0, 0, 0, 0, 0])
-# Extremes.quantile(fd.model, [0, 0, 0, 0, 0], 0.95)
-# Extremes.quantile(fd, 0.95)
-# Extremes.parametervar(fd)
-# Extremes.quantilevar(fd, 0.95)
-#
-#
-#
-#
-# # Testing stationary GEV fit with non-informative Bayesian
-# pd = GeneralizedExtremeValue(0, 1, 0.1)
-# y = rand(pd, 300)
-# fm = gevfitbayes(y)
-# Extremes.quantile(fm, 0.95)
-# data = Dict(:y => y)
-# gevfitbayes(data, :y)
-# Extremes.fitbayes(fm.model)
-#
-#
-# # Testing non-stationary GEV (only location) fit (only location) with maximum likelihood
-# n = 300
-# x = collect(1:n)
-# μ = x * 1 / 100
-# pd = GeneralizedExtremeValue.(μ, 1, 0.1)
-# y = rand.(pd)
-# data = Dict(:y => y, :x => x, :n => n)
-# Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ => Symbol[])
-# fm = gevfitbayes(data, :y, Covariate = Covariate, niter = 1000, warmup = 500)
-# Extremes.quantile(fm, 0.95)
-#
-#
-# pd = GeneralizedPareto(0,1,.1)
-# y = rand(pd, 300)
-#
-# fm = Extremes.gpfitpwm(y)
-# Extremes.getdistribution(fm.model, fm.θ̂)
-#
-# fm = Extremes.gpfit(y)
-# fm = Extremes.gpfit(y, threshold = [0], nobsperblock = 1)
-# Extremes.getdistribution(fm)
-# Extremes.getdistribution(fm.model, [0, 0])
-# Extremes.quantile(fm.model, [0, 0], 0.95)
-# Extremes.quantile(fm, 0.95)
-# Extremes.parametervar(fm)
-# Extremes.quantilevar(fm, 0.95)
-#
-# data = Dict(:y => y)
-# dataid = :y
-# Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-#
-# fm = Extremes.gpfit(data, :y)
-#
-# fm = Extremes.gpfit(fm.model)
-#
-#
-# fm = Extremes.gpfitbayes(y)
-# fm = Extremes.gpfitbayes(data, :y)
-#
-#
-# μ = 0.0
-# σ = 1.0
-# ξ = .2
-#
-#
-#
-#
-# println("End of tests")
-# # fd = gevfit(data, dataid=:y)
-# # fd = gevfit(data, dataid=:y, initialvalues=[0, 0, .1])
-# # fd = gevfit(data, dataid=:y, locationid=:x)
-# # fd = gevfit(data, dataid=:y, locationid=:x, initialvalues=[0, 1/50, 0, .1])
-# # fd = gevfit(data, dataid=:y, logscaleid=:x)
-# # fd = gevfit(data, dataid=:y, logscaleid=:x, initialvalues=[0, 0, 0, .1])
-# # fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
-# # fd = gevfit(data, dataid=:y, locationid=:x, logscaleid=:x, initialvalues=[0,1/50,0,0,.1])
-# #
-# # @test_throws AssertionError gevfit(data, dataid=:z)
-# # @test_throws AssertionError gevfit(data, dataid=:y, locationid=:z)
-# # @test_throws AssertionError gevfit(data, dataid=:y, logscaleid=:z)
-# #
-# # # test for many datasets in a loop
-# # for i=1:1000
-# #     x = collect(0:300)
-# #     μ = x/100
-# #     pd = GeneralizedExtremeValue.(μ,1,.1)
-# #     y = rand.(pd)
-# #     data = Dict(:y => y, :x => x)
-# #     gevfit(data, dataid=:y, locationid=:x, logscaleid=:x)
-# # end
-# #
-# #
-# #
-# # # Test for the GPD
-# #
-# # pd = Normal()
-# # y = rand(pd,1000)
-# # g = getcluster(y,1,0)
-# #
-# # x = collect(Date(2000,1,1):Day(1):Date(2010,12,31))
-# # y = rand(pd, length(x))
-# # df = DataFrame(Date = x, Y = y)
-# # g = getcluster(df,1,0)
-# #
-# # df = DataFrame(Y = y, Date = x)
-# # @test_throws AssertionError getcluster(df,1,0)
-# # df = DataFrame(Date = x, Y=x)
-# # @test_throws AssertionError getcluster(df,1,0)
-#
-# # x = collect(0:300)
-# # σ = exp.(x/300)
-# # pd = GeneralizedPareto.(0,σ,.1)
-# # y = rand.(pd)
-# # data = Dict(:y => y, :x => x)
-# #
-# # fd = Extremes.gpdfitmom(y)
-# # fd = Extremes.gpdfitmom(y, threshold = -0.05)
-# #
-# # ini = Extremes.getinitialvalue(GeneralizedPareto,y)
-# #
-# # fd = gpdfit(y)
-# # fd = gpdfit(y, threshold=-.5)
-# # fd = gpdfit(y, threshold=-.5, initialvalues=[1, .1])
-# # fd = gpdfit(data, dataid=:y)
-# # fd = gpdfit(data, dataid=:y, threshold=-.05)
-# # fd = gpdfit(data, dataid=:y, initialvalues=[1, .1])
-# # fd = gpdfit(data, dataid=:y, logscaleid=:x)
-# # fd = gpdfit(data, dataid=:y, logscaleid=:x, initialvalues=[1, 0, .1])
-# #
-# # @test_throws AssertionError gpdfit(data, dataid=:z)
-# # @test_throws AssertionError gpdfit(data, dataid=:y, logscaleid=:z)
-# #
-# # # test for many datasets in a loop
-# # for i=1:1000
-# #     x = collect(0:300)
-# #     σ = exp.(x/300)
-# #     pd = GeneralizedPareto.(0,σ,.1)
-# #     y = rand.(pd)
-# #     data = Dict(:y => y, :x => x)
-# #     gpdfit(data, dataid=:y, logscaleid=:x)
-# # end
-# #
-# #
-# #
-# # fd = Extremes.gevfitbayes(y)
-# # fd = Extremes.gevfitbayes(y, stepSize=[.025,.05,.08])
-# # fd = Extremes.gevfitbayes(y,niter=5000, stepSize=[.025,.05,.08])
-# # fd = Extremes.gevfitbayes(y,warmup=1000, niter=5000, stepSize=[.025,.05,.08])
-# # fd = Extremes.gevfitbayes(y,warmup=1000, thin=4, niter=5000, stepSize=[.025,.05,.08])
-# # fd = Extremes.gevfitbayes(y, warmup=2000, niter=5000, stepSize=[.025,.05,.08])
-# #
-# #
-# # y = rand(Normal(),100)
-# # c = Extremes.getcluster(y,.2)
-# # c = Extremes.getcluster(y,.2,.1)
-# #
-# # threshold = 5
-# # σ = 1
-# # ξ = .1
-# # y = rand(GeneralizedPareto(threshold, σ, ξ),100)
-# #
-# # Extremes.gpdfitbayes(y)
-# # Extremes.gpdfitbayes(y, threshold=threshold)
-# # Extremes.gpdfitbayes(y, threshold=threshold, stepSize=[.2,.15])

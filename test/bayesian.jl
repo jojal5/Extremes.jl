@@ -183,7 +183,7 @@ end
 end
 
 
-@testset "non-stationary shape GP fit by ML" begin
+@testset "non-stationary shape GP Bayesian fit" begin
       n = 10000
 
       x₁ = randn(n) / 10

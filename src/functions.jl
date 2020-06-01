@@ -485,13 +485,70 @@ function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)
 
     end
 
-    if isa(q, Real)
-        res = V[1]
-    else
-        res = V
-    end
+    return V
 
-    return res
+    # if isa(q, Real)
+    #     res = V[1]
+    # else
+    #     res = V
+    # end
+    #
+    # return res
+
+end
+
+
+function returnlevel(fm::MaximumLikelihoodEVA, returnPeriod::Real, confidencelevel::Real=.95)
+
+      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+      @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+      α = (1 - confidencelevel)
+
+      # quantile level
+      p = 1-1/returnPeriod
+
+      q = Extremes.quantile(fm, p)
+
+      v = Extremes.quantilevar(fm,p)
+
+      qdist = Normal.(q,sqrt.(v))
+
+      a = quantile.(qdist,α/2)
+      b = quantile.(qdist,1-α/2)
+
+      cint = Extremes.slicematrix(hcat(a,b), dims=2)
+
+      res = ReturnLevel(fm, returnPeriod, q, cint)
+
+      return res
+
+end
+
+function returnlevel(fm::BayesianEVA, returnPeriod::Real, confidencelevel::Real=.95)
+
+      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+      @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+      α = (1 - confidencelevel)
+
+      # quantile level
+      p = 1-1/returnPeriod
+
+      Q = Extremes.quantile(fm, p)
+
+      q = vec(mean(Q, dims=1))
+
+      qsliced = Extremes.slicematrix(Q)
+
+      a = quantile.(qsliced, α/2)
+      b = quantile.(qsliced, 1-α/2)
+
+      cint = Extremes.slicematrix(hcat(a,b), dims=2)
+
+      res = ReturnLevel(fm, returnPeriod, q, cint)
+
+      return res
 
 end
 

@@ -37,14 +37,16 @@ struct PeaksOverThreshold <: EVA
     paramindex::Dict
 end
 
-struct pwmEVA
+abstract type fittedEVA end
+
+struct pwmEVA <: fittedEVA
     "Extreme value model definition"
     model::EVA
     "Maximum likelihood estimate"
     θ̂::Vector{Float64}
 end
 
-struct MaximumLikelihoodEVA
+struct MaximumLikelihoodEVA <: fittedEVA
     "Extreme value model definition"
     model::EVA
     "Maximum likelihood estimate"
@@ -53,22 +55,62 @@ struct MaximumLikelihoodEVA
     H::Array{Float64}
 end
 
-struct BayesianEVA
+struct BayesianEVA <: fittedEVA
     "Extreme value model definition"
     model::EVA
     "MCMC outputs"
     sim::Mamba.Chains
 end
 
+struct ReturnLevel
+      fittedmodel::fittedEVA
+      returnperiod::Real
+      value::Vector{<:Real}
+      cint::Vector{Vector{T}} where T<:Real
+end
+
 Base.Broadcast.broadcastable(obj::Extremes.EVA) = Ref(obj)
 
+include("bayesian.jl")
+include("data.jl")
 include("functions.jl")
-include("mle_functions.jl")
-include("bayes_functions.jl")
+include("maximumlikelihood.jl")
+include("probabilityweightedmoment.jl")
 include("utils.jl")
-include("data_functions.jl")
-include("pwm_functions.jl")
 
-export getcluster, gevfit, gevfitbayes, load
+
+
+export
+
+    # Generic types
+    EVA,
+    fittedEVA,
+
+    # Extreme value analysis type
+    BlockMaxima,
+    PeaksOverThreshold,
+
+    # Fitted extreme value analysis model
+    pwmEVA,
+    MaximumLikelihoodEVA,
+    BayesianEVA,
+
+    # Other types
+    ReturnLevel,
+
+    # Data related functions
+    load,
+    getcluster,
+
+    # Fitting functions
+    gevfit,
+    gevfitbayes,
+    gevfitpwm,
+    gpfit,
+    gpfitbayes,
+    gpfitpwm,
+
+    # Other functions
+    returnlevel
 
 end # module
