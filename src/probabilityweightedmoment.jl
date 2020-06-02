@@ -35,13 +35,13 @@ Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the gener
 function gevfitpwm(data::Dict, dataid::Symbol,
     Covariate::Dict=Dict{Symbol,Vector{Symbol}}())
 
-    if getcovariatenumber(Covariate, [:μ, :ϕ, :ξ]) > 0
+    model = BlockMaxima(data[dataid])
+
+    if getcovariatenumber(model) > 0
         @warn "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned."
     end
-
-    model = BlockMaxima(data[dataid])
 
     fittedmodel = gevfitpwm(model)
 

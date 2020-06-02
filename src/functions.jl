@@ -2,7 +2,7 @@
 """
 Establish the parameter as function of the corresponding covariates.
 """
-function computeparamfunction(data::Dict, covariateid::Array{Symbol,1}, n::Integer)
+function computeparamfunction(data::Dict, covariateid::Array{Symbol,1}, n::Int) # TODO : Remove when no longer in use
     fun =
     if isempty(covariateid)
         function(β::Vector{<:Real})
@@ -13,6 +13,28 @@ function computeparamfunction(data::Dict, covariateid::Array{Symbol,1}, n::Integ
 
         for i=1:length(covariateid)
             X = hcat(X, data[covariateid[i]])
+        end
+        function(β::Vector{<:Real})
+            return X*β
+        end
+    end
+    return fun
+end
+
+"""
+Establish the parameter as function of the corresponding covariates.
+"""
+function computeparamfunction(covariates) # TODO : Type argument
+    fun =
+    if isempty(covariates)
+        function(β::Vector{<:Real})
+            return identity(β)
+        end
+    else
+        X = ones(length(covariates[1]))
+
+        for cov in covariates
+            X = hcat(X, cov)
         end
         function(β::Vector{<:Real})
             return X*β
@@ -234,9 +256,9 @@ function getdistribution(model::BlockMaxima, θ::Vector{<:Real})
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 
     pi = paramindex(model)
-    μ = model.locationfun(θ[pi[:μ]])
-    ϕ = model.logscalefun(θ[pi[:ϕ]])
-    ξ = model.shapefun(θ[pi[:ξ]])
+    μ = model.location.fun(θ[pi[:μ]])
+    ϕ = model.logscale.fun(θ[pi[:ϕ]])
+    ξ = model.shape.fun(θ[pi[:ξ]])
 
     σ = exp.(ϕ)
 
@@ -320,7 +342,7 @@ end
 """
 Return the number of covariates.
 """
-function getcovariatenumber(Covariate::Dict, params::Vector{Symbol})
+function getcovariatenumber(Covariate::Dict, params::Vector{Symbol}) # TODO : Remove when no longer in use
 
     ncovariate = 0
 
@@ -332,6 +354,13 @@ function getcovariatenumber(Covariate::Dict, params::Vector{Symbol})
 
     return ncovariate
 
+end
+
+"""
+Return the number of covariates.
+"""
+function getcovariatenumber(model::BlockMaxima)
+    return sum([length(model.location.covariate), length(model.logscale.covariate), length(model.shape.covariate)])
 end
 
 
@@ -380,9 +409,7 @@ end
 Return the indexes of parameters belonging to the locationFunction,
 logscaleFunction and shapeFunction from a single vector.
 """
-function paramindexing(Covariate::Dict, params::Vector{Symbol})
-
-    # params = [:μ, :ϕ, :ξ]
+function paramindexing(Covariate::Dict, params::Vector{Symbol}) # TODO : Remove when not in use
 
     id = Symbol[]
     for p in params
@@ -553,36 +580,45 @@ end
 """
 Get the number of parameters in a BlockMaxima
 """
-function nparameter(bm::BlockMaxima)
-    return 3 + getcovariatenumber(bm.covariate, [:μ, :ϕ, :ξ])
+function nparameter(model::BlockMaxima)
+    return 3 + getcovariatenumber(model)
 end
 
 """
 Get the number of parameters in a PeaksOverThreshold
 """
-function nparameter(pot::PeaksOverThreshold)
-    return 2 + getcovariatenumber(pot.covariate, [:ϕ, :ξ])
+function nparameter(model::PeaksOverThreshold)
+    return 2 + getcovariatenumber(model.covariate, [:ϕ, :ξ])
 end
 
 """
 Get the parameter indexing for a BlockMaxima
 """
-function paramindex(bm::BlockMaxima)
-    return paramindexing(bm.covariate, [:μ, :ϕ, :ξ])
+function paramindex(model::BlockMaxima)
+    i = 0
+    function increasei()
+        i = i + 1
+        return i
+    end
+    return Dict{Symbol,Vector{<:Int}}(
+        :μ => Int64[increasei() for k in 1:length(model.location.covariate) + 1],
+        :ϕ => Int64[increasei() for k in 1:length(model.logscale.covariate) + 1],
+        :ξ => Int64[increasei() for k in 1:length(model.shape.covariate) + 1]
+    )
 end
 
 """
 Get the parameter indexing for a PeaksOverThreshold
 """
-function paramindex(pot::PeaksOverThreshold)
-    return paramindexing(pot.covariate, [:ϕ, :ξ])
+function paramindex(model::PeaksOverThreshold)
+    return paramindexing(model.covariate, [:ϕ, :ξ])
 end
 
 """
 Get the data for a BlockMaxima
 """
-function data(bm::BlockMaxima)
-    return bm.d
+function data(model::BlockMaxima)
+    return model.data
 end
 
 """
@@ -594,9 +630,9 @@ end
 
 function Base.show(io::IO, obj::BlockMaxima)
   println(io, "Extreme value model")
-  println(io, "    "*showparamfun(obj,:μ))
-  println(io, "    "*showparamfun(obj,:ϕ))
-  println(io, "    "*showparamfun(obj,:ξ))
+  println(io, "    "*showparamfun(obj.location))
+  println(io, "    "*showparamfun(obj.logscale))
+  println(io, "    "*showparamfun(obj.shape))
 end
 
 function Base.show(io::IO, obj::PeaksOverThreshold)
@@ -611,7 +647,14 @@ function Base.show(io::IO, obj::MaximumLikelihoodEVA)
     println(io, "θ̂ = $(obj.θ̂)")
 end
 
-function showparamfun(model::Extremes.EVA, param::Symbol)
+function showparamfun(param::paramEVA)
+    covariate = [" + x$i" for i in 1:length(param.covariate)]
+    res = string("$param ~ 1", covariate...)
+
+    return res
+end
+
+function showparamfun(model::PeaksOverThreshold, param::Symbol) # TODO : Remove when not in use
 
     covariate = [" + $x" for x in model.covariate[param]]
     res = string("$param ~ 1", covariate...)

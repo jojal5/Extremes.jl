@@ -12,13 +12,16 @@ import Statistics.var
 
 abstract type EVA end
 
+struct paramEVA
+    covariate # TODO : Type attribute
+    fun::Function
+end
+
 struct BlockMaxima <: EVA
-    d::Vector{<:Real}
-    data::Dict
-    covariate::Dict
-    locationfun::Function
-    logscalefun::Function
-    shapefun::Function
+    data::Vector{<:Real}
+    location::paramEVA
+    logscale::paramEVA
+    shape::paramEVA
 end
 
 """
@@ -26,34 +29,11 @@ Creates a BlockMaxima structure
 """
 #TODO : TYPE PARAMS
 function BlockMaxima(data::Vector{<:Real}; locationcov = Vector{Vector{Float64}}(), scalecov = Vector{Vector{Float64}}(),  shapecov = Vector{Vector{Float64}}())
+    locationfun = computeparamfunction(locationcov)
+    logscalefun = computeparamfunction(scalecov)
+    shapefun = computeparamfunction(shapecov)
 
-    d = Dict()
-    locSym = Symbol[]
-    scaSym = Symbol[]
-    shaSym = Symbol[]
-    for i in 1:length(locationcov)
-        s = Symbol(string("l", i))
-        push!(d, s => locationcov[i])
-        push!(locSym, s)
-    end
-    for i in 1:length(scalecov)
-        s = Symbol(string("sc", i))
-        push!(d, s => scalecov[i])
-        push!(scaSym, s)
-    end
-    for i in 1:length(shapecov)
-        s = Symbol(string("sh", i))
-        push!(d, s => shapecov[i])
-        push!(shaSym, s)
-    end
-
-    Covariate = Dict(:μ => locSym,:ϕ => scaSym,:ξ => shaSym)
-
-    locationfun = computeparamfunction(d, Covariate[:μ], length(data))
-    logscalefun = computeparamfunction(d, Covariate[:ϕ], length(data))
-    shapefun = computeparamfunction(d, Covariate[:ξ], length(data))
-
-    return BlockMaxima(data, d, Covariate, locationfun, logscalefun, shapefun)
+    return BlockMaxima(data, paramEVA(locationcov, locationfun), paramEVA(scalecov, logscalefun), paramEVA(shapecov, shapefun))
 end
 
 struct PeaksOverThreshold <: EVA
