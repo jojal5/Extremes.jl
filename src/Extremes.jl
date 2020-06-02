@@ -20,7 +20,6 @@ struct BlockMaxima <: EVA
     locationfun::Function
     logscalefun::Function
     shapefun::Function
-    paramindex::Dict
 end
 
 """
@@ -51,13 +50,12 @@ function BlockMaxima(data::Vector{<:Real}; locationcov = Vector{Vector{Float64}}
 
     dataid = :data
     Covariate = Dict(:μ => locSym,:ϕ => scaSym,:ξ => shaSym)
-    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
 
     locationfun = computeparamfunction(d, Covariate[:μ])
     logscalefun = computeparamfunction(d, Covariate[:ϕ])
     shapefun = computeparamfunction(d, Covariate[:ξ])
 
-    return BlockMaxima(GeneralizedExtremeValue, d, dataid, Covariate, locationfun, logscalefun, shapefun, paramindex)
+    return BlockMaxima(GeneralizedExtremeValue, d, dataid, Covariate, locationfun, logscalefun, shapefun)
 end
 
 struct PeaksOverThreshold <: EVA
@@ -69,7 +67,6 @@ struct PeaksOverThreshold <: EVA
     threshold::Vector{<:Real}
     logscalefun::Function
     shapefun::Function
-    paramindex::Dict
 end
 
 abstract type fittedEVA end

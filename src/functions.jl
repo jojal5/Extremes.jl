@@ -192,8 +192,9 @@ function getinitialvalue(model::BlockMaxima)
     θ₀ = Dict(:μ => μ₀, :ϕ => log(σ₀), :ξ => ξ₀)
 
     initialvalues = zeros(nparameter(model))
+    pi = paramindex(model)
     for param in [:μ, :ϕ, :ξ]
-        ind = model.paramindex[param][1]
+        ind = pi[param][1]
         initialvalues[ind] = θ₀[param]
     end
 
@@ -215,8 +216,9 @@ function getinitialvalue(model::PeaksOverThreshold)
     θ₀ = Dict(:ϕ => log(σ₀), :ξ => ξ₀)
 
     initialvalues = zeros(nparameter(model))
+    pi = paramindex(model)
     for param in [:ϕ, :ξ]
-        ind = model.paramindex[param][1]
+        ind = pi[param][1]
         initialvalues[ind] = θ₀[param]
     end
 
@@ -235,9 +237,10 @@ function getdistribution(model::BlockMaxima, θ::Vector{<:Real})
 
     dist = model.distribution
 
-    μ = model.locationfun(θ[model.paramindex[:μ]])
-    ϕ = model.logscalefun(θ[model.paramindex[:ϕ]])
-    ξ = model.shapefun(θ[model.paramindex[:ξ]])
+    pi = paramindex(model)
+    μ = model.locationfun(θ[pi[:μ]])
+    ϕ = model.logscalefun(θ[pi[:ϕ]])
+    ξ = model.shapefun(θ[pi[:ξ]])
 
     σ = exp.(ϕ)
 
@@ -266,8 +269,9 @@ function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})
 
     dist = model.distribution
 
-    ϕ = model.logscalefun(θ[model.paramindex[:ϕ]])
-    ξ = model.shapefun(θ[model.paramindex[:ξ]])
+    pi = paramindex(model)
+    ϕ = model.logscalefun(θ[pi[:ϕ]])
+    ξ = model.shapefun(θ[pi[:ξ]])
 
     σ = exp.(ϕ)
 
@@ -564,6 +568,20 @@ Get the number of parameters in a PeaksOverThreshold
 """
 function nparameter(pot::PeaksOverThreshold)
     return 2 + getcovariatenumber(pot.covariate, [:ϕ, :ξ])
+end
+
+"""
+Get the parameter indexing for a BlockMaxima
+"""
+function paramindex(bm::BlockMaxima)
+    return paramindexing(bm.covariate, [:μ, :ϕ, :ξ])
+end
+
+"""
+Get the parameter indexing for a PeaksOverThreshold
+"""
+function paramindex(pot::PeaksOverThreshold)
+    return paramindexing(pot.covariate, [:ϕ, :ξ])
 end
 
 function Base.show(io::IO, obj::BlockMaxima)
