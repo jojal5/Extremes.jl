@@ -24,6 +24,41 @@ struct BlockMaxima <: EVA
     paramindex::Dict
 end
 
+#TODO : TYPE PARAMS
+function BlockMaxima(data::Vector{<:Real}; locationcov = Vector{Vector{Float64}}(), scalecov = Vector{Vector{Float64}}(),  shapecov = Vector{Vector{Float64}}())
+
+    d = Dict(:data => data, :n => length(data))
+    locSym = Symbol[]
+    scaSym = Symbol[]
+    shaSym = Symbol[]
+    for i in 1:length(locationcov)
+        s = Symbol(string("l", i))
+        push!(d, s => locationcov[i])
+        push!(locSym, s)
+    end
+    for i in 1:length(scalecov)
+        s = Symbol(string("sc", i))
+        push!(d, s => scalecov[i])
+        push!(scaSym, s)
+    end
+    for i in 1:length(shapecov)
+        s = Symbol(string("sh", i))
+        push!(d, s => shapecov[i])
+        push!(shaSym, s)
+    end
+
+    dataid = :data
+    Covariate = Dict(:μ => locSym,:ϕ => scaSym,:ξ => shaSym)
+    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
+    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
+
+    locationfun = computeparamfunction(d, Covariate[:μ])
+    logscalefun = computeparamfunction(d, Covariate[:ϕ])
+    shapefun = computeparamfunction(d, Covariate[:ξ])
+
+    return BlockMaxima(GeneralizedExtremeValue, d, dataid, Covariate, locationfun, logscalefun, shapefun, nparameter, paramindex)
+end
+
 struct PeaksOverThreshold <: EVA
     distribution::Type
     data::Dict

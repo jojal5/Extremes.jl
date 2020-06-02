@@ -3,7 +3,6 @@ using Distributions, Extremes
 using Test
 using LinearAlgebra
 
-
 @testset "Test of getdistribution" begin
 
       # Model BlockMaxima - stationary
@@ -19,19 +18,7 @@ using LinearAlgebra
       pd = GeneralizedExtremeValue(μ, σ, ξ)
       y = rand(pd, n)
 
-      data = Dict(:y => y, :n => n)
-      dataid = :y
-      Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-
-      paramindex = Extremes.paramindexing(Covariate, [:μ, :ϕ, :ξ])
-      nparameter = 3 + Extremes.getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
-
-      locationfun = Extremes.computeparamfunction(data, Covariate[:μ])
-      logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ])
-      shapefun = Extremes.computeparamfunction(data, Covariate[:ξ])
-
-      model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate,
-            locationfun, logscalefun, shapefun, nparameter, paramindex)
+      model = BlockMaxima(y)
 
       fd = Extremes.getdistribution(model, θ)[]
 
@@ -55,19 +42,7 @@ using LinearAlgebra
 
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :x₃ => x₃, :n => n)
-      dataid = :y
-      Covariate = Dict(:μ => [:x₁], :ϕ => [:x₂], :ξ => [:x₃])
-
-      paramindex = Extremes.paramindexing(Covariate, [:μ, :ϕ, :ξ])
-      nparameter = 3 + Extremes.getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
-
-      locationfun = Extremes.computeparamfunction(data, Covariate[:μ])
-      logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ])
-      shapefun = Extremes.computeparamfunction(data, Covariate[:ξ])
-
-      model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate,
-            locationfun, logscalefun, shapefun, nparameter, paramindex)
+      model = BlockMaxima(y, locationcov = [x₁], scalecov = [x₂], shapecov = [x₃])
 
       fd = Extremes.getdistribution(model, θ)
 

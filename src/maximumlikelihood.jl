@@ -5,13 +5,7 @@ Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to th
 """
 function gevfit(y::Vector{<:Real})
 
-    data = Dict(:y => y)
-    dataid = :y
-    Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
-    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
-
-    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
+    model = BlockMaxima(y)
 
     fittedmodel = fit(model)
 
@@ -70,15 +64,12 @@ function gevfit(data::Dict, dataid::Symbol ;
         end
     end
 
-    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
-    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
 
-    locationfun = computeparamfunction(data, Covariate[:μ])
-    logscalefun = computeparamfunction(data, Covariate[:ϕ])
-    shapefun = computeparamfunction(data, Covariate[:ξ])
 
-    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate,
-        locationfun, logscalefun, shapefun, nparameter, paramindex)
+    model = BlockMaxima(data[dataid],
+        locationcov = [data[s] for s in Covariate[:μ]],
+        scalecov = [data[s] for s in Covariate[:ϕ]],
+        shapecov = [data[s] for s in Covariate[:ξ]])
 
     fittedmodel = fit(model)
 

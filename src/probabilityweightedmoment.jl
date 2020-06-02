@@ -10,13 +10,7 @@ Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the gener
 """
 function gevfitpwm(y::Vector{<:Real})
 
-    data = Dict(:y => y)
-    dataid = :y
-    Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
-    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
-
-    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
+    model = BlockMaxima(y)
 
     fittedmodel = gevfitpwm(model)
 
@@ -47,18 +41,7 @@ function gevfitpwm(data::Dict, dataid::Symbol,
             The estimates for the stationary model is returned."
     end
 
-    emptyCovariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-
-    paramindex = paramindexing(emptyCovariate, [:μ, :ϕ, :ξ])
-
-    nparameter = 3
-
-    locationfun = identity
-    logscalefun = identity
-    shapefun = identity
-
-    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate,
-        locationfun, logscalefun, shapefun, nparameter, paramindex)
+    model = BlockMaxima(data[dataid])
 
     fittedmodel = gevfitpwm(model)
 
@@ -215,13 +198,7 @@ Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted m
 """
 function gumbelfitpwm(y::Vector{<:Real})
 
-    data = Dict(:y => y)
-    dataid = :y
-    Covariate = Dict(:μ => Symbol[], :ϕ => Symbol[], :ξ => Symbol[])
-    paramindex = paramindexing(Covariate, [:μ, :ϕ, :ξ])
-    nparameter = 3 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
-
-    model = BlockMaxima(GeneralizedExtremeValue, data, dataid, Covariate, identity, identity, identity, nparameter, paramindex)
+    model = BlockMaxima(y)
 
     fittedmodel = gumbelfitpwm(model)
 
