@@ -102,7 +102,7 @@ function gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
     dataid = :y
     Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
 
-    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, identity, identity)
+    model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, identity, identity)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -167,7 +167,7 @@ function gpfitbayes(data::Dict, dataid::Symbol ;
     logscalefun = computeparamfunction(data, Covariate[:ϕ])
     shapefun = computeparamfunction(data, Covariate[:ξ])
 
-    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun)
+    model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 

@@ -13,7 +13,6 @@ import Statistics.var
 abstract type EVA end
 
 struct BlockMaxima <: EVA
-    distribution::Type
     data::Dict
     dataid::Symbol
     covariate::Dict
@@ -55,11 +54,10 @@ function BlockMaxima(data::Vector{<:Real}; locationcov = Vector{Vector{Float64}}
     logscalefun = computeparamfunction(d, Covariate[:ϕ])
     shapefun = computeparamfunction(d, Covariate[:ξ])
 
-    return BlockMaxima(GeneralizedExtremeValue, d, dataid, Covariate, locationfun, logscalefun, shapefun)
+    return BlockMaxima(d, dataid, Covariate, locationfun, logscalefun, shapefun)
 end
 
 struct PeaksOverThreshold <: EVA
-    distribution::Type
     data::Dict
     dataid::Symbol
     nobsperblock::Int
