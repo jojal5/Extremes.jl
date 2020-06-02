@@ -66,9 +66,8 @@ using LinearAlgebra
       dataid = :y
       Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
       paramindex = Extremes.paramindexing(Covariate, [:ϕ, :ξ])
-      nparameter = 2 + Extremes.getcovariatenumber(Covariate, [:ϕ, :ξ])
 
-      model = PeaksOverThreshold(GeneralizedPareto, data, dataid, 1, Covariate, [0], identity, identity, nparameter, paramindex)
+      model = PeaksOverThreshold(GeneralizedPareto, data, dataid, 1, Covariate, [0], identity, identity, paramindex)
 
       fd = Extremes.getdistribution(model, θ)[]
 
@@ -96,12 +95,11 @@ using LinearAlgebra
       dataid = :y
       Covariate = Dict(:ϕ => [:x₁, :x₂], :ξ => [:x₃])
       paramindex = Extremes.paramindexing(Covariate, [:ϕ, :ξ])
-      nparameter = 2 + Extremes.getcovariatenumber(Covariate, [:ϕ, :ξ])
 
       logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ])
       shapefun = Extremes.computeparamfunction(data, Covariate[:ξ])
 
-      model = PeaksOverThreshold(GeneralizedPareto, data, dataid, 1, Covariate, [0], logscalefun, shapefun, nparameter, paramindex)
+      model = PeaksOverThreshold(GeneralizedPareto, data, dataid, 1, Covariate, [0], logscalefun, shapefun, paramindex)
 
       fd = Extremes.getdistribution(model, θ)
 

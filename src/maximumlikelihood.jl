@@ -100,9 +100,8 @@ function gpfit(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::I
     dataid = :y
     Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
     paramindex = paramindexing(Covariate, [:ϕ, :ξ])
-    nparameter = 2 + getcovariatenumber(Covariate, [:ϕ, :ξ])
 
-    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, identity, identity, nparameter, paramindex)
+    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, identity, identity, paramindex)
 
     fittedmodel = fit(model)
 
@@ -121,12 +120,11 @@ function gpfit(data::Dict, dataid::Symbol ; Covariate::Dict=Dict{Symbol,Vector{S
     end
 
     paramindex = paramindexing(Covariate, [:ϕ, :ξ])
-    nparameter = 2 + getcovariatenumber(Covariate, [:ϕ, :ξ])
 
     logscalefun = computeparamfunction(data, Covariate[:ϕ])
     shapefun = computeparamfunction(data, Covariate[:ξ])
 
-    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun, nparameter, paramindex)
+    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun, paramindex)
 
     fittedmodel = fit(model)
 

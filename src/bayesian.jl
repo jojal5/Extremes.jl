@@ -102,9 +102,8 @@ function gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
     dataid = :y
     Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
     paramindex = paramindexing(Covariate, [:ϕ, :ξ])
-    nparameter = 2 + getcovariatenumber(Covariate, [:μ, :ϕ, :ξ])
 
-    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, identity, identity, nparameter, paramindex)
+    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, identity, identity, paramindex)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -167,12 +166,11 @@ function gpfitbayes(data::Dict, dataid::Symbol ;
     end
 
     paramindex = paramindexing(Covariate, [:ϕ, :ξ])
-    nparameter = 2 + getcovariatenumber(Covariate, [:ϕ, :ξ])
 
     logscalefun = computeparamfunction(data, Covariate[:ϕ])
     shapefun = computeparamfunction(data, Covariate[:ξ])
 
-    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun, nparameter, paramindex)
+    model = PeaksOverThreshold(GeneralizedPareto, data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun, paramindex)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -215,7 +213,7 @@ function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)
     # append!(paramnames, ["β₃[$i]" for i=1:m])
 
     # sim = Chains(niter, model.nparameter, start = (warmup + 1), names = paramnames)
-    sim = Chains(niter, model.nparameter, start = (warmup + 1))
+    sim = Chains(niter, nparameter(model), start = (warmup + 1))
     θ = NUTSVariate(initialvalues, logfgrad)
     # θ = AMWGVariate(initialvalues, 1.0, logf)
     @showprogress for i in 1:niter

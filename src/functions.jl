@@ -191,7 +191,7 @@ function getinitialvalue(model::BlockMaxima)
     # Store them in a dictionary
     θ₀ = Dict(:μ => μ₀, :ϕ => log(σ₀), :ξ => ξ₀)
 
-    initialvalues = zeros(model.nparameter)
+    initialvalues = zeros(nparameter(model))
     for param in [:μ, :ϕ, :ξ]
         ind = model.paramindex[param][1]
         initialvalues[ind] = θ₀[param]
@@ -214,7 +214,7 @@ function getinitialvalue(model::PeaksOverThreshold)
     # Store them in a dictionary
     θ₀ = Dict(:ϕ => log(σ₀), :ξ => ξ₀)
 
-    initialvalues = zeros(model.nparameter)
+    initialvalues = zeros(nparameter(model))
     for param in [:ϕ, :ξ]
         ind = model.paramindex[param][1]
         initialvalues[ind] = θ₀[param]
@@ -231,7 +231,7 @@ Return the fitted distribution in case of stationarity or the vector of fitted d
 """
 function getdistribution(model::BlockMaxima, θ::Vector{<:Real})
 
-    @assert length(θ)==model.nparameter "The length of the parameter vector should be equal to the model number of parameters."
+    @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 
     dist = model.distribution
 
@@ -262,7 +262,7 @@ Return the fitted distribution in case of stationarity or the vector of fitted d
 """
 function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})
 
-    @assert length(θ)==model.nparameter "The length of the parameter vector should be equal to the model number of parameters."
+    @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 
     dist = model.distribution
 
@@ -552,6 +552,19 @@ function returnlevel(fm::BayesianEVA, returnPeriod::Real, confidencelevel::Real=
 
 end
 
+"""
+Get the number of parameters in a BlockMaxima
+"""
+function nparameter(bm::BlockMaxima)
+    return 3 + getcovariatenumber(bm.covariate, [:μ, :ϕ, :ξ])
+end
+
+"""
+Get the number of parameters in a PeaksOverThreshold
+"""
+function nparameter(pot::PeaksOverThreshold)
+    return 2 + getcovariatenumber(pot.covariate, [:ϕ, :ξ])
+end
 
 function Base.show(io::IO, obj::BlockMaxima)
   println(io, "Extreme value model")
