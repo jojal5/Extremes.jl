@@ -346,7 +346,7 @@ Compute the model loglikelihood evaluated at θ.
 """
 function loglike(model::EVA, θ::Vector{<:Real})
 
-    y = model.data[model.dataid]
+    y = data(model)
 
     pd = getdistribution(model, θ)
 
@@ -582,6 +582,20 @@ Get the parameter indexing for a PeaksOverThreshold
 """
 function paramindex(pot::PeaksOverThreshold)
     return paramindexing(pot.covariate, [:ϕ, :ξ])
+end
+
+"""
+Get the data for a BlockMaxima
+"""
+function data(bm::BlockMaxima)
+    return bm.data[bm.dataid]
+end
+
+"""
+Get the data for a PeaksOverThreshold
+"""
+function data(pot::PeaksOverThreshold)
+    return pot.data[pot.dataid]
 end
 
 function Base.show(io::IO, obj::BlockMaxima)
