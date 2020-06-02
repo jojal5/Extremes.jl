@@ -164,8 +164,8 @@ function gpfitbayes(data::Dict, dataid::Symbol ;
         end
     end
 
-    logscalefun = computeparamfunction(data, Covariate[:ϕ])
-    shapefun = computeparamfunction(data, Covariate[:ξ])
+    logscalefun = computeparamfunction(data, Covariate[:ϕ], length(data[dataid]))
+    shapefun = computeparamfunction(data, Covariate[:ξ], length(data[dataid]))
 
     model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun)
 

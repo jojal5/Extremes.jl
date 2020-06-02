@@ -64,7 +64,7 @@ Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the gener
 """
 function gevfitpwm(model::BlockMaxima)
 
-    y = model.data[model.dataid]
+    y = data(model)
 
     # Computing the estimates of the probability weighted moments M_{1,q,0} for q ∈ {0,1,2}.
     b₀ = pwm(y,1,0,0)
@@ -213,7 +213,7 @@ Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted m
 """
 function gumbelfitpwm(model::BlockMaxima)
 
-    y = model.data[model.dataid]
+    y = data(model)
 
     a₀ = pwm(y,1,0,0)
     a₁ = pwm(y,1,0,1)

@@ -94,8 +94,8 @@ using LinearAlgebra
       dataid = :y
       Covariate = Dict(:ϕ => [:x₁, :x₂], :ξ => [:x₃])
 
-      logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ])
-      shapefun = Extremes.computeparamfunction(data, Covariate[:ξ])
+      logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ], length(data[dataid]))
+      shapefun = Extremes.computeparamfunction(data, Covariate[:ξ], length(data[dataid]))
 
       model = PeaksOverThreshold(data, dataid, 1, Covariate, [0], logscalefun, shapefun)
 

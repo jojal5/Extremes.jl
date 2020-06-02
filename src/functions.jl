@@ -2,14 +2,14 @@
 """
 Establish the parameter as function of the corresponding covariates.
 """
-function computeparamfunction(data::Dict, covariateid::Array{Symbol,1})
+function computeparamfunction(data::Dict, covariateid::Array{Symbol,1}, n::Integer)
     fun =
     if isempty(covariateid)
         function(β::Vector{<:Real})
             return identity(β)
         end
     else
-        X = ones(data[:n])
+        X = ones(n)
 
         for i=1:length(covariateid)
             X = hcat(X, data[covariateid[i]])
@@ -183,7 +183,7 @@ Get an initial values vector for the parameters of model
 """
 function getinitialvalue(model::BlockMaxima)
 
-    y = model.data[model.dataid]
+    y = data(model)
 
     # Compute stationary initial values
     μ₀,σ₀,ξ₀ = Extremes.getinitialvalue(GeneralizedExtremeValue,y)
@@ -582,7 +582,7 @@ end
 Get the data for a BlockMaxima
 """
 function data(bm::BlockMaxima)
-    return bm.data[bm.dataid]
+    return bm.d
 end
 
 """

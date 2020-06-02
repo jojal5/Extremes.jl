@@ -13,8 +13,8 @@ import Statistics.var
 abstract type EVA end
 
 struct BlockMaxima <: EVA
+    d::Vector{<:Real}
     data::Dict
-    dataid::Symbol
     covariate::Dict
     locationfun::Function
     logscalefun::Function
@@ -27,7 +27,7 @@ Creates a BlockMaxima structure
 #TODO : TYPE PARAMS
 function BlockMaxima(data::Vector{<:Real}; locationcov = Vector{Vector{Float64}}(), scalecov = Vector{Vector{Float64}}(),  shapecov = Vector{Vector{Float64}}())
 
-    d = Dict(:data => data, :n => length(data))
+    d = Dict()
     locSym = Symbol[]
     scaSym = Symbol[]
     shaSym = Symbol[]
@@ -47,14 +47,13 @@ function BlockMaxima(data::Vector{<:Real}; locationcov = Vector{Vector{Float64}}
         push!(shaSym, s)
     end
 
-    dataid = :data
     Covariate = Dict(:μ => locSym,:ϕ => scaSym,:ξ => shaSym)
 
-    locationfun = computeparamfunction(d, Covariate[:μ])
-    logscalefun = computeparamfunction(d, Covariate[:ϕ])
-    shapefun = computeparamfunction(d, Covariate[:ξ])
+    locationfun = computeparamfunction(d, Covariate[:μ], length(data))
+    logscalefun = computeparamfunction(d, Covariate[:ϕ], length(data))
+    shapefun = computeparamfunction(d, Covariate[:ξ], length(data))
 
-    return BlockMaxima(d, dataid, Covariate, locationfun, logscalefun, shapefun)
+    return BlockMaxima(data, d, Covariate, locationfun, logscalefun, shapefun)
 end
 
 struct PeaksOverThreshold <: EVA
