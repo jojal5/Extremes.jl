@@ -1,30 +1,7 @@
-
 """
 Establish the parameter as function of the corresponding covariates.
 """
-function computeparamfunction(data::Dict, covariateid::Array{Symbol,1}, n::Int) # TODO : Remove when no longer in use
-    fun =
-    if isempty(covariateid)
-        function(β::Vector{<:Real})
-            return identity(β)
-        end
-    else
-        X = ones(n)
-
-        for i=1:length(covariateid)
-            X = hcat(X, data[covariateid[i]])
-        end
-        function(β::Vector{<:Real})
-            return X*β
-        end
-    end
-    return fun
-end
-
-"""
-Establish the parameter as function of the corresponding covariates.
-"""
-function computeparamfunction(covariates::Vector{Vector{T}} where T<:Real)
+function computeparamfunction(covariates) # TODO : ::Vector{Vector{T}} where T<:Real
     fun =
     if isempty(covariates)
         function(β::Vector{<:Real})

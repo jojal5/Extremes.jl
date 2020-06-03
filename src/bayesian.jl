@@ -75,11 +75,7 @@ Only flat prior is now supported.
 function gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
      threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
 
-    data = Dict(:y => y)
-    dataid = :y
-    Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
-
-    model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, identity, identity)
+    model = PeaksOverThreshold(y, threshold = threshold, nobsperblock = nobsperblock)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -141,10 +137,10 @@ function gpfitbayes(data::Dict, dataid::Symbol ;
         end
     end
 
-    logscalefun = computeparamfunction(data, Covariate[:ϕ], length(data[dataid]))
-    shapefun = computeparamfunction(data, Covariate[:ξ], length(data[dataid]))
-
-    model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun)
+    model = PeaksOverThreshold(data[dataid],
+        scalecov = [data[s] for s in Covariate[:ϕ]],
+        shapecov = [data[s] for s in Covariate[:ξ]],
+        threshold = threshold, nobsperblock = nobsperblock)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 

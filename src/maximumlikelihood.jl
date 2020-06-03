@@ -66,11 +66,7 @@ Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to th
 """
 function gpfit(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
 
-    data = Dict(:y => y)
-    dataid = :y
-    Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
-
-    model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, identity, identity)
+    model = PeaksOverThreshold(y, threshold = threshold, nobsperblock = nobsperblock)
 
     fittedmodel = fit(model)
 
@@ -88,10 +84,10 @@ function gpfit(data::Dict, dataid::Symbol ; Covariate::Dict=Dict{Symbol,Vector{S
         end
     end
 
-    logscalefun = computeparamfunction(data, Covariate[:ϕ], length(data[dataid]))
-    shapefun = computeparamfunction(data, Covariate[:ξ], length(data[dataid]))
-
-    model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun)
+    model = PeaksOverThreshold(data[dataid],
+        scalecov = [data[s] for s in Covariate[:ϕ]],
+        shapecov = [data[s] for s in Covariate[:ξ]],
+        threshold = threshold, nobsperblock = nobsperblock)
 
     fittedmodel = fit(model)
 

@@ -62,11 +62,7 @@ using LinearAlgebra
       pd = GeneralizedPareto(σ, ξ)
       y = rand(pd,n)
 
-      data = Dict(:y => y)
-      dataid = :y
-      Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
-
-      model = PeaksOverThreshold(data, dataid, 1, Covariate, [0], identity, identity)
+      model = PeaksOverThreshold(y)
 
       fd = Extremes.getdistribution(model, θ)[]
 
@@ -90,14 +86,7 @@ using LinearAlgebra
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :n => n, :x₁ => x₁, :x₂ => x₂, :x₃ => x₃)
-      dataid = :y
-      Covariate = Dict(:ϕ => [:x₁, :x₂], :ξ => [:x₃])
-
-      logscalefun = Extremes.computeparamfunction(data, Covariate[:ϕ], length(data[dataid]))
-      shapefun = Extremes.computeparamfunction(data, Covariate[:ξ], length(data[dataid]))
-
-      model = PeaksOverThreshold(data, dataid, 1, Covariate, [0], logscalefun, shapefun)
+      model = PeaksOverThreshold(y, scalecov = [x₁, x₂], shapecov = [x₃])
 
       fd = Extremes.getdistribution(model, θ)
 

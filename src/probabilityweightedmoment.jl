@@ -70,46 +70,7 @@ Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation fo
 """
 function gpfitpwm(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
 
-    data = Dict(:y => y)
-    dataid = :y
-    Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
-
-    model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, identity, identity)
-
-    fittedmodel = gpfitpwm(model)
-
-    return fittedmodel
-
-end
-
-"""
-    gpfitpwm(data::Dict, dataid::Symbol ; Covariate::Dict=Dict{Symbol,Vector{Symbol}}(),
-        threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
-
-Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
-in Hosking & Wallis (1987).
-
-With the methods of moments, it is not possible to include covariates in the
-model. If covariates are provided, they are ignored and the stationary model is fitted.
-
-*Reference:*
-Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
-    Technometrics, 29(3), 339-349.
-"""
-function gpfitpwm(data::Dict, dataid::Symbol ; Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
-
-    if getcovariatenumber(Covariate, [:ϕ, :ξ]) > 0
-        @warn "covariates cannot be included in the model when estimating the
-            paramters by the probability weighted moment parameter estimation.
-            The estimates for the stationary model is returned."
-    end
-
-    emptyCovariate = Dict(:ϕ => Symbol[], :ξ => Symbol[])
-
-    logscalefun = identity
-    shapefun = identity
-
-    model = PeaksOverThreshold(data, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun)
+    model = PeaksOverThreshold(y, threshold = threshold, nobsperblock = nobsperblock)
 
     fittedmodel = gpfitpwm(model)
 

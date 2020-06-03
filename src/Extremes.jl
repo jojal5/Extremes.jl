@@ -49,6 +49,39 @@ struct PeaksOverThreshold <: EVA
     shapefun::Function
 end
 
+"""
+Creates a PeaksOverThreshold structure
+"""
+# TODO : Type for params
+function PeaksOverThreshold(data::Vector{<:Real};
+    scalecov = Vector{Vector{Float64}}(),
+    shapecov = Vector{Vector{Float64}}(),
+    threshold::Vector{<:Real}=[0],
+    nobsperblock::Int=1)
+
+    d = Dict(:data => data, :n => length(data))
+    scaSym = Symbol[]
+    shaSym = Symbol[]
+    for i in 1:length(scalecov)
+        s = Symbol(string("sc", i))
+        push!(d, s => scalecov[i])
+        push!(scaSym, s)
+    end
+    for i in 1:length(shapecov)
+        s = Symbol(string("sh", i))
+        push!(d, s => shapecov[i])
+        push!(shaSym, s)
+    end
+
+    dataid = :data
+    Covariate = Dict(:ϕ => scaSym,:ξ => shaSym)
+
+    logscalefun = computeparamfunction(scalecov)
+    shapefun = computeparamfunction(shapecov)
+
+    return PeaksOverThreshold(d, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun)
+end
+
 abstract type fittedEVA end
 
 struct pwmEVA <: fittedEVA
