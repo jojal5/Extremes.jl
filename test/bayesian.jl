@@ -36,11 +36,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :n => n)
-      dataid = :y
-      Covariate = Dict(:μ => [:x₁, :x₂])
-
-      fm = Extremes.gevfitbayes(data, dataid, Covariate = Covariate, niter=2000, warmup=1000)
+      fm = Extremes.gevfitbayes(y, locationcov = [x₁, x₂], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -64,11 +60,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :n => n)
-      dataid = :y
-      Covariate = Dict(:ϕ => [:x₁, :x₂])
-
-      fm = Extremes.gevfitbayes(data, dataid, Covariate = Covariate, niter=2000, warmup=1000)
+      fm = Extremes.gevfitbayes(y, scalecov = [x₁, x₂], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -92,11 +84,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :n => n)
-      dataid = :y
-      Covariate = Dict(:μ => [:x₁], :ϕ => [:x₂])
-
-      fm = Extremes.gevfitbayes(data, dataid, Covariate = Covariate, niter=2000, warmup=1000)
+      fm = Extremes.gevfitbayes(y, locationcov = [x₁], scalecov = [x₂], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -119,11 +107,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :n => n)
-      dataid = :y
-      Covariate = Dict(:ξ => [:x₁])
-
-      fm = Extremes.gevfitbayes(data, dataid, Covariate = Covariate, niter=2000, warmup=1000)
+      fm = Extremes.gevfitbayes(y, shapecov = [x₁], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 

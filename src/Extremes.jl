@@ -13,7 +13,7 @@ import Statistics.var
 abstract type EVA end
 
 struct paramfun
-    covariate # TODO : Type attribute
+    covariate::Vector{Vector{T}} where T<:Real
     fun::Function
 end
 
@@ -27,8 +27,11 @@ end
 """
 Creates a BlockMaxima structure
 """
-#TODO : TYPE PARAMS
-function BlockMaxima(data::Vector{<:Real}; locationcov = Vector{Vector{Float64}}(), scalecov = Vector{Vector{Float64}}(),  shapecov = Vector{Vector{Float64}}())
+function BlockMaxima(data::Vector{<:Real};
+    locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())
+
     locationfun = computeparamfunction(locationcov)
     logscalefun = computeparamfunction(scalecov)
     shapefun = computeparamfunction(shapecov)

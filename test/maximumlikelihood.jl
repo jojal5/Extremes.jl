@@ -34,11 +34,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :n => n)
-      dataid = :y
-      Covariate = Dict(:μ => [:x₁, :x₂])
-
-      fm = Extremes.gevfit(data, dataid, Covariate = Covariate)
+      fm = Extremes.gevfit(y; locationcov = [x₁, x₂])
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -60,12 +56,8 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :n => n)
-      dataid = :y
-      Covariate = Dict(:ϕ => [:x₁, :x₂])
-
-      fm = Extremes.gevfit(data, dataid, Covariate = Covariate)
-
+      fm = Extremes.gevfit(y, scalecov = [x₁, x₂])
+      
       @test fm.θ̂ ≈ θ atol = 0.05
 
 end
@@ -86,11 +78,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :n => n)
-      dataid = :y
-      Covariate = Dict(:μ => [:x₁], :ϕ => [:x₂])
-
-      fm = Extremes.gevfit(data, dataid, Covariate = Covariate)
+      fm = Extremes.gevfit(y, locationcov = [x₁], scalecov = [x₂])
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -111,11 +99,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :n => n)
-      dataid = :y
-      Covariate = Dict(:ξ => [:x₁])
-
-      fm = Extremes.gevfit(data, dataid, Covariate = Covariate)
+      fm = Extremes.gevfit(y, shapecov = [x₁])
 
       @test fm.θ̂ ≈ θ atol = 0.1
 

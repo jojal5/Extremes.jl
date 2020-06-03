@@ -1,34 +1,15 @@
 """
-    gevfitbayes(y::DenseArray; niter::Int=5000, warmup::Int=2000)
+    gevfitbayes(y::Vector{<:Real};
+        locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+        scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+        shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+        niter::Int=5000, warmup::Int=2000)
 
-Fit the Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data `y`.
+Fit a non-stationary Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data contained in the vector y.
 
-Data is a dictionary with Symbol as keys.
-
-A random sample from the posterior distribution is generated using the NUTS algortihm.
-
-Only flat prior is now supported.
-"""
-function gevfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000)
-
-    model = BlockMaxima(y)
-
-    fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
-
-    return fittedmodel
-
-end
-
-"""
-    gevfitbayes(data::Dict, dataid::Symbol, Covariate::Dict)
-
-Fit a non-stationary Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data contains in the disctionary `data`under the key `dataid`.
-
-Covariate is a dictionary containing the covariates identifyer for each parameter (μ, ϕ, ξ).
-
-The location parameter μ is a linear function using the covariates in `data` identified by the symbols in Covariate[:μ].
-The logscale parameter ϕ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ϕ].
-The location parameter ξ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ξ].
+The optional parameter `locationcov` is a vector containing the covariates for the parameter μ.
+The optional parameter `scalecov` is a vector containing the covariates for the parameter σ.
+The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
 
 The covariate may be standardized to facilitate the estimation.
 
@@ -51,30 +32,18 @@ x = collect(1:n)
 pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
 
-# Put the data in a dictionary
-data = Dict(:y => y, :x => x, :n => n)
-
-# Put the covariate identifier in a dictionary
-Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ => Symbol[] )
-
 # Estimate the parameters
-gevfitbayes(data, :y, Covariate=Covariate)
+gevfitbayes(y, locationcov = [x])
 ```
 
 """
-function gevfitbayes(data::Dict, dataid::Symbol ; Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), niter::Int=5000, warmup::Int=2000)
+function gevfitbayes(y::Vector{<:Real};
+    locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    niter::Int=5000, warmup::Int=2000)
 
-    # Put empty Symbol array to stationary parameters
-    for k in [:μ, :ϕ, :ξ]
-        if !(haskey(Covariate,k))
-            Covariate[k] = Symbol[]
-        end
-    end
-
-    model = BlockMaxima(data[dataid],
-        locationcov = [data[s] for s in Covariate[:μ]],
-        scalecov = [data[s] for s in Covariate[:ϕ]],
-        shapecov = [data[s] for s in Covariate[:ξ]])
+    model = BlockMaxima(y, locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -82,9 +51,17 @@ function gevfitbayes(data::Dict, dataid::Symbol ; Covariate::Dict=Dict{Symbol,Ve
 
 end
 
+"""
+    gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)
 
+Fit a non-stationary Generalized Extreme Value (GEV) distribution under the Bayesian paradigm of the BlockMaxima model `model`.
 
+"""
+function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)
 
+    return fitbayes(model, niter=niter, warmup=warmup)
+
+end
 
 """
     gpfitbayes(y::DenseArray; niter::Int=5000, warmup::Int=2000)

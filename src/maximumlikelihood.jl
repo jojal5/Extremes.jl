@@ -1,28 +1,14 @@
 """
-    gevfit(y::DenseVector)
+    gevfit(y::Vector{<:Real};
+        locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+        scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+        shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())
 
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
-"""
-function gevfit(y::Vector{<:Real})
+Fit a non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contained in `y`.
 
-    model = BlockMaxima(y)
-
-    fittedmodel = fit(model)
-
-    return fittedmodel
-
-end
-
-"""
-    gevfit(data::Dict, dataid::Symbol, Covariate::Dict)
-
-Fit a non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contains in the disctionary `data`under the key `dataid`.
-
-Covariate is a dictionary containing the covariates identifyer for each parameter (μ, ϕ, ξ).
-
-The location parameter μ is a linear function using the covariates in `data` identified by the symbols in Covariate[:μ].
-The logscale parameter ϕ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ϕ].
-The location parameter ξ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ξ].
+The optional parameter `locationcov` is a vector containing the covariates for the parameter μ.
+The optional parameter `scalecov` is a vector containing the covariates for the parameter σ.
+The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
 
 Example with a non-stationary location parameter:
 ```julia
@@ -41,35 +27,19 @@ x = collect(1:n)
 pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
 
-# Put the data in a dictionary
-data = Dict(:y => y, :x => x, :n => n)
-
-# Put the covariate identifier in a dictionary
-Covariate = Dict(:μ => [:x], :ϕ => Symbol[], :ξ => Symbol[] )
-
 # Estimate the parameters
-gevfit(data, :y, Covariate=Covariate)
+gevfit(y, locationcov = [x])
 ```
 
 The covariate may be standardized to facilitate the estimation.
 
 """
-function gevfit(data::Dict, dataid::Symbol ;
-    Covariate::Dict=Dict{Symbol,Vector{Symbol}}())
+function gevfit(y::Vector{<:Real};
+    locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())
 
-    # Put empty Symbol array to stationary parameters
-    for k in [:μ, :ϕ, :ξ]
-        if !(haskey(Covariate,k))
-            Covariate[k] = Symbol[]
-        end
-    end
-
-
-
-    model = BlockMaxima(data[dataid],
-        locationcov = [data[s] for s in Covariate[:μ]],
-        scalecov = [data[s] for s in Covariate[:ϕ]],
-        shapecov = [data[s] for s in Covariate[:ξ]])
+    model = BlockMaxima(y, locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fit(model)
 
@@ -78,12 +48,12 @@ function gevfit(data::Dict, dataid::Symbol ;
 end
 
 """
-    gevfit(model::EVA)
+    gevfit(model::BlockMaxima)
 
-Fit the non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood of the EVA model `model`.
+Fit the non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood of the BlockMaxima model `model`.
 
 """
-function gevfit(model::EVA)
+function gevfit(model::BlockMaxima)
 
     fit(model)
 

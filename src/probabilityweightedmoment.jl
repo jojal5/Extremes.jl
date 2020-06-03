@@ -19,37 +19,6 @@ function gevfitpwm(y::Vector{<:Real})
 end
 
 """
-    gevfitpwm(data::Dict, dataid::Symbol,
-        Covariate::Dict=Dict{Symbol,Vector{Symbol}}())
-
-Estimate the Generalized Extreme value distribution parameters with the
-probability weighted moments as described in Hosking et al. (1985).
-
-With the methods of moments, it is not possible to include covariates in the
-model. If covariates are provided, they are ignored and the stationary model is fitted.
-
-*Reference:*
-Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
-    distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
-"""
-function gevfitpwm(data::Dict, dataid::Symbol,
-    Covariate::Dict=Dict{Symbol,Vector{Symbol}}())
-
-    model = BlockMaxima(data[dataid])
-
-    if getcovariatenumber(model) > 0
-        @warn "covariates cannot be included in the model when estimating the
-            paramters by the probability weighted moment parameter estimation.
-            The estimates for the stationary model is returned."
-    end
-
-    fittedmodel = gevfitpwm(model)
-
-    return fittedmodel
-
-end
-
-"""
     gevfitpwm(model::BlockMaxima)
 
 Estimate the Generalized Extreme value distribution parameters with the

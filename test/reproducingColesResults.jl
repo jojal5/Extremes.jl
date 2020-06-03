@@ -55,18 +55,7 @@ end
 
     t = collect(1:n)
 
-    data = Dict(
-        :SeaLevel => df[:, :SeaLevel],
-        :t => t,
-        :t2 => t .^ 2,
-        :soi => df[:, :SOI],
-        :n => n,
-    )
-
-    dataid = :SeaLevel
-
-    Covariate = Dict(:μ => [:t])
-    fm = gevfit(data, dataid, Covariate = Covariate)
+    fm = gevfit(df[:, :SeaLevel], locationcov = [t])
 
     # Parameter estimates
     θ̂ = fm.θ̂
@@ -90,18 +79,15 @@ end
     @test Extremes.loglike(fm.model, θ̂) ≈ 49.9 rtol = 0.1
 
     # Quadratic trend in μ
-    Covariate = Dict(:μ => [:t, :t2])
-    fm = gevfit(data, dataid, Covariate = Covariate)
+    fm = gevfit(df[:, :SeaLevel], locationcov = [t, t .^ 2])
     @test Extremes.loglike(fm.model, fm.θ̂) ≈ 50.6 rtol = 0.1
 
     # Linear trend in both μ and ϕ
-    Covariate = Dict(:μ => [:t], :ϕ => [:t])
-    fm = gevfit(data, dataid, Covariate = Covariate)
+    fm = gevfit(df[:, :SeaLevel], locationcov = [t], scalecov = [t])
     @test Extremes.loglike(fm.model, fm.θ̂) ≈ 50.7 rtol = 0.1
 
     # Linear trend in μ as function of the time and the SOI
-    Covariate = Dict(:μ => [:t, :soi])
-    fm = gevfit(data, dataid, Covariate = Covariate)
+    fm = gevfit(df[:, :SeaLevel], locationcov = [t, df[:, :SOI]])
     @test Extremes.loglike(fm.model, fm.θ̂) ≈ 53.9 rtol = 0.1
     @test fm.θ̂[3] ≈ 0.055 rtol = 0.1
 

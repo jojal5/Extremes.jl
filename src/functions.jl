@@ -24,7 +24,7 @@ end
 """
 Establish the parameter as function of the corresponding covariates.
 """
-function computeparamfunction(covariates) # TODO : Type argument
+function computeparamfunction(covariates::Vector{Vector{T}} where T<:Real)
     fun =
     if isempty(covariates)
         function(β::Vector{<:Real})
