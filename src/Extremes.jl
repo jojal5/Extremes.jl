@@ -12,16 +12,16 @@ import Statistics.var
 
 abstract type EVA end
 
-struct paramEVA
+struct paramfun
     covariate # TODO : Type attribute
     fun::Function
 end
 
 struct BlockMaxima <: EVA
     data::Vector{<:Real}
-    location::paramEVA
-    logscale::paramEVA
-    shape::paramEVA
+    location::paramfun
+    logscale::paramfun
+    shape::paramfun
 end
 
 """
@@ -33,7 +33,7 @@ function BlockMaxima(data::Vector{<:Real}; locationcov = Vector{Vector{Float64}}
     logscalefun = computeparamfunction(scalecov)
     shapefun = computeparamfunction(shapecov)
 
-    return BlockMaxima(data, paramEVA(locationcov, locationfun), paramEVA(scalecov, logscalefun), paramEVA(shapecov, shapefun))
+    return BlockMaxima(data, paramfun(locationcov, locationfun), paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
 end
 
 struct PeaksOverThreshold <: EVA

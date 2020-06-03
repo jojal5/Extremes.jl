@@ -647,7 +647,7 @@ function Base.show(io::IO, obj::MaximumLikelihoodEVA)
     println(io, "θ̂ = $(obj.θ̂)")
 end
 
-function showparamfun(param::paramEVA)
+function showparamfun(param::paramfun)
     covariate = [" + x$i" for i in 1:length(param.covariate)]
     res = string("$param ~ 1", covariate...)
 
