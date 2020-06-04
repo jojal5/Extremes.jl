@@ -62,7 +62,7 @@ using LinearAlgebra
       pd = GeneralizedPareto(σ, ξ)
       y = rand(pd,n)
 
-      model = PeaksOverThreshold(y, n) # TODO : n is probability not nobservation
+      model = PeaksOverThreshold(y, n * 20)
 
       fd = Extremes.getdistribution(model, θ)[]
 
@@ -86,7 +86,7 @@ using LinearAlgebra
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      model = PeaksOverThreshold(y, n, scalecov = [x₁, x₂], shapecov = [x₃]) # TODO : n is probably not nobservation
+      model = PeaksOverThreshold(y, n * 20, scalecov = [x₁, x₂], shapecov = [x₃])
 
       fd = Extremes.getdistribution(model, θ)
 

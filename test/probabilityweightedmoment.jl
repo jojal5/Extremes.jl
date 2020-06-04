@@ -18,7 +18,7 @@ end;
       pd = GeneralizedPareto(θ...)
       y = rand(pd, n)
 
-      fm = Extremes.gpfitpwm(y, n) # TODO : n is probability not nobservation
+      fm = Extremes.gpfitpwm(y, n * 20)
 
       @test fm.θ̂ ≈ θ rtol = .05
 

@@ -121,7 +121,7 @@ end
       pd = GeneralizedPareto(σ, ξ)
       y = rand(pd, n)
 
-      fm = Extremes.gpfit(y, n) # TODO : n is probability not nobservation
+      fm = Extremes.gpfit(y, n * 20)
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -146,7 +146,7 @@ end
       dataid = :y
       Covariate = Dict(:ϕ => [:x₁, :x₂])
 
-      fm = Extremes.gpfit(data, dataid, n, Covariate = Covariate) # TODO : n is probability not nobservation
+      fm = Extremes.gpfit(data, dataid, n * 20, Covariate = Covariate)
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
