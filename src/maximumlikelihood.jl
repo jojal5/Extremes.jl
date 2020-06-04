@@ -64,9 +64,9 @@ end
 
 Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
 """
-function gpfit(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+function gpfit(y::Vector{<:Real}, nobservation::Int; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
 
-    model = PeaksOverThreshold(y, threshold = threshold, nobsperblock = nobsperblock)
+    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
 
     fittedmodel = fit(model)
 
@@ -75,7 +75,7 @@ function gpfit(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::I
 end
 
 
-function gpfit(data::Dict, dataid::Symbol ; Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+function gpfit(data::Dict, dataid::Symbol, nobservation::Int ; Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
 
     # Put empty Symbol array to stationary parameters
     for k in [:ϕ, :ξ]
@@ -84,7 +84,7 @@ function gpfit(data::Dict, dataid::Symbol ; Covariate::Dict=Dict{Symbol,Vector{S
         end
     end
 
-    model = PeaksOverThreshold(data[dataid],
+    model = PeaksOverThreshold(data[dataid], nobservation,
         scalecov = [data[s] for s in Covariate[:ϕ]],
         shapecov = [data[s] for s in Covariate[:ξ]],
         threshold = threshold, nobsperblock = nobsperblock)

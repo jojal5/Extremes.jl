@@ -68,9 +68,9 @@ in Hosking & Wallis (1987).
 Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
     Technometrics, 29(3), 339-349.
 """
-function gpfitpwm(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+function gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
 
-    model = PeaksOverThreshold(y, threshold = threshold, nobsperblock = nobsperblock)
+    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
 
     fittedmodel = gpfitpwm(model)
 
@@ -91,7 +91,7 @@ Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation fo
 function gpfitpwm(model::PeaksOverThreshold)
 
 #TO DO warn if nonstationary
-    y = model.data[model.dataid]
+    y = data(model)
 
     a₀ = pwm(y,1,0,0)
     a₁ = pwm(y,1,0,1)

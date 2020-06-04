@@ -57,7 +57,7 @@ end
       y = rand.(pd)
 
       fm = Extremes.gevfit(y, scalecov = [x₁, x₂])
-      
+
       @test fm.θ̂ ≈ θ atol = 0.05
 
 end
@@ -121,7 +121,7 @@ end
       pd = GeneralizedPareto(σ, ξ)
       y = rand(pd, n)
 
-      fm = Extremes.gpfit(y)
+      fm = Extremes.gpfit(y, n) # TODO : n is probability not nobservation
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -146,7 +146,7 @@ end
       dataid = :y
       Covariate = Dict(:ϕ => [:x₁, :x₂])
 
-      fm = Extremes.gpfit(data, dataid, Covariate = Covariate)
+      fm = Extremes.gpfit(data, dataid, n, Covariate = Covariate) # TODO : n is probability not nobservation
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -172,7 +172,7 @@ end
       dataid = :y
       Covariate = Dict(:ξ => [:x₁])
 
-      fm = Extremes.gpfit(data, dataid, Covariate = Covariate)
+      fm = Extremes.gpfit(data, dataid, n, Covariate = Covariate)
 
       @test fm.θ̂ ≈ θ atol = 0.1
 

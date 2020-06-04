@@ -13,7 +13,7 @@ import Statistics.var
 abstract type EVA end
 
 struct paramfun
-    covariate::Vector{Vector{T}} where T<:Real
+    covariate # TODO : ::Vector{Vector{T}} where T<:Real
     fun::Function
 end
 
@@ -39,47 +39,34 @@ function BlockMaxima(data::Vector{<:Real};
     return BlockMaxima(data, paramfun(locationcov, locationfun), paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
 end
 
+struct ThresholdExceedance
+    data::Vector{<:Real}
+    logscale::paramfun
+    shape::paramfun
+end
+
 struct PeaksOverThreshold <: EVA
-    data::Dict
-    dataid::Symbol
-    nobsperblock::Int
-    covariate::Dict
+    mark::ThresholdExceedance
     threshold::Vector{<:Real}
-    logscalefun::Function
-    shapefun::Function
+    nobservation::Int
+    nobsperblock::Int
 end
 
 """
 Creates a PeaksOverThreshold structure
 """
 # TODO : Type for params
-function PeaksOverThreshold(data::Vector{<:Real};
+function PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
     scalecov = Vector{Vector{Float64}}(),
     shapecov = Vector{Vector{Float64}}(),
     threshold::Vector{<:Real}=[0],
     nobsperblock::Int=1)
 
-    d = Dict(:data => data, :n => length(data))
-    scaSym = Symbol[]
-    shaSym = Symbol[]
-    for i in 1:length(scalecov)
-        s = Symbol(string("sc", i))
-        push!(d, s => scalecov[i])
-        push!(scaSym, s)
-    end
-    for i in 1:length(shapecov)
-        s = Symbol(string("sh", i))
-        push!(d, s => shapecov[i])
-        push!(shaSym, s)
-    end
-
-    dataid = :data
-    Covariate = Dict(:ϕ => scaSym,:ξ => shaSym)
-
     logscalefun = computeparamfunction(scalecov)
     shapefun = computeparamfunction(shapecov)
+    te = ThresholdExceedance(exceedances, paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
 
-    return PeaksOverThreshold(d, dataid, nobsperblock, Covariate, threshold, logscalefun, shapefun)
+    return PeaksOverThreshold(te, threshold, nobservation, nobsperblock)
 end
 
 abstract type fittedEVA end

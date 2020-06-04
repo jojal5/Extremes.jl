@@ -155,10 +155,10 @@ function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})
 
 end
 
-function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})
+function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real}, nobservation::Int)
 
     # Fit the model with by the probability weigthed moments
-    fm = Extremes.gpfitpwm(y::Array{Float64})
+    fm = Extremes.gpfitpwm(y::Array{Float64}, nobservation)
 
     # Convert to fitted model in a Distribution object
     fd = Extremes.getdistribution(fm.model, fm.θ̂)[]
@@ -205,10 +205,10 @@ Get an initial values vector for the parameters of model
 """
 function getinitialvalue(model::PeaksOverThreshold)
 
-    y = model.data[model.dataid]
+    y = data(model)
 
     # Compute stationary initial values
-    σ₀,ξ₀ = Extremes.getinitialvalue(GeneralizedPareto,y)
+    σ₀,ξ₀ = Extremes.getinitialvalue(GeneralizedPareto, y, model.nobservation)
     # Store them in a dictionary
     θ₀ = Dict(:ϕ => log(σ₀), :ξ => ξ₀)
 
@@ -263,8 +263,8 @@ function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 
     pi = paramindex(model)
-    ϕ = model.logscalefun(θ[pi[:ϕ]])
-    ξ = model.shapefun(θ[pi[:ξ]])
+    ϕ = model.mark.logscale.fun(θ[pi[:ϕ]])
+    ξ = model.mark.shape.fun(θ[pi[:ξ]])
 
     σ = exp.(ϕ)
 
@@ -319,17 +319,9 @@ end
 """
 Return the number of covariates.
 """
-function getcovariatenumber(Covariate::Dict, params::Vector{Symbol}) # TODO : Remove when no longer in use
+function getcovariatenumber(model::PeaksOverThreshold)
 
-    ncovariate = 0
-
-    for p in params
-        if haskey(Covariate, p)
-            ncovariate += length(Covariate[p])
-        end
-    end
-
-    return ncovariate
+    return sum([length(model.mark.logscale.covariate), length(model.mark.shape.covariate)])
 
 end
 
@@ -337,7 +329,9 @@ end
 Return the number of covariates.
 """
 function getcovariatenumber(model::BlockMaxima)
+
     return sum([length(model.location.covariate), length(model.logscale.covariate), length(model.shape.covariate)])
+
 end
 
 
@@ -381,32 +375,6 @@ function parametervar(fm::Extremes.MaximumLikelihoodEVA)
 
     return V
 end
-
-"""
-Return the indexes of parameters belonging to the locationFunction,
-logscaleFunction and shapeFunction from a single vector.
-"""
-function paramindexing(Covariate::Dict, params::Vector{Symbol}) # TODO : Remove when not in use
-
-    id = Symbol[]
-    for p in params
-        if haskey(Covariate,p)
-            append!(id, fill(p, 1+length(Covariate[p])))
-        else
-            push!(id, p)
-        end
-    end
-
-    paramindex = Dict{Symbol,Vector{<:Int}}()
-
-    for p in params
-        paramindex[p] = findall(id.==p)
-    end
-
-    return paramindex
-
-end
-
 
 """
     quantile(model::EVA, θ::Vector{<:Real}, p::Real)
@@ -565,13 +533,14 @@ end
 Get the number of parameters in a PeaksOverThreshold
 """
 function nparameter(model::PeaksOverThreshold)
-    return 2 + getcovariatenumber(model.covariate, [:ϕ, :ξ])
+    return 2 + getcovariatenumber(model)
 end
 
 """
 Get the parameter indexing for a BlockMaxima
 """
 function paramindex(model::BlockMaxima)
+
     i = 0
     function increasei()
         i = i + 1
@@ -582,13 +551,24 @@ function paramindex(model::BlockMaxima)
         :ϕ => Int64[increasei() for k in 1:length(model.logscale.covariate) + 1],
         :ξ => Int64[increasei() for k in 1:length(model.shape.covariate) + 1]
     )
+
 end
 
 """
 Get the parameter indexing for a PeaksOverThreshold
 """
 function paramindex(model::PeaksOverThreshold)
-    return paramindexing(model.covariate, [:ϕ, :ξ])
+
+    i = 0
+    function increasei()
+        i = i + 1
+        return i
+    end
+    return Dict{Symbol,Vector{<:Int}}(
+        :ϕ => Int64[increasei() for k in 1:length(model.mark.logscale.covariate) + 1],
+        :ξ => Int64[increasei() for k in 1:length(model.mark.shape.covariate) + 1]
+    )
+
 end
 
 """
@@ -601,8 +581,8 @@ end
 """
 Get the data for a PeaksOverThreshold
 """
-function data(pot::PeaksOverThreshold)
-    return pot.data[pot.dataid]
+function data(model::PeaksOverThreshold)
+    return model.mark.data
 end
 
 function Base.show(io::IO, obj::BlockMaxima)
@@ -614,8 +594,8 @@ end
 
 function Base.show(io::IO, obj::PeaksOverThreshold)
   println(io, "Extreme value model")
-  println(io, "    "*showparamfun(obj,:ϕ))
-  println(io, "    "*showparamfun(obj,:ξ))
+  println(io, "    "*showparamfun(obj.mark.logscale))
+  println(io, "    "*showparamfun(obj.mark.shape))
 end
 
 function Base.show(io::IO, obj::MaximumLikelihoodEVA)
@@ -629,13 +609,4 @@ function showparamfun(param::paramfun)
     res = string("$param ~ 1", covariate...)
 
     return res
-end
-
-function showparamfun(model::PeaksOverThreshold, param::Symbol) # TODO : Remove when not in use
-
-    covariate = [" + $x" for x in model.covariate[param]]
-    res = string("$param ~ 1", covariate...)
-
-    return res
-
 end

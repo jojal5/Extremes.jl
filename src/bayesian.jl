@@ -72,10 +72,10 @@ A random sample from the posterior distribution is generated using the NUTS algo
 
 Only flat prior is now supported.
 """
-function gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
+function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
      threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
 
-    model = PeaksOverThreshold(y, threshold = threshold, nobsperblock = nobsperblock)
+    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -126,7 +126,7 @@ gpfitbayes(data, :y, Covariate=Covariate)
 ```
 
 """
-function gpfitbayes(data::Dict, dataid::Symbol ;
+function gpfitbayes(data::Dict, dataid::Symbol, nobservation::Int ;
     Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), niter::Int=5000,
     warmup::Int=2000, threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
 
@@ -137,7 +137,7 @@ function gpfitbayes(data::Dict, dataid::Symbol ;
         end
     end
 
-    model = PeaksOverThreshold(data[dataid],
+    model = PeaksOverThreshold(data[dataid], nobservation, 
         scalecov = [data[s] for s in Covariate[:ϕ]],
         shapecov = [data[s] for s in Covariate[:ξ]],
         threshold = threshold, nobsperblock = nobsperblock)
