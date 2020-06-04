@@ -12,7 +12,7 @@ Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted m
     some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
     15(5), 1055–1064.
 """
-function pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)
+function pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)::Real
 
     @assert sign(p)>=0 "p should be a non-negative integer."
     @assert sign(r)>=0 "r should be a non-negative integer."
@@ -32,7 +32,7 @@ end
 
 Convert a Matrix in a Vector of Vector. The slicing dimension can be defined with `dims`.
 """
-function slicematrix(A::AbstractMatrix{T}; dims::Int=1) where T
+function slicematrix(A::AbstractMatrix{T}; dims::Int=1)::Array{Array{T,1},1} where T
 
     @assert dims∈(1,2) "dims should be either 1 or 2."
 
@@ -59,7 +59,7 @@ end
 
 Convert a Vector of Vector in a Matrix. The vectors within each vector should be of the same length.
 """
-function unslicematrix(B::Array{Array{T,1},1}; dims::Int=1) where T
+function unslicematrix(B::Array{Array{T,1},1}; dims::Int=1)::AbstractMatrix{T} where T
 
     @assert dims∈(1,2) "dims should be either 1 or 2."
 

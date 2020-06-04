@@ -37,7 +37,7 @@ The covariate may be standardized to facilitate the estimation.
 function gevfit(y::Vector{<:Real};
     locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
     scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())
+    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::MaximumLikelihoodEVA
 
     model = BlockMaxima(y, locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
 
@@ -53,7 +53,7 @@ end
 Fit the non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood of the BlockMaxima model `model`.
 
 """
-function gevfit(model::BlockMaxima)
+function gevfit(model::BlockMaxima)::MaximumLikelihoodEVA
 
     fit(model)
 
@@ -64,7 +64,7 @@ end
 
 Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
 """
-function gpfit(y::Vector{<:Real}, nobservation::Int; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+function gpfit(y::Vector{<:Real}, nobservation::Int; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::MaximumLikelihoodEVA
 
     model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
 
@@ -75,7 +75,7 @@ function gpfit(y::Vector{<:Real}, nobservation::Int; threshold::Vector{<:Real}=[
 end
 
 
-function gpfit(data::Dict, dataid::Symbol, nobservation::Int ; Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+function gpfit(data::Dict, dataid::Symbol, nobservation::Int ; Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::MaximumLikelihoodEVA
 
     # Put empty Symbol array to stationary parameters
     for k in [:ϕ, :ξ]
@@ -101,7 +101,7 @@ end
 Fit the Generalized Pareto (GP) distribution by maximum likelihood to the EVA model.
 
 """
-function gpfit(model::EVA)
+function gpfit(model::EVA)::MaximumLikelihoodEVA
 
     fit(model)
 
@@ -114,7 +114,7 @@ end
 Fit the extreme value model by maximum likelihood.
 
 """
-function fit(model::EVA)
+function fit(model::EVA)::MaximumLikelihoodEVA
 
     initialvalues = getinitialvalue(model)
 

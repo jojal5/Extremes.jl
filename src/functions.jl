@@ -1,7 +1,7 @@
 """
 Establish the parameter as function of the corresponding covariates.
 """
-function computeparamfunction(covariates) # TODO : ::Vector{Vector{T}} where T<:Real
+function computeparamfunction(covariates)::Function # TODO : ::Vector{Vector{T}} where T<:Real
     fun =
     if isempty(covariates)
         function(β::Vector{<:Real})
@@ -25,7 +25,7 @@ end
 
 Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
 """
-function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0.0)
+function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0.0)::DataFrame
 
     n = length(y)
 
@@ -93,7 +93,7 @@ end
 
 Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
 """
-function getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)
+function getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)::DataFrame
 
     coltype = describe(df)[:,:eltype]#colwise(eltype, df)
 
@@ -125,7 +125,7 @@ end
 Compute the initial values of the GEV parameters given the data `y`.
 
 """
-function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})
+function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vector{<:Real}
 
     # Fit the model with by the probability weigthed moments
     fm = Extremes.gevfitpwm(y)
@@ -155,7 +155,7 @@ function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})
 
 end
 
-function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real}, nobservation::Int)
+function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real}, nobservation::Int)::Vector{<:Real}
 
     # Fit the model with by the probability weigthed moments
     fm = Extremes.gpfitpwm(y::Array{Float64}, nobservation)
@@ -180,7 +180,7 @@ end
 """
 Get an initial values vector for the parameters of model
 """
-function getinitialvalue(model::BlockMaxima)
+function getinitialvalue(model::BlockMaxima)::Vector{<:Real}
 
     y = data(model)
 
@@ -203,7 +203,7 @@ end
 """
 Get an initial values vector for the parameters of model
 """
-function getinitialvalue(model::PeaksOverThreshold)
+function getinitialvalue(model::PeaksOverThreshold)::Vector{<:Real}
 
     y = data(model)
 
@@ -228,7 +228,7 @@ end
 
 Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
 """
-function getdistribution(model::BlockMaxima, θ::Vector{<:Real})
+function getdistribution(model::BlockMaxima, θ::Vector{<:Real})::Vector{<:Distribution}
 
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 
@@ -258,7 +258,7 @@ end
 
 Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
 """
-function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})
+function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})::Vector{<:Distribution}
 
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 
@@ -287,7 +287,7 @@ end
 
 Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
 """
-function getdistribution(fittedmodel::MaximumLikelihoodEVA)
+function getdistribution(fittedmodel::MaximumLikelihoodEVA)::Vector{<:Distribution}
 
     model = fittedmodel.model
     θ̂ = fittedmodel.θ̂
@@ -299,27 +299,9 @@ function getdistribution(fittedmodel::MaximumLikelihoodEVA)
 end
 
 """
-Return the parameter number of the model
-"""
-function getparameternumber(Covariate::Dict)
-
-    # The number of parameters in the model without any covariates
-    nparameters = 3
-
-    for p in [:μ, :ϕ, :ξ]
-        if haskey(Covariate, p)
-            nparameters += length(Covariate[p])
-        end
-    end
-
-    return nparameters
-
-end
-
-"""
 Return the number of covariates.
 """
-function getcovariatenumber(model::PeaksOverThreshold)
+function getcovariatenumber(model::PeaksOverThreshold)::Int
 
     return sum([length(model.mark.logscale.covariate), length(model.mark.shape.covariate)])
 
@@ -328,7 +310,7 @@ end
 """
 Return the number of covariates.
 """
-function getcovariatenumber(model::BlockMaxima)
+function getcovariatenumber(model::BlockMaxima)::Int
 
     return sum([length(model.location.covariate), length(model.logscale.covariate), length(model.shape.covariate)])
 
@@ -338,7 +320,7 @@ end
 """
 Compute the model loglikelihood evaluated at θ.
 """
-function loglike(model::EVA, θ::Vector{<:Real})
+function loglike(model::EVA, θ::Vector{<:Real})::Real
 
     y = data(model)
 
@@ -353,7 +335,7 @@ end
 """
 Compute the model loglikelihood evaluated at θ̂ if the maximum likelihood method has been used.
 """
-function loglike(fd::MaximumLikelihoodEVA)
+function loglike(fd::MaximumLikelihoodEVA)::Real
 
     θ̂ = fd.results
 
@@ -368,7 +350,7 @@ end
 
 Compute the covariance parameters estimate of the fitted model `fm`.
 """
-function parametervar(fm::Extremes.MaximumLikelihoodEVA)
+function parametervar(fm::Extremes.MaximumLikelihoodEVA)::Array{Float64, 2}
 
     # Compute the parameters covariance matrix
     V = inv(fm.H)
@@ -381,7 +363,7 @@ end
 
 Compute the quantile of level `p` from the model evaluated at `θ"". If the model is non-stationary, then the effective quantiles are returned.
 """
-function quantile(model::EVA, θ::Vector{<:Real}, p::Real)
+function quantile(model::EVA, θ::Vector{<:Real}, p::Real)::Vector{<:Real}
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
@@ -396,7 +378,7 @@ end
 """
 Compute the quantile of level `p` from the fitted model by maximum likelihood. In the case of non-stationarity, the effective quantiles are returned.
 """
-function quantile(fm::MaximumLikelihoodEVA, p::Real)
+function quantile(fm::MaximumLikelihoodEVA, p::Real)::Vector{<:Real}
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
@@ -414,7 +396,7 @@ model is stationary, then a quantile is returned for each MCMC steps. If the
 model is non-stationary, a matrix of quantiles is returned, where each row
 corresponds to a MCMC step and each column to a covariate.
 """
-function quantile(fm::Extremes.BayesianEVA,p::Real)
+function quantile(fm::Extremes.BayesianEVA,p::Real)::Real
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
@@ -436,7 +418,7 @@ end
 
 Compute the variance of the quantile of level `level` from the fitted model `fm`.
 """
-function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)
+function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 
     θ̂ = fm.θ̂
     H = fm.H
@@ -468,7 +450,7 @@ function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)
 end
 
 
-function returnlevel(fm::MaximumLikelihoodEVA, returnPeriod::Real, confidencelevel::Real=.95)
+function returnlevel(fm::MaximumLikelihoodEVA, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -495,7 +477,7 @@ function returnlevel(fm::MaximumLikelihoodEVA, returnPeriod::Real, confidencelev
 
 end
 
-function returnlevel(fm::BayesianEVA, returnPeriod::Real, confidencelevel::Real=.95)
+function returnlevel(fm::BayesianEVA, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -525,21 +507,21 @@ end
 """
 Get the number of parameters in a BlockMaxima
 """
-function nparameter(model::BlockMaxima)
+function nparameter(model::BlockMaxima)::Int
     return 3 + getcovariatenumber(model)
 end
 
 """
 Get the number of parameters in a PeaksOverThreshold
 """
-function nparameter(model::PeaksOverThreshold)
+function nparameter(model::PeaksOverThreshold)::Int
     return 2 + getcovariatenumber(model)
 end
 
 """
 Get the parameter indexing for a BlockMaxima
 """
-function paramindex(model::BlockMaxima)
+function paramindex(model::BlockMaxima)::Dict{Symbol,Vector{<:Int}}
 
     i = 0
     function increasei()
@@ -557,7 +539,7 @@ end
 """
 Get the parameter indexing for a PeaksOverThreshold
 """
-function paramindex(model::PeaksOverThreshold)
+function paramindex(model::PeaksOverThreshold)::Dict{Symbol,Vector{<:Int}}
 
     i = 0
     function increasei()
@@ -574,14 +556,14 @@ end
 """
 Get the data for a BlockMaxima
 """
-function data(model::BlockMaxima)
+function data(model::BlockMaxima)::Vector{<:Real}
     return model.data
 end
 
 """
 Get the data for a PeaksOverThreshold
 """
-function data(model::PeaksOverThreshold)
+function data(model::PeaksOverThreshold)::Vector{<:Real}
     return model.mark.data
 end
 
@@ -604,7 +586,7 @@ function Base.show(io::IO, obj::MaximumLikelihoodEVA)
     println(io, "θ̂ = $(obj.θ̂)")
 end
 
-function showparamfun(param::paramfun)
+function showparamfun(param::paramfun)::String
     covariate = [" + x$i" for i in 1:length(param.covariate)]
     res = string("$param ~ 1", covariate...)
 

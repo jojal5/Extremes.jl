@@ -8,7 +8,7 @@ probability weighted moments as described in Hosking et al. (1985).
 Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
     distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
 """
-function gevfitpwm(y::Vector{<:Real})
+function gevfitpwm(y::Vector{<:Real})::pwmEVA
 
     model = BlockMaxima(y)
 
@@ -31,7 +31,7 @@ model. If covariates are provided, they are ignored and the stationary model is 
 Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
     distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
 """
-function gevfitpwm(model::BlockMaxima)
+function gevfitpwm(model::BlockMaxima)::pwmEVA
 
     y = data(model)
 
@@ -68,7 +68,7 @@ in Hosking & Wallis (1987).
 Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
     Technometrics, 29(3), 339-349.
 """
-function gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+function gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::pwmEVA
 
     model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
 
@@ -88,7 +88,7 @@ in Hosking & Wallis (1987).
 Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
     Technometrics, 29(3), 339-349.
 """
-function gpfitpwm(model::PeaksOverThreshold)
+function gpfitpwm(model::PeaksOverThreshold)::pwmEVA
 
 #TO DO warn if nonstationary
     y = data(model)
@@ -120,7 +120,7 @@ Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted m
     some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
     15(5), 1055–1064.
 """
-function gumbelfitpwm(y::Vector{<:Real})
+function gumbelfitpwm(y::Vector{<:Real})::pwmEVA
 
     model = BlockMaxima(y)
 
@@ -141,7 +141,7 @@ Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted m
     some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
     15(5), 1055–1064.
 """
-function gumbelfitpwm(model::BlockMaxima)
+function gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
     y = data(model)
 

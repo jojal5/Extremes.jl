@@ -41,7 +41,7 @@ function gevfitbayes(y::Vector{<:Real};
     locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
     scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
     shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    niter::Int=5000, warmup::Int=2000)
+    niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     model = BlockMaxima(y, locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
 
@@ -57,7 +57,7 @@ end
 Fit a non-stationary Generalized Extreme Value (GEV) distribution under the Bayesian paradigm of the BlockMaxima model `model`.
 
 """
-function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)
+function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     return fitbayes(model, niter=niter, warmup=warmup)
 
@@ -73,7 +73,7 @@ A random sample from the posterior distribution is generated using the NUTS algo
 Only flat prior is now supported.
 """
 function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
-     threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+     threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::BayesianEVA
 
     model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
 
@@ -128,7 +128,7 @@ gpfitbayes(data, :y, Covariate=Covariate)
 """
 function gpfitbayes(data::Dict, dataid::Symbol, nobservation::Int ;
     Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), niter::Int=5000,
-    warmup::Int=2000, threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+    warmup::Int=2000, threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::BayesianEVA
 
     # Put empty Symbol array to stationary parameters
     for k in [:ϕ, :ξ]
@@ -137,7 +137,7 @@ function gpfitbayes(data::Dict, dataid::Symbol, nobservation::Int ;
         end
     end
 
-    model = PeaksOverThreshold(data[dataid], nobservation, 
+    model = PeaksOverThreshold(data[dataid], nobservation,
         scalecov = [data[s] for s in Covariate[:ϕ]],
         shapecov = [data[s] for s in Covariate[:ξ]],
         threshold = threshold, nobsperblock = nobsperblock)
@@ -159,7 +159,7 @@ end
 
 Fits the extreme-value model under the Bayesian paradigm.
 """
-function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)
+function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     # Set initial values to the maximum likelihood estimates
     ml = fit(model)

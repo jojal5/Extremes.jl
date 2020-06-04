@@ -30,7 +30,7 @@ Creates a BlockMaxima structure
 function BlockMaxima(data::Vector{<:Real};
     locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
     scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())
+    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::BlockMaxima
 
     locationfun = computeparamfunction(locationcov)
     logscalefun = computeparamfunction(scalecov)
@@ -60,7 +60,7 @@ function PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
     scalecov = Vector{Vector{Float64}}(),
     shapecov = Vector{Vector{Float64}}(),
     threshold::Vector{<:Real}=[0],
-    nobsperblock::Int=1)
+    nobsperblock::Int=1)::PeaksOverThreshold
 
     logscalefun = computeparamfunction(scalecov)
     shapefun = computeparamfunction(shapecov)
@@ -84,7 +84,7 @@ struct MaximumLikelihoodEVA <: fittedEVA
     "Maximum likelihood estimate"
     θ̂::Vector{Float64}
     "Hessian matrix"
-    H::Array{Float64}
+    H::Array{Float64, 2}
 end
 
 struct BayesianEVA <: fittedEVA
