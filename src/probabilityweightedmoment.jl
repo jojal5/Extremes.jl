@@ -33,6 +33,8 @@ Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the gener
 """
 function gevfitpwm(model::BlockMaxima)::pwmEVA
 
+    model = validatestationarity(model)
+
     y = data(model)
 
     # Computing the estimates of the probability weighted moments M_{1,q,0} for q ∈ {0,1,2}.
@@ -90,7 +92,8 @@ Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation fo
 """
 function gpfitpwm(model::PeaksOverThreshold)::pwmEVA
 
-#TO DO warn if nonstationary
+    model = validatestationarity(model)
+
     y = data(model)
 
     a₀ = pwm(y,1,0,0)
@@ -143,6 +146,8 @@ Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted m
 """
 function gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
+    model = validatestationarity(model)
+
     y = data(model)
 
     a₀ = pwm(y,1,0,0)
@@ -158,4 +163,21 @@ function gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
     return fm
 
+end
+
+"""
+    validatestationarity(model::T)::T where T<:EVA
+
+Warns that the non-stationarity won't be taken into account for this fit and returns a stationary model.
+"""
+function validatestationarity(model::T)::T where T<:EVA
+    if getcovariatenumber(model) > 0
+        @warn "covariates cannot be included in the model when estimating the
+            paramters by the probability weighted moment parameter estimation.
+            The estimates for the stationary model is returned."
+
+        return T(data(model))
+    end
+
+    return model
 end
