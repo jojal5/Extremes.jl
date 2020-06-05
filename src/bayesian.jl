@@ -147,18 +147,8 @@ function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
         return ll, g
     end
 
-    # paramnames = String[]
-    # m = length(model.paramindex[:μ])
-    # append!(paramnames, ["β₁[$i]" for i=1:m])
-    # m = length(model.paramindex[:ϕ])
-    # append!(paramnames, ["β₂[$i]" for i=1:m])
-    # m = length(model.paramindex[:ξ])
-    # append!(paramnames, ["β₃[$i]" for i=1:m])
-
-    # sim = Chains(niter, model.nparameter, start = (warmup + 1), names = paramnames)
     sim = Chains(niter, nparameter(model), start = (warmup + 1))
     θ = NUTSVariate(initialvalues, logfgrad)
-    # θ = AMWGVariate(initialvalues, 1.0, logf)
     @showprogress for i in 1:niter
         sample!(θ, adapt = (i <= warmup))
         if i > warmup

@@ -95,7 +95,7 @@ Returns a DataFrame with clusters for exceedance models. A cluster is defined as
 """
 function getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)::DataFrame
 
-    coltype = describe(df)[:,:eltype]#colwise(eltype, df)
+    coltype = describe(df)[:,:eltype]
 
     @assert coltype[1]==Date || coltype[1]==DateTime "The first dataframe column should be of type Date."
     @assert coltype[2]<:Real "The second dataframe column should be of any subtypes of Real."
@@ -243,14 +243,6 @@ function getdistribution(model::BlockMaxima, θ::Vector{<:Real})::Vector{<:Distr
 
     return fd
 
-    # if length(fd) == 1
-    #     res = fd[1]
-    # else
-    #     res = fd
-    # end
-    #
-    # return res
-
 end
 
 """
@@ -271,14 +263,6 @@ function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})::Vector{
     fd = GeneralizedPareto.(σ, ξ)
 
     return fd
-
-    # if length(fd) == 1
-    #     res = fd[1]
-    # else
-    #     res = fd
-    # end
-    #
-    # return res
 
 end
 
@@ -438,14 +422,6 @@ function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)::Vector{<:R
     end
 
     return V
-
-    # if isa(q, Real)
-    #     res = V[1]
-    # else
-    #     res = V
-    # end
-    #
-    # return res
 
 end
 
