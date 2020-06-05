@@ -12,8 +12,13 @@ import Statistics.var
 
 abstract type EVA end
 
+struct ExplanatoryVariable
+    name::String
+    value::Vector{<:Real}
+end
+
 struct paramfun
-    covariate::Vector{Vector{T}} where T<:Real
+    covariate::Vector{ExplanatoryVariable}
     fun::Function
 end
 
@@ -28,9 +33,9 @@ end
 Creates a BlockMaxima structure
 """
 function BlockMaxima(data::Vector{<:Real};
-    locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::BlockMaxima
+    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima
 
     locationfun = computeparamfunction(locationcov)
     logscalefun = computeparamfunction(scalecov)
@@ -56,8 +61,8 @@ end
 Creates a PeaksOverThreshold structure
 """
 function PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
-    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     threshold::Vector{<:Real}=[0],
     nobsperblock::Int=1)::PeaksOverThreshold
 
@@ -116,6 +121,9 @@ export
     # Generic types
     EVA,
     fittedEVA,
+
+    # Explanatory variable type
+    ExplanatoryVariable,
 
     # Extreme value analysis type
     BlockMaxima,

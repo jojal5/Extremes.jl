@@ -35,9 +35,9 @@ The covariate may be standardized to facilitate the estimation.
 
 """
 function gevfit(y::Vector{<:Real};
-    locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::MaximumLikelihoodEVA
+    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::MaximumLikelihoodEVA
 
     model = BlockMaxima(y, locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
 
@@ -66,8 +66,8 @@ Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to th
 """
 function gpfit(y::Vector{<:Real},
     nobservation::Int; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
-    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::MaximumLikelihoodEVA
+    scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::MaximumLikelihoodEVA
 
     model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
 

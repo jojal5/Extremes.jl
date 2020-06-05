@@ -36,7 +36,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gevfitbayes(y, locationcov = [x₁, x₂], niter=2000, warmup=1000)
+      fm = Extremes.gevfitbayes(y, locationcov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -60,7 +60,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gevfitbayes(y, scalecov = [x₁, x₂], niter=2000, warmup=1000)
+      fm = Extremes.gevfitbayes(y, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -84,7 +84,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gevfitbayes(y, locationcov = [x₁], scalecov = [x₂], niter=2000, warmup=1000)
+      fm = Extremes.gevfitbayes(y, locationcov = [ExplanatoryVariable("x₁", x₁)], scalecov = [ExplanatoryVariable("x₂", x₂)], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -107,7 +107,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gevfitbayes(y, shapecov = [x₁], niter=2000, warmup=1000)
+      fm = Extremes.gevfitbayes(y, shapecov = [ExplanatoryVariable("x₁", x₁)], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -154,7 +154,7 @@ end
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gpfitbayes(y, n * 20, scalecov = [x₁, x₂], niter=2000, warmup=1000)
+      fm = Extremes.gpfitbayes(y, n * 20, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -178,7 +178,7 @@ end
       pd = GeneralizedPareto.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gpfitbayes(y, n * 20, shapecov = [x₁], niter=2000, warmup=1000)
+      fm = Extremes.gpfitbayes(y, n * 20, shapecov = [ExplanatoryVariable("x₁", x₁)], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 

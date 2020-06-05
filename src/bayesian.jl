@@ -38,9 +38,9 @@ gevfitbayes(y, locationcov = [x])
 
 """
 function gevfitbayes(y::Vector{<:Real};
-    locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     model = BlockMaxima(y, locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
@@ -100,8 +100,8 @@ gpfitbayes(y, scalecov = [x])
 ```
 """
 function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
-     threshold::Vector{<:Real}=[0], nobsperblock::Int=1, scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-     shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::BayesianEVA
+     threshold::Vector{<:Real}=[0], nobsperblock::Int=1, scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BayesianEVA
 
     model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
 

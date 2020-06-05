@@ -1,17 +1,17 @@
 """
 Establish the parameter as function of the corresponding covariates.
 """
-function computeparamfunction(covariates::Vector{Vector{T}} where T<:Real)::Function
+function computeparamfunction(covariates::Vector{ExplanatoryVariable})::Function
     fun =
     if isempty(covariates)
         function(β::Vector{<:Real})
             return identity(β)
         end
     else
-        X = ones(length(covariates[1]))
+        X = ones(length(covariates[1].value))
 
         for cov in covariates
-            X = hcat(X, cov)
+            X = hcat(X, cov.value)
         end
         function(β::Vector{<:Real})
             return X*β
@@ -543,28 +543,63 @@ function data(model::PeaksOverThreshold)::Vector{<:Real}
     return model.mark.data
 end
 
-function Base.show(io::IO, obj::BlockMaxima)
-  println(io, "Extreme value model")
-  println(io, "    "*showparamfun(obj.location))
-  println(io, "    "*showparamfun(obj.logscale))
-  println(io, "    "*showparamfun(obj.shape))
+function Base.show(io::IO, obj::EVA)
+    showEVA(io, obj)
 end
 
-function Base.show(io::IO, obj::PeaksOverThreshold)
-  println(io, "Extreme value model")
-  println(io, "    "*showparamfun(obj.mark.logscale))
-  println(io, "    "*showparamfun(obj.mark.shape))
+function showEVA(io::IO, obj::BlockMaxima; prefix::String = "")
+    println(io, prefix, "BlockMaxima")
+    println(io, prefix, "data :\t\t", typeof(data(obj)), "[", length(data(obj)), "]")
+    println(io, prefix, "location :\t", showparamfun("μ", obj.location))
+    println(io, prefix, "logscale :\t", showparamfun("ϕ", obj.logscale))
+    println(io, prefix, "shape :\t\t", showparamfun("ξ", obj.shape))
+end
+
+function showEVA(io::IO, obj::PeaksOverThreshold; prefix::String = "")
+    println(io, prefix, "PeaksOverThreshold")
+    println(io, prefix, "mark :", )
+    showTE(io, obj.mark, prefix = "\t\t")
+    println()
+    println(io, prefix, "threshold :\t", obj.threshold)
+    println(io, prefix, "nobservation :\t", obj.nobservation)
+    println(io, prefix, "nobsperblock :\t", obj.nobsperblock)
+end
+
+function showTE(io::IO, obj::ThresholdExceedance; prefix::String = "")
+    println(io, prefix, "ThresholdExceedance")
+    println(io, prefix, "data :\t\t",typeof(obj.data), "[", length(obj.data), "]")
+    println(io, prefix, "logscale :\t", showparamfun("ϕ", obj.logscale))
+    println(io, prefix, "shape :\t\t", showparamfun("ξ", obj.shape))
+end
+
+function Base.show(io::IO, obj::pwmEVA)
+    println(io, "pwmEVA")
+    println("model :")
+    showEVA(io, obj.model, prefix = "\t")
+    println()
+    println(io, "θ̂  :\t", obj.θ̂)
 end
 
 function Base.show(io::IO, obj::MaximumLikelihoodEVA)
-    show(io, obj.model)
-    println(io, "Maximum likelihood estimates")
-    println(io, "θ̂ = $(obj.θ̂)")
+    println(io, "MaximumLikelihoodEVA")
+    println("model :")
+    showEVA(io, obj.model, prefix = "\t")
+    println()
+    println(io, "θ̂  :\t", obj.θ̂)
+    println(io, "H :\t", obj.H)
 end
 
-function showparamfun(param::paramfun)::String
-    covariate = [" + x$i" for i in 1:length(param.covariate)]
-    res = string("$param ~ 1", covariate...)
+function Base.show(io::IO, obj::BayesianEVA)
+    println(io, "BayesianEVA")
+    println("model :")
+    showEVA(io, obj.model, prefix = "\t")
+    println()
+    println(io, "sim :\t", typeof(obj.sim))
+end
+
+function showparamfun(name::String, param::paramfun)::String
+    covariate = [" + $(x.name)" for x in param.covariate]
+    res = string("$name ~ 1", covariate...)
 
     return res
 end

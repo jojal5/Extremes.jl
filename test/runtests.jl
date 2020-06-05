@@ -42,7 +42,7 @@ using LinearAlgebra
 
       y = rand.(pd)
 
-      model = BlockMaxima(y, locationcov = [x₁], scalecov = [x₂], shapecov = [x₃])
+      model = BlockMaxima(y, locationcov = [ExplanatoryVariable("x₁", x₁)], scalecov = [ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
 
       fd = Extremes.getdistribution(model, θ)
 
@@ -86,7 +86,7 @@ using LinearAlgebra
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      model = PeaksOverThreshold(y, n * 20, scalecov = [x₁, x₂], shapecov = [x₃])
+      model = PeaksOverThreshold(y, n * 20, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
 
       fd = Extremes.getdistribution(model, θ)
 
