@@ -64,34 +64,14 @@ function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)::Bay
 end
 
 """
-    gpfitbayes(y::DenseArray; niter::Int=5000, warmup::Int=2000)
+    gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
+        threshold::Vector{<:Real}=[0], nobsperblock::Int=1, scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+        shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::BayesianEVA
 
-Fit the Generalized Pareto (GP) distribution under the Bayesian paradigm to the vector of data `y`.
+Fit a non-stationary Generalized Pareto (GEV) distribution under the Bayesian paradigm to the vector of data contained in the Vector y.
 
-A random sample from the posterior distribution is generated using the NUTS algortihm.
-
-Only flat prior is now supported.
-"""
-function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
-     threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::BayesianEVA
-
-    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
-
-    fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
-
-    return fittedmodel
-
-end
-
-"""
-    gpfitbayes(data::Dict, dataid::Symbol, Covariate::Dict)
-
-Fit a non-stationary Generalized Pareto (GEV) distribution under the Bayesian paradigm to the vector of data contains in the disctionary `data`under the key `dataid`.
-
-Covariate is a dictionary containing the covariates identifyer for each parameter (ϕ, ξ).
-
-The logscale parameter ϕ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ϕ].
-The location parameter ξ is a linear function using the covariates in `data` identified by the symbols in Covariate[:ξ].
+The optional parameter `scalecov` is a vector containing the covariates for the parameter σ.
+The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
 
 The covariate may be standardized to facilitate the estimation.
 
@@ -115,32 +95,15 @@ x = collect(1:n)
 pd = GeneralizedPareto.(σ,.1)
 y = rand.(pd)
 
-# Put the data in a dictionary
-data = Dict(:y => y, :x => x,)
-
-# Put the covariate identifier in a dictionary
-Covariate = Dict(:ϕ => Symbol[], :ξ => Symbol[] )
-
 # Estimate the parameters
-gpfitbayes(data, :y, Covariate=Covariate)
+gpfitbayes(y, scalecov = [x])
 ```
-
 """
-function gpfitbayes(data::Dict, dataid::Symbol, nobservation::Int ;
-    Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), niter::Int=5000,
-    warmup::Int=2000, threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::BayesianEVA
+function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
+     threshold::Vector{<:Real}=[0], nobsperblock::Int=1, scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+     shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::BayesianEVA
 
-    # Put empty Symbol array to stationary parameters
-    for k in [:ϕ, :ξ]
-        if !(haskey(Covariate,k))
-            Covariate[k] = Symbol[]
-        end
-    end
-
-    model = PeaksOverThreshold(data[dataid], nobservation,
-        scalecov = [data[s] for s in Covariate[:ϕ]],
-        shapecov = [data[s] for s in Covariate[:ξ]],
-        threshold = threshold, nobsperblock = nobsperblock)
+    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -148,11 +111,21 @@ function gpfitbayes(data::Dict, dataid::Symbol, nobservation::Int ;
 
 end
 
+"""
+    gpfitbayes(model::PeaksOverThreshold, niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
+Fit the Generalized Pareto (GP) distribution under the Bayesian paradigm to the PeaksOverThreshold model.
 
+A random sample from the posterior distribution is generated using the NUTS algortihm.
 
+Only flat prior is now supported.
 
+"""
+function gpfitbayes(model::PeaksOverThreshold, niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
+    return fitbayes(model, niter=niter, warmup=warmup)
+
+end
 
 """
     fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)

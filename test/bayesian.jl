@@ -154,11 +154,7 @@ end
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :n => n)
-      dataid = :y
-      Covariate = Dict(:ϕ => [:x₁, :x₂])
-
-      fm = Extremes.gpfitbayes(data, dataid, n * 20, Covariate = Covariate, niter=2000, warmup=1000)
+      fm = Extremes.gpfitbayes(y, n * 20, scalecov = [x₁, x₂], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -182,11 +178,7 @@ end
       pd = GeneralizedPareto.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :n => n)
-      dataid = :y
-      Covariate = Dict(:ξ => [:x₁])
-
-      fm = Extremes.gpfitbayes(data, dataid, n * 20, Covariate = Covariate, niter=2000, warmup=1000)
+      fm = Extremes.gpfitbayes(y, n * 20, shapecov = [x₁], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 

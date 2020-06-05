@@ -142,11 +142,7 @@ end
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :x₂ => x₂, :n => n)
-      dataid = :y
-      Covariate = Dict(:ϕ => [:x₁, :x₂])
-
-      fm = Extremes.gpfit(data, dataid, n * 20, Covariate = Covariate)
+      fm = Extremes.gpfit(y, n * 20, scalecov = [x₁, x₂])
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -168,11 +164,7 @@ end
       pd = GeneralizedPareto.(μ, σ, ξ)
       y = rand.(pd)
 
-      data = Dict(:y => y, :x₁ => x₁, :n => n)
-      dataid = :y
-      Covariate = Dict(:ξ => [:x₁])
-
-      fm = Extremes.gpfit(data, dataid, n, Covariate = Covariate)
+      fm = Extremes.gpfit(y, n, shapecov = [x₁])
 
       @test fm.θ̂ ≈ θ atol = 0.1
 

@@ -64,30 +64,12 @@ end
 
 Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
 """
-function gpfit(y::Vector{<:Real}, nobservation::Int; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::MaximumLikelihoodEVA
+function gpfit(y::Vector{<:Real},
+    nobservation::Int; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::MaximumLikelihoodEVA
 
-    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
-
-    fittedmodel = fit(model)
-
-    return fittedmodel
-
-end
-
-
-function gpfit(data::Dict, dataid::Symbol, nobservation::Int ; Covariate::Dict=Dict{Symbol,Vector{Symbol}}(), threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::MaximumLikelihoodEVA
-
-    # Put empty Symbol array to stationary parameters
-    for k in [:ϕ, :ξ]
-        if !(haskey(Covariate,k))
-            Covariate[k] = Symbol[]
-        end
-    end
-
-    model = PeaksOverThreshold(data[dataid], nobservation,
-        scalecov = [data[s] for s in Covariate[:ϕ]],
-        shapecov = [data[s] for s in Covariate[:ξ]],
-        threshold = threshold, nobsperblock = nobsperblock)
+    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fit(model)
 
@@ -96,17 +78,16 @@ function gpfit(data::Dict, dataid::Symbol, nobservation::Int ; Covariate::Dict=D
 end
 
 """
-    gpfit(model::EVA)
+    gpfit(model::PeaksOverThreshold)::MaximumLikelihoodEVA
 
-Fit the Generalized Pareto (GP) distribution by maximum likelihood to the EVA model.
+Fit the Generalized Pareto (GP) distribution by maximum likelihood to the PeaksOverThreshold model.
 
 """
-function gpfit(model::EVA)::MaximumLikelihoodEVA
+function gpfit(model::PeaksOverThreshold)::MaximumLikelihoodEVA
 
-    fit(model)
+    return fit(model)
 
 end
-
 
 """
     fit(model::EVA)

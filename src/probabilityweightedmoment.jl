@@ -70,9 +70,12 @@ in Hosking & Wallis (1987).
 Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
     Technometrics, 29(3), 339-349.
 """
-function gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)::pwmEVA
+function gpfitpwm(y::Vector{<:Real},
+    nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::pwmEVA
 
-    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
+    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = gpfitpwm(model)
 

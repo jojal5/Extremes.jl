@@ -1,7 +1,7 @@
 """
 Establish the parameter as function of the corresponding covariates.
 """
-function computeparamfunction(covariates)::Function # TODO : ::Vector{Vector{T}} where T<:Real
+function computeparamfunction(covariates::Vector{Vector{T}} where T<:Real)::Function
     fun =
     if isempty(covariates)
         function(β::Vector{<:Real})

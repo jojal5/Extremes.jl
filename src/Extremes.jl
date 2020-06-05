@@ -13,7 +13,7 @@ import Statistics.var
 abstract type EVA end
 
 struct paramfun
-    covariate # TODO : ::Vector{Vector{T}} where T<:Real
+    covariate::Vector{Vector{T}} where T<:Real
     fun::Function
 end
 
@@ -55,10 +55,9 @@ end
 """
 Creates a PeaksOverThreshold structure
 """
-# TODO : Type for params
 function PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
-    scalecov = Vector{Vector{Float64}}(),
-    shapecov = Vector{Vector{Float64}}(),
+    scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+    shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
     threshold::Vector{<:Real}=[0],
     nobsperblock::Int=1)::PeaksOverThreshold
 
