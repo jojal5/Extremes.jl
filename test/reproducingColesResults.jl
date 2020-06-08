@@ -2,10 +2,8 @@
 
     data = load("portpirie")
 
-    y = data[:, :SeaLevel]
-
     # Fit of the GEV distribution by maximum likelihood
-    fm = gevfit(y)
+    fm = gevfit(data, :SeaLevel)
 
     # Parameter estimates
     θ̂ = fm.θ̂
@@ -89,6 +87,10 @@ end
     # Linear trend in both μ and ϕ
     fm = gevfit(df[:, :SeaLevel], locationcov = [evt], scalecov = [evt])
     @test Extremes.loglike(fm.model, fm.θ̂) ≈ 50.7 rtol = 0.1
+
+    # μ as a function of the SOI
+    fm = gevfit(df, :SeaLevel, locationcovid = [:SOI])
+    @test Extremes.loglike(fm.model, fm.θ̂) ≈ 47.2 rtol = 0.1
 
     # Linear trend in μ as function of the time and the SOI
     fm = gevfit(df[:, :SeaLevel], locationcov = [evt, evSOI])

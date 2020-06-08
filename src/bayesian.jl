@@ -52,6 +52,34 @@ function gevfitbayes(y::Vector{<:Real};
 end
 
 """
+    gevfitbayes(df::DataFrame, datacol::Symbol;
+        locationcovid::Vector{Symbol}=Symbol[],
+        scalecovid::Vector{Symbol}=Symbol[],
+        shapecovid::Vector{Symbol}=Symbol[],
+        niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
+
+Fit a Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data contained in the dataframe `df` at the column `datacol`.
+
+"""
+function gevfitbayes(df::DataFrame, datacol::Symbol;
+    locationcovid::Vector{Symbol}=Symbol[],
+    scalecovid::Vector{Symbol}=Symbol[],
+    shapecovid::Vector{Symbol}=Symbol[],
+    niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
+
+    locationcov = buildExplanatoryVariables(df, locationcovid)
+    scalecov = buildExplanatoryVariables(df, scalecovid)
+    shapecov = buildExplanatoryVariables(df, shapecovid)
+
+    model = BlockMaxima(df[:,datacol], locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
+
+    fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
+
+    return fittedmodel
+
+end
+
+"""
     gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)
 
 Fit a non-stationary Generalized Extreme Value (GEV) distribution under the Bayesian paradigm of the BlockMaxima model `model`.
@@ -105,6 +133,33 @@ function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmu
      shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BayesianEVA
 
     model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
+
+    fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
+
+    return fittedmodel
+
+end
+
+"""
+    gpfitbayes(df::DataFrame, datacol::Symbol, nobservation::Int;
+        niter::Int=5000, warmup::Int=2000,
+        threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+        scalecovid::Vector{Symbol}=Symbol[],
+        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+Fit a Generalized Pareto (GP) distribution under the Bayesian paradigm to the vector of data contained in the dataframe `df` at the column `datacol`.
+
+"""
+function gpfitbayes(df::DataFrame, datacol::Symbol, nobservation::Int;
+    niter::Int=5000, warmup::Int=2000,
+    threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+    scalecovid::Vector{Symbol}=Symbol[],
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+    scalecov = buildExplanatoryVariables(df, scalecovid)
+    shapecov = buildExplanatoryVariables(df, shapecovid)
+
+    model = PeaksOverThreshold(df[:,datacol], nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 

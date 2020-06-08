@@ -96,3 +96,21 @@ function unslicematrix(B::Array{Array{T,1},1}; dims::Int=1)::AbstractMatrix{T} w
     return A
 
 end
+
+"""
+    buildExplanatoryVariables(df::DataFrame, ids::Vector{Symbol})::Vector{ExplanatoryVariable}
+
+Creates the explanatory variables with names corresponding to the symbols.
+
+"""
+function buildExplanatoryVariables(df::DataFrame, ids::Vector{Symbol})::Vector{ExplanatoryVariable}
+
+    variables = Vector{ExplanatoryVariable}()
+
+    for id in ids
+        push!(variables, ExplanatoryVariable(string(id), df[:,id]))
+    end
+
+    return variables
+
+end

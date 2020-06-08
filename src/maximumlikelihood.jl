@@ -48,6 +48,30 @@ function gevfit(y::Vector{<:Real};
 end
 
 """
+    gevfit(df::DataFrame, datacol::Symbol; locationcovid::Vector{Symbol}=Symbol[], scalecovid::Vector{Symbol}=Symbol[], shapecovid::Vector{Symbol}=Symbol[])
+
+Fit a non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol`.
+
+"""
+function gevfit(df::DataFrame, datacol::Symbol;
+    locationcovid::Vector{Symbol}=Symbol[],
+    scalecovid::Vector{Symbol}=Symbol[],
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+    locationcov = buildExplanatoryVariables(df, locationcovid)
+    scalecov = buildExplanatoryVariables(df, scalecovid)
+    shapecov = buildExplanatoryVariables(df, shapecovid)
+
+    model = BlockMaxima(df[:,datacol], locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
+
+    fittedmodel = Extremes.fit(model)
+
+    return fittedmodel
+
+end
+
+
+"""
     gevfit(model::BlockMaxima)
 
 Fit the non-stationary Generalized Extreme Value (GEV) distribution by maximum likelihood of the BlockMaxima model `model`.
@@ -73,6 +97,31 @@ function gpfit(y::Vector{<:Real},
     model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fit(model)
+
+    return fittedmodel
+
+end
+
+"""
+    gpfit(df::DataFrame, datacol::Symbol, nobservation::Int;
+        threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+        scalecovid::Vector{Symbol}=Symbol[],
+        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+Fit a Generalized Pareto (GP) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol`.
+
+"""
+function gpfit(df::DataFrame, datacol::Symbol, nobservation::Int;
+    threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+    scalecovid::Vector{Symbol}=Symbol[],
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+    scalecov = buildExplanatoryVariables(df, scalecovid)
+    shapecov = buildExplanatoryVariables(df, shapecovid)
+
+    model = PeaksOverThreshold(df[:,datacol], nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
+
+    fittedmodel = Extremes.fit(model)
 
     return fittedmodel
 
