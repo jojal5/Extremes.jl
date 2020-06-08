@@ -49,7 +49,7 @@ using LinearAlgebra
       @test pd == fd
 
 
-      # PeaksOverThreshold model - stationary
+      # ThresholdExceedance model - stationary
 
       n = 100
 
@@ -62,13 +62,13 @@ using LinearAlgebra
       pd = GeneralizedPareto(σ, ξ)
       y = rand(pd,n)
 
-      model = PeaksOverThreshold(y, n * 20)
+      model = ThresholdExceedance(y)
 
       fd = Extremes.getdistribution(model, θ)[]
 
       @test fd == pd
 
-      # PeaksOverThreshold model - non-stationary
+      # ThresholdExceedance model - non-stationary
 
       n = 100
 
@@ -86,7 +86,7 @@ using LinearAlgebra
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      model = PeaksOverThreshold(y, n * 20, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
+      model = ThresholdExceedance(y, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
 
       fd = Extremes.getdistribution(model, θ)
 

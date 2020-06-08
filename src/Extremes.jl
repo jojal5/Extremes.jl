@@ -51,40 +51,33 @@ function BlockMaxima(data::Vector{<:Real};
 
 end
 
-struct ThresholdExceedance
+struct ThresholdExceedance <: EVA
     data::Vector{<:Real}
     logscale::paramfun
     shape::paramfun
 end
 
-struct PeaksOverThreshold <: EVA
-    mark::ThresholdExceedance
-    threshold::Vector{<:Real}
-    nobservation::Int
-    nobsperblock::Int
-end
+#TODO : RETURN LEVEL
+#threshold::Vector{<:Real}
+#nobservation::Int
+#nobsperblock::Int
 
 """
-    PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
+    ThresholdExceedance(exceedances::Vector{<:Real};
         scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-        shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-        threshold::Vector{<:Real}=[0],
-        nobsperblock::Int=1)::PeaksOverThreshold
+        shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::ThresholdExceedance
 
-Creates a PeaksOverThreshold structure.
+Creates a ThresholdExceedance structure.
 
 """
-function PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
+function ThresholdExceedance(exceedances::Vector{<:Real};
     scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    threshold::Vector{<:Real}=[0],
-    nobsperblock::Int=1)::PeaksOverThreshold
+    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::ThresholdExceedance
 
     logscalefun = computeparamfunction(scalecov)
     shapefun = computeparamfunction(shapecov)
-    te = ThresholdExceedance(exceedances, paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
 
-    return PeaksOverThreshold(te, threshold, nobservation, nobsperblock)
+    return ThresholdExceedance(exceedances, paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
 
 end
 
@@ -140,7 +133,7 @@ export
 
     # Extreme value analysis type
     BlockMaxima,
-    PeaksOverThreshold,
+    ThresholdExceedance,
 
     # Fitted extreme value analysis model
     pwmEVA,

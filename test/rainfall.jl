@@ -6,7 +6,7 @@ data = filter(row -> row.Rainfall > threshold, df)
 
 y = data[:, :Rainfall] .- threshold
 
-fm = gpfit(y, threshold = [threshold])
+fm = gpfit(y)
 
 θ̂ = fm.θ̂
 

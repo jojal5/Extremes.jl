@@ -92,9 +92,9 @@ function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)::Bay
 end
 
 """
-    gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
-        threshold::Vector{<:Real}=[0], nobsperblock::Int=1, scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-        shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())::BayesianEVA
+gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
+     scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BayesianEVA
 
 Fit a non-stationary Generalized Pareto (GEV) distribution under the Bayesian paradigm to the vector of data contained in the Vector y.
 
@@ -128,11 +128,11 @@ gpfitbayes(y, scalecov = [x])
 ```
 
 """
-function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
-     threshold::Vector{<:Real}=[0], nobsperblock::Int=1, scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+function gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
+     scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
      shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BayesianEVA
 
-    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
+    model = ThresholdExceedance(y, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -141,25 +141,23 @@ function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmu
 end
 
 """
-    gpfitbayes(df::DataFrame, datacol::Symbol, nobservation::Int;
-        niter::Int=5000, warmup::Int=2000,
-        threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
-        scalecovid::Vector{Symbol}=Symbol[],
-        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+gpfitbayes(df::DataFrame, datacol::Symbol;
+    niter::Int=5000, warmup::Int=2000,
+    scalecovid::Vector{Symbol}=Symbol[],
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
 
 Fit a Generalized Pareto (GP) distribution under the Bayesian paradigm to the vector of data contained in the dataframe `df` at the column `datacol`.
 
 """
-function gpfitbayes(df::DataFrame, datacol::Symbol, nobservation::Int;
+function gpfitbayes(df::DataFrame, datacol::Symbol;
     niter::Int=5000, warmup::Int=2000,
-    threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
     scalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
 
     scalecov = buildExplanatoryVariables(df, scalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = PeaksOverThreshold(df[:,datacol], nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
+    model = ThresholdExceedance(df[:,datacol], scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -168,16 +166,16 @@ function gpfitbayes(df::DataFrame, datacol::Symbol, nobservation::Int;
 end
 
 """
-    gpfitbayes(model::PeaksOverThreshold, niter::Int=5000, warmup::Int=2000)::BayesianEVA
+    gpfitbayes(model::ThresholdExceedance, niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-Fit the Generalized Pareto (GP) distribution under the Bayesian paradigm to the PeaksOverThreshold model.
+Fit the Generalized Pareto (GP) distribution under the Bayesian paradigm to the ThresholdExceedance model.
 
 A random sample from the posterior distribution is generated using the NUTS algortihm.
 
 Only flat prior is now supported.
 
 """
-function gpfitbayes(model::PeaksOverThreshold, niter::Int=5000, warmup::Int=2000)::BayesianEVA
+function gpfitbayes(model::ThresholdExceedance, niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     return fitbayes(model, niter=niter, warmup=warmup)
 

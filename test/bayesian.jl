@@ -131,7 +131,7 @@ end
       pd = GeneralizedPareto(σ, ξ)
       y = rand(pd, n)
 
-      fm = Extremes.gpfitbayes(y, n * 20, niter=2000, warmup=1000)
+      fm = Extremes.gpfitbayes(y, niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -154,7 +154,7 @@ end
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gpfitbayes(y, n * 20, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], niter=2000, warmup=1000)
+      fm = Extremes.gpfitbayes(y, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
@@ -178,7 +178,7 @@ end
       pd = GeneralizedPareto.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gpfitbayes(y, n * 20, shapecov = [ExplanatoryVariable("x₁", x₁)], niter=2000, warmup=1000)
+      fm = Extremes.gpfitbayes(y, shapecov = [ExplanatoryVariable("x₁", x₁)], niter=2000, warmup=1000)
 
       θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 

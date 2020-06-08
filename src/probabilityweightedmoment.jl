@@ -37,7 +37,7 @@ function gevfitpwm(model::BlockMaxima)::pwmEVA
 
     model = validatestationarity(model)
 
-    y = data(model)
+    y = model.data
 
     # Computing the estimates of the probability weighted moments M_{1,q,0} for q ∈ {0,1,2}.
     b₀ = pwm(y,1,0,0)
@@ -63,7 +63,7 @@ end
 
 
 """
-    gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,)::pwmEVA
+    gpfitpwm(y::Vector{<:Real})::pwmEVA
 
 Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
 in Hosking & Wallis (1987).
@@ -73,9 +73,9 @@ Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation fo
     Technometrics, 29(3), 339-349.
 
 """
-function gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,)::pwmEVA
+function gpfitpwm(y::Vector{<:Real})::pwmEVA
 
-    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock)
+    model = ThresholdExceedance(y)
 
     fittedmodel = gpfitpwm(model)
 
@@ -84,7 +84,7 @@ function gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Rea
 end
 
 """
-    gpfitpwm(model::PeaksOverThreshold)::pwmEVA
+    gpfitpwm(model::ThresholdExceedance)::pwmEVA
 
 Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
 in Hosking & Wallis (1987).
@@ -94,11 +94,11 @@ Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation fo
     Technometrics, 29(3), 339-349.
 
 """
-function gpfitpwm(model::PeaksOverThreshold)::pwmEVA
+function gpfitpwm(model::ThresholdExceedance)::pwmEVA
 
     model = validatestationarity(model)
 
-    y = data(model)
+    y = model.data
 
     a₀ = pwm(y,1,0,0)
     a₁ = pwm(y,1,0,1)
@@ -154,7 +154,7 @@ function gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
     model = validatestationarity(model)
 
-    y = data(model)
+    y = model.data
 
     a₀ = pwm(y,1,0,0)
     a₁ = pwm(y,1,0,1)
@@ -184,9 +184,9 @@ function validatestationarity(model::T)::T where T<:EVA
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned."
 
-        return T(data(model))
+        return T(model.data)
     end
 
     return model
-    
+
 end

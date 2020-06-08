@@ -121,7 +121,7 @@ end
       pd = GeneralizedPareto(σ, ξ)
       y = rand(pd, n)
 
-      fm = Extremes.gpfit(y, n * 20)
+      fm = Extremes.gpfit(y)
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -142,7 +142,7 @@ end
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gpfit(y, n * 20, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
+      fm = Extremes.gpfit(y, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -164,7 +164,7 @@ end
       pd = GeneralizedPareto.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gpfit(y, n, shapecov = [ExplanatoryVariable("x₁", x₁)])
+      fm = Extremes.gpfit(y, shapecov = [ExplanatoryVariable("x₁", x₁)])
 
       @test fm.θ̂ ≈ θ atol = 0.1
 

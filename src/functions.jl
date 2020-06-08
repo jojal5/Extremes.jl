@@ -163,15 +163,15 @@ function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vec
 end
 
 """
-    getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real}, nobservation::Int)::Vector{<:Real}
+     getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
 
 Compute the initial values of the GP parameters given the data `y`.
 
 """
-function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real}, nobservation::Int)::Vector{<:Real}
+function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
 
     # Fit the model with by the probability weigthed moments
-    fm = Extremes.gpfitpwm(y::Array{Float64}, nobservation)
+    fm = Extremes.gpfitpwm(y::Array{Float64})
 
     # Convert to fitted model in a Distribution object
     fd = Extremes.getdistribution(fm.model, fm.θ̂)[]
@@ -198,7 +198,7 @@ Get an initial values vector for the parameters of model.
 """
 function getinitialvalue(model::BlockMaxima)::Vector{<:Real}
 
-    y = data(model)
+    y = model.data
 
     # Compute stationary initial values
     μ₀,σ₀,ξ₀ = Extremes.getinitialvalue(GeneralizedExtremeValue,y)
@@ -217,17 +217,17 @@ function getinitialvalue(model::BlockMaxima)::Vector{<:Real}
 end
 
 """
-    getinitialvalue(model::PeaksOverThreshold)::Vector{<:Real}
+    getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
 
 Get an initial values vector for the parameters of model.
 
 """
-function getinitialvalue(model::PeaksOverThreshold)::Vector{<:Real}
+function getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
 
-    y = data(model)
+    y = model.data
 
     # Compute stationary initial values
-    σ₀,ξ₀ = Extremes.getinitialvalue(GeneralizedPareto, y, model.nobservation)
+    σ₀,ξ₀ = Extremes.getinitialvalue(GeneralizedPareto, y)
     # Store them in a dictionary
     θ₀ = Dict(:ϕ => log(σ₀), :ξ => ξ₀)
 
@@ -266,18 +266,18 @@ function getdistribution(model::BlockMaxima, θ::Vector{<:Real})::Vector{<:Distr
 end
 
 """
-    getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})::Vector{<:Distribution}
+    getdistribution(model::ThresholdExceedance, θ::Vector{<:Real})::Vector{<:Distribution}
 
 Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
 
 """
-function getdistribution(model::PeaksOverThreshold, θ::Vector{<:Real})::Vector{<:Distribution}
+function getdistribution(model::ThresholdExceedance, θ::Vector{<:Real})::Vector{<:Distribution}
 
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 
     pi = paramindex(model)
-    ϕ = model.mark.logscale.fun(θ[pi[:ϕ]])
-    ξ = model.mark.shape.fun(θ[pi[:ξ]])
+    ϕ = model.logscale.fun(θ[pi[:ϕ]])
+    ξ = model.shape.fun(θ[pi[:ξ]])
 
     σ = exp.(ϕ)
 
@@ -305,14 +305,14 @@ function getdistribution(fittedmodel::MaximumLikelihoodEVA)::Vector{<:Distributi
 end
 
 """
-    getcovariatenumber(model::PeaksOverThreshold)::Int
+    getcovariatenumber(model::ThresholdExceedance)::Int
 
 Return the number of covariates.
 
 """
-function getcovariatenumber(model::PeaksOverThreshold)::Int
+function getcovariatenumber(model::ThresholdExceedance)::Int
 
-    return sum([length(model.mark.logscale.covariate), length(model.mark.shape.covariate)])
+    return sum([length(model.logscale.covariate), length(model.shape.covariate)])
 
 end
 
@@ -337,7 +337,7 @@ Compute the model loglikelihood evaluated at θ.
 """
 function loglike(model::EVA, θ::Vector{<:Real})::Real
 
-    y = data(model)
+    y = model.data
 
     pd = getdistribution(model, θ)
 
@@ -369,7 +369,7 @@ end
 Compute the covariance parameters estimate of the fitted model `fm`.
 
 """
-function parametervar(fm::Extremes.MaximumLikelihoodEVA)::Array{Float64, 2}
+function parametervar(fm::MaximumLikelihoodEVA)::Array{Float64, 2}
 
     # Compute the parameters covariance matrix
     V = inv(hessian(fm))
@@ -420,7 +420,7 @@ model is non-stationary, a matrix of quantiles is returned, where each row
 corresponds to a MCMC step and each column to a covariate.
 
 """
-function quantile(fm::Extremes.BayesianEVA,p::Real)::Real
+function quantile(fm::BayesianEVA,p::Real)::Real
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
@@ -443,7 +443,7 @@ end
 Compute the variance of the quantile of level `level` from the fitted model `fm`.
 
 """
-function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
+function quantilevar(fm::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 
     θ̂ = fm.θ̂
     H = hessian(fm)
@@ -545,12 +545,12 @@ function nparameter(model::BlockMaxima)::Int
 end
 
 """
-    nparameter(model::PeaksOverThreshold)::Int
+    nparameter(model::ThresholdExceedance)::Int
 
-Get the number of parameters in a PeaksOverThreshold.
+Get the number of parameters in a ThresholdExceedance.
 
 """
-function nparameter(model::PeaksOverThreshold)::Int
+function nparameter(model::ThresholdExceedance)::Int
 
     return 2 + getcovariatenumber(model)
 
@@ -578,12 +578,12 @@ function paramindex(model::BlockMaxima)::Dict{Symbol,Vector{<:Int}}
 end
 
 """
-    paramindex(model::PeaksOverThreshold)::Dict{Symbol,Vector{<:Int}}
+    paramindex(model::ThresholdExceedance)::Dict{Symbol,Vector{<:Int}}
 
-Get the parameter indexing for a PeaksOverThreshold.
+Get the parameter indexing for a ThresholdExceedance.
 
 """
-function paramindex(model::PeaksOverThreshold)::Dict{Symbol,Vector{<:Int}}
+function paramindex(model::ThresholdExceedance)::Dict{Symbol,Vector{<:Int}}
 
     i = 0
     function increasei()
@@ -591,33 +591,9 @@ function paramindex(model::PeaksOverThreshold)::Dict{Symbol,Vector{<:Int}}
         return i
     end
     return Dict{Symbol,Vector{<:Int}}(
-        :ϕ => Int64[increasei() for k in 1:length(model.mark.logscale.covariate) + 1],
-        :ξ => Int64[increasei() for k in 1:length(model.mark.shape.covariate) + 1]
+        :ϕ => Int64[increasei() for k in 1:length(model.logscale.covariate) + 1],
+        :ξ => Int64[increasei() for k in 1:length(model.shape.covariate) + 1]
     )
-
-end
-
-"""
-    data(model::BlockMaxima)::Vector{<:Real}
-
-Get the data for a BlockMaxima.
-
-"""
-function data(model::BlockMaxima)::Vector{<:Real}
-
-    return model.data
-
-end
-
-"""
-    data(model::PeaksOverThreshold)::Vector{<:Real}
-
-Get the data for a PeaksOverThreshold.
-
-"""
-function data(model::PeaksOverThreshold)::Vector{<:Real}
-
-    return model.mark.data
 
 end
 
@@ -654,28 +630,10 @@ Displays a BlockMaxima with the prefix `prefix` before every line.
 function showEVA(io::IO, obj::BlockMaxima; prefix::String = "")
 
     println(io, prefix, "BlockMaxima")
-    println(io, prefix, "data :\t\t", typeof(data(obj)), "[", length(data(obj)), "]")
+    println(io, prefix, "data :\t\t", typeof(obj.data), "[", length(obj.data), "]")
     println(io, prefix, "location :\t", showparamfun("μ", obj.location))
     println(io, prefix, "logscale :\t", showparamfun("ϕ", obj.logscale))
     println(io, prefix, "shape :\t\t", showparamfun("ξ", obj.shape))
-
-end
-
-"""
-    showEVA(io::IO, obj::PeaksOverThreshold; prefix::String = "")
-
-Displays a PeaksOverThreshold with the prefix `prefix` before every line.
-
-"""
-function showEVA(io::IO, obj::PeaksOverThreshold; prefix::String = "")
-
-    println(io, prefix, "PeaksOverThreshold")
-    println(io, prefix, "mark :", )
-    showTE(io, obj.mark, prefix = prefix*"\t\t")
-    println()
-    println(io, prefix, "threshold :\t", obj.threshold)
-    println(io, prefix, "nobservation :\t", obj.nobservation)
-    println(io, prefix, "nobsperblock :\t", obj.nobsperblock)
 
 end
 
@@ -685,7 +643,7 @@ end
 Displays a ThresholdExceedance with the prefix `prefix` before every line.
 
 """
-function showTE(io::IO, obj::ThresholdExceedance; prefix::String = "")
+function showEVA(io::IO, obj::ThresholdExceedance; prefix::String = "")
 
     println(io, prefix, "ThresholdExceedance")
     println(io, prefix, "data :\t\t",typeof(obj.data), "[", length(obj.data), "]")

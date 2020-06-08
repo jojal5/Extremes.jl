@@ -89,12 +89,11 @@ end
 Fit the Generalized Pareto (GP) distribution by maximum likelihood to the vector of data `y`.
 
 """
-function gpfit(y::Vector{<:Real},
-    nobservation::Int; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+function gpfit(y::Vector{<:Real};
     scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::MaximumLikelihoodEVA
 
-    model = PeaksOverThreshold(y, nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
+    model = ThresholdExceedance(y, scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = fit(model)
 
@@ -103,23 +102,21 @@ function gpfit(y::Vector{<:Real},
 end
 
 """
-    gpfit(df::DataFrame, datacol::Symbol, nobservation::Int;
-        threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+    gpfit(df::DataFrame, datacol::Symbol;
         scalecovid::Vector{Symbol}=Symbol[],
         shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
 
 Fit a Generalized Pareto (GP) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol`.
 
 """
-function gpfit(df::DataFrame, datacol::Symbol, nobservation::Int;
-    threshold::Vector{<:Real}=[0], nobsperblock::Int=1,
+function gpfit(df::DataFrame, datacol::Symbol;
     scalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
 
     scalecov = buildExplanatoryVariables(df, scalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = PeaksOverThreshold(df[:,datacol], nobservation, threshold = threshold, nobsperblock = nobsperblock, scalecov = scalecov, shapecov = shapecov)
+    model = ThresholdExceedance(df[:,datacol], scalecov = scalecov, shapecov = shapecov)
 
     fittedmodel = Extremes.fit(model)
 
@@ -128,12 +125,12 @@ function gpfit(df::DataFrame, datacol::Symbol, nobservation::Int;
 end
 
 """
-    gpfit(model::PeaksOverThreshold)::MaximumLikelihoodEVA
+    gpfit(model::ThresholdExceedance)::MaximumLikelihoodEVA
 
-Fit the Generalized Pareto (GP) distribution by maximum likelihood to the PeaksOverThreshold model.
+Fit the Generalized Pareto (GP) distribution by maximum likelihood to the ThresholdExceedance model.
 
 """
-function gpfit(model::PeaksOverThreshold)::MaximumLikelihoodEVA
+function gpfit(model::ThresholdExceedance)::MaximumLikelihoodEVA
 
     return fit(model)
 
