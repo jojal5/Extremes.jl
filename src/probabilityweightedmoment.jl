@@ -1,5 +1,5 @@
 """
-    gevfitpwm(y::Vector{<:Real})
+    gevfitpwm(y::Vector{<:Real})::pwmEVA
 
 Estimate the Generalized Extreme value distribution parameters with the
 probability weighted moments as described in Hosking et al. (1985).
@@ -7,6 +7,7 @@ probability weighted moments as described in Hosking et al. (1985).
 *Reference:*
 Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
     distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
+
 """
 function gevfitpwm(y::Vector{<:Real})::pwmEVA
 
@@ -19,7 +20,7 @@ function gevfitpwm(y::Vector{<:Real})::pwmEVA
 end
 
 """
-    gevfitpwm(model::BlockMaxima)
+    gevfitpwm(model::BlockMaxima)::pwmEVA
 
 Estimate the Generalized Extreme value distribution parameters with the
 probability weighted moments as described in Hosking et al. (1985).
@@ -30,6 +31,7 @@ model. If covariates are provided, they are ignored and the stationary model is 
 *Reference:*
 Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
     distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
+
 """
 function gevfitpwm(model::BlockMaxima)::pwmEVA
 
@@ -61,7 +63,7 @@ end
 
 
 """
-    gpfitpwm(y::Vector{<:Real}; threshold::Vector{<:Real}=[0], nobsperblock::Int=1)
+    gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,)::pwmEVA
 
 Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
 in Hosking & Wallis (1987).
@@ -69,6 +71,7 @@ in Hosking & Wallis (1987).
 *Reference:*
 Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
     Technometrics, 29(3), 339-349.
+
 """
 function gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,)::pwmEVA
 
@@ -81,7 +84,7 @@ function gpfitpwm(y::Vector{<:Real}, nobservation::Int ; threshold::Vector{<:Rea
 end
 
 """
-    gpfitpwm(model::PeaksOverThreshold)
+    gpfitpwm(model::PeaksOverThreshold)::pwmEVA
 
 Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
 in Hosking & Wallis (1987).
@@ -89,6 +92,7 @@ in Hosking & Wallis (1987).
 *Reference:*
 Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
     Technometrics, 29(3), 339-349.
+
 """
 function gpfitpwm(model::PeaksOverThreshold)::pwmEVA
 
@@ -114,7 +118,7 @@ function gpfitpwm(model::PeaksOverThreshold)::pwmEVA
 end
 
 """
-    gumbelfitpwm(y::Vector{<:Real})
+    gumbelfitpwm(y::Vector{<:Real})::pwmEVA
 
 Estimate the Gumbel distribution with the probability weighted moments as described in Landwehr et al. (1979).
 
@@ -122,6 +126,7 @@ Estimate the Gumbel distribution with the probability weighted moments as descri
 Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
     some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
     15(5), 1055–1064.
+
 """
 function gumbelfitpwm(y::Vector{<:Real})::pwmEVA
 
@@ -135,7 +140,7 @@ end
 
 
 """
-    gumbelfitpwm(model::BlockMaxima)
+    gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
 Estimate the Gumbel distribution with the probability weighted moments as described in Landwehr et al. (1979).
 
@@ -143,6 +148,7 @@ Estimate the Gumbel distribution with the probability weighted moments as descri
 Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
     some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
     15(5), 1055–1064.
+
 """
 function gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
@@ -169,8 +175,10 @@ end
     validatestationarity(model::T)::T where T<:EVA
 
 Warns that the non-stationarity won't be taken into account for this fit and returns a stationary model.
+
 """
 function validatestationarity(model::T)::T where T<:EVA
+
     if getcovariatenumber(model) > 0
         @warn "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
@@ -180,4 +188,5 @@ function validatestationarity(model::T)::T where T<:EVA
     end
 
     return model
+    
 end

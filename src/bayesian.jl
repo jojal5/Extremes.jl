@@ -98,6 +98,7 @@ y = rand.(pd)
 # Estimate the parameters
 gpfitbayes(y, scalecov = [x])
 ```
+
 """
 function gpfitbayes(y::Vector{<:Real}, nobservation::Int; niter::Int=5000, warmup::Int=2000,
      threshold::Vector{<:Real}=[0], nobsperblock::Int=1, scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
@@ -128,9 +129,10 @@ function gpfitbayes(model::PeaksOverThreshold, niter::Int=5000, warmup::Int=2000
 end
 
 """
-    fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)
+    fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
 Fits the extreme-value model under the Bayesian paradigm.
+
 """
 function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 

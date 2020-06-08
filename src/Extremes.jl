@@ -30,7 +30,13 @@ struct BlockMaxima <: EVA
 end
 
 """
-Creates a BlockMaxima structure
+    BlockMaxima(data::Vector{<:Real};
+        locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+        scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+        shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima
+
+Creates a BlockMaxima structure.
+
 """
 function BlockMaxima(data::Vector{<:Real};
     locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
@@ -42,6 +48,7 @@ function BlockMaxima(data::Vector{<:Real};
     shapefun = computeparamfunction(shapecov)
 
     return BlockMaxima(data, paramfun(locationcov, locationfun), paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
+
 end
 
 struct ThresholdExceedance
@@ -58,7 +65,14 @@ struct PeaksOverThreshold <: EVA
 end
 
 """
-Creates a PeaksOverThreshold structure
+    PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
+        scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+        shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+        threshold::Vector{<:Real}=[0],
+        nobsperblock::Int=1)::PeaksOverThreshold
+
+Creates a PeaksOverThreshold structure.
+
 """
 function PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
     scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
@@ -71,6 +85,7 @@ function PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
     te = ThresholdExceedance(exceedances, paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
 
     return PeaksOverThreshold(te, threshold, nobservation, nobsperblock)
+    
 end
 
 abstract type fittedEVA end

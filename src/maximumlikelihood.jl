@@ -62,7 +62,8 @@ end
 """
     gpfit(y::Vector{<:Real})
 
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y.
+Fit the Generalized Pareto (GP) distribution by maximum likelihood to the vector of data `y`.
+
 """
 function gpfit(y::Vector{<:Real},
     nobservation::Int; threshold::Vector{<:Real}=[0], nobsperblock::Int=1,

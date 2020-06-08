@@ -1,5 +1,5 @@
 """
-    pwm(x::Vector{<:Real}, p::Int,r::Int,s::Int)
+    pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)::Real
 
 Compute the empirical probability weighted moments defined by:
 ```math
@@ -11,6 +11,7 @@ The unbiased empirical estimate is computed using the formula given by Landwehr 
 Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
     some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
     15(5), 1055–1064.
+
 """
 function pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)::Real
 
@@ -28,9 +29,10 @@ function pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)::Real
 end
 
 """
-    slicematrix(A::AbstractMatrix{T}; dims::Int=1) where T
+    slicematrix(A::AbstractMatrix{T}; dims::Int=1)::Array{Array{T,1},1} where T
 
 Convert a Matrix in a Vector of Vector. The slicing dimension can be defined with `dims`.
+
 """
 function slicematrix(A::AbstractMatrix{T}; dims::Int=1)::Array{Array{T,1},1} where T
 
@@ -55,9 +57,10 @@ function slicematrix(A::AbstractMatrix{T}; dims::Int=1)::Array{Array{T,1},1} whe
 end
 
 """
-    unslicematrix(B::Array{Array{T,1},1}) where T
+    unslicematrix(B::Array{Array{T,1},1}; dims::Int=1)::AbstractMatrix{T} where T
 
 Convert a Vector of Vector in a Matrix. The vectors within each vector should be of the same length.
+
 """
 function unslicematrix(B::Array{Array{T,1},1}; dims::Int=1)::AbstractMatrix{T} where T
 
