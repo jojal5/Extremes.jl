@@ -160,9 +160,7 @@ function fit(model::EVA)::MaximumLikelihoodEVA
         θ̂ = initialvalues
     end
 
-    H = ForwardDiff.hessian(fobj, θ̂)
-
-    fittedmodel = MaximumLikelihoodEVA(model, θ̂, H)
+    fittedmodel = MaximumLikelihoodEVA(model, θ̂)
 
     return fittedmodel
 

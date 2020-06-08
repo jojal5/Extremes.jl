@@ -85,7 +85,7 @@ function PeaksOverThreshold(exceedances::Vector{<:Real}, nobservation::Int;
     te = ThresholdExceedance(exceedances, paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
 
     return PeaksOverThreshold(te, threshold, nobservation, nobsperblock)
-    
+
 end
 
 abstract type fittedEVA end
@@ -102,8 +102,6 @@ struct MaximumLikelihoodEVA <: fittedEVA
     model::EVA
     "Maximum likelihood estimate"
     θ̂::Vector{Float64}
-    "Hessian matrix"
-    H::Array{Float64, 2}
 end
 
 struct BayesianEVA <: fittedEVA

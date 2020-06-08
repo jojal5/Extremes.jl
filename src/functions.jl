@@ -372,7 +372,7 @@ Compute the covariance parameters estimate of the fitted model `fm`.
 function parametervar(fm::Extremes.MaximumLikelihoodEVA)::Array{Float64, 2}
 
     # Compute the parameters covariance matrix
-    V = inv(fm.H)
+    V = inv(hessian(fm))
 
     return V
 end
@@ -446,7 +446,7 @@ Compute the variance of the quantile of level `level` from the fitted model `fm`
 function quantilevar(fm::Extremes.MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 
     θ̂ = fm.θ̂
-    H = fm.H
+    H = hessian(fm)
 
     q = quantile(fm, level)
 
@@ -622,6 +622,18 @@ function data(model::PeaksOverThreshold)::Vector{<:Real}
 end
 
 """
+    hessian(model::MaximumLikelihoodEVA)::Array{Float64, 2}
+
+Calculates the Hessian matrix associated with the MaximumLikelihoodEVA model.
+"""
+function hessian(model::MaximumLikelihoodEVA)::Array{Float64, 2}
+
+    fobj(θ) = -loglike(model.model, θ)
+    return ForwardDiff.hessian(fobj, model.θ̂)
+
+end
+
+"""
     Base.show(io::IO, obj::EVA)
 
 Override of the show function for the objects of type EVA.
@@ -711,7 +723,6 @@ function Base.show(io::IO, obj::MaximumLikelihoodEVA)
     showEVA(io, obj.model, prefix = "\t")
     println()
     println(io, "θ̂  :\t", obj.θ̂)
-    println(io, "H :\t", obj.H)
 
 end
 
@@ -743,5 +754,5 @@ function showparamfun(name::String, param::paramfun)::String
     res = string("$name ~ 1", covariate...)
 
     return res
-    
+
 end
