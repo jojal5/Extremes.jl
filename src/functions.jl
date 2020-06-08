@@ -467,12 +467,12 @@ function quantilevar(fm::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 end
 
 """
-    returnlevel(fm::MaximumLikelihoodEVA, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+    returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
 Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::MaximumLikelihoodEVA, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -500,12 +500,27 @@ function returnlevel(fm::MaximumLikelihoodEVA, returnPeriod::Real, confidencelev
 end
 
 """
-    returnlevel(fm::BayesianEVA, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+    returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
+        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
 Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::BayesianEVA, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
+    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+    # TODO : implement
+    error("Not implemented")
+
+end
+
+"""
+    returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
+
+"""
+function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -529,6 +544,21 @@ function returnlevel(fm::BayesianEVA, returnPeriod::Real, confidencelevel::Real=
       res = ReturnLevel(fm, returnPeriod, q, cint)
 
       return res
+
+end
+
+"""
+    returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
+        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
+
+"""
+function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
+    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+    # TODO : implement
+    error("Not implemented")
 
 end
 

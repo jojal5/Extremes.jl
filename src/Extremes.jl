@@ -57,11 +57,6 @@ struct ThresholdExceedance <: EVA
     shape::paramfun
 end
 
-#TODO : RETURN LEVEL
-#threshold::Vector{<:Real}
-#nobservation::Int
-#nobsperblock::Int
-
 """
     ThresholdExceedance(exceedances::Vector{<:Real};
         scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
@@ -83,23 +78,23 @@ end
 
 abstract type fittedEVA end
 
-struct pwmEVA <: fittedEVA
+struct pwmEVA{T<:EVA} <: fittedEVA
     "Extreme value model definition"
-    model::EVA
+    model::T
     "Maximum likelihood estimate"
     θ̂::Vector{Float64}
 end
 
-struct MaximumLikelihoodEVA <: fittedEVA
+struct MaximumLikelihoodEVA{T<:EVA} <: fittedEVA
     "Extreme value model definition"
-    model::EVA
+    model::T
     "Maximum likelihood estimate"
     θ̂::Vector{Float64}
 end
 
-struct BayesianEVA <: fittedEVA
+struct BayesianEVA{T<:EVA} <: fittedEVA
     "Extreme value model definition"
-    model::EVA
+    model::T
     "MCMC outputs"
     sim::Mamba.Chains
 end
