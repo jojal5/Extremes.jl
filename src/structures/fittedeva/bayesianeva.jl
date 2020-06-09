@@ -6,7 +6,7 @@ struct BayesianEVA{T<:EVA} <: fittedEVA
 end
 
 """
-    quantile(fm::Extremes.BayesianEVA,p::Real)::Real
+    quantile(fm::BayesianEVA,p::Real)::Real
 
 Compute the quantile of level `p` from the fitted Bayesian model `fm`. If the
 model is stationary, then a quantile is returned for each MCMC steps. If the

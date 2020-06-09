@@ -18,7 +18,7 @@ function hessian(model::MaximumLikelihoodEVA)::Array{Float64, 2}
 end
 
 """
-    parametervar(fm::Extremes.MaximumLikelihoodEVA)::Array{Float64, 2}
+    parametervar(fm::MaximumLikelihoodEVA)::Array{Float64, 2}
 
 Compute the covariance parameters estimate of the fitted model `fm`.
 
@@ -81,7 +81,7 @@ function quantile(fm::MaximumLikelihoodEVA, p::Real)::Vector{<:Real}
 end
 
 """
-    quantilevar(fd::Extremes.MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
+    quantilevar(fd::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 
 Compute the variance of the quantile of level `level` from the fitted model `fm`.
 
@@ -125,16 +125,16 @@ function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, 
       # quantile level
       p = 1-1/returnPeriod
 
-      q = Extremes.quantile(fm, p)
+      q = quantile(fm, p)
 
-      v = Extremes.quantilevar(fm,p)
+      v = quantilevar(fm,p)
 
       qdist = Normal.(q,sqrt.(v))
 
       a = quantile.(qdist,α/2)
       b = quantile.(qdist,1-α/2)
 
-      cint = Extremes.slicematrix(hcat(a,b), dims=2)
+      cint = slicematrix(hcat(a,b), dims=2)
 
       res = ReturnLevel(fm, returnPeriod, q, cint)
 

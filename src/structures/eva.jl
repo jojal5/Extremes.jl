@@ -10,7 +10,7 @@ struct paramfun
     fun::Function
 end
 
-Base.Broadcast.broadcastable(obj::Extremes.EVA) = Ref(obj)
+Base.Broadcast.broadcastable(obj::EVA) = Ref(obj)
 
 """
     computeparamfunction(covariates::Vector{ExplanatoryVariable})::Function

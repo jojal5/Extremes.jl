@@ -119,7 +119,7 @@ function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vec
         σ₀ = scale(fd)
         ξ₀ = Distributions.shape(fd)
     else
-        fm = Extremes.gumbelfitpwm(y)
+        fm = gumbelfitpwm(y)
         μ₀ = fm.θ̂[1]
         σ₀ = fm.θ̂[2]
         ξ₀ = 0.0

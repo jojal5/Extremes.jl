@@ -67,7 +67,7 @@ function gevfit(df::DataFrame, datacol::Symbol;
 
     model = BlockMaxima(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
-    fittedmodel = Extremes.fit(model)
+    fittedmodel = fit(model)
 
     return fittedmodel
 

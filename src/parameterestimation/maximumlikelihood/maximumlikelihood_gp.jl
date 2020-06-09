@@ -58,7 +58,7 @@ function gpfit(df::DataFrame, datacol::Symbol;
 
     model = ThresholdExceedance(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov)
 
-    fittedmodel = Extremes.fit(model)
+    fittedmodel = fit(model)
 
     return fittedmodel
 

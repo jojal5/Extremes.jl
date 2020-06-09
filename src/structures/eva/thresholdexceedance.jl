@@ -98,10 +98,10 @@ Compute the initial values of the GP parameters given the data `y`.
 function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
 
     # Fit the model with by the probability weigthed moments
-    fm = Extremes.gpfitpwm(y)
+    fm = gpfitpwm(y)
 
     # Convert to fitted model in a Distribution object
-    fd = Extremes.getdistribution(fm.model, fm.θ̂)[]
+    fd = getdistribution(fm.model, fm.θ̂)[]
 
     if all(insupport(fd,y))
         σ₀ = scale(fd)
@@ -128,7 +128,7 @@ function getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
     y = model.data
 
     # Compute stationary initial values
-    σ₀,ξ₀ = Extremes.getinitialvalue(GeneralizedPareto, y)
+    σ₀,ξ₀ = getinitialvalue(GeneralizedPareto, y)
     # Store them in a dictionary
     θ₀ = Dict(:ϕ => log(σ₀), :ξ => ξ₀)
 
