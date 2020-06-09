@@ -56,7 +56,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gevfit(y, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
+      fm = Extremes.gevfit(y, logscalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -78,7 +78,7 @@ end
       pd = GeneralizedExtremeValue.(μ, σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gevfit(y, locationcov = [ExplanatoryVariable("x₁", x₁)], scalecov = [ExplanatoryVariable("x₂", x₂)])
+      fm = Extremes.gevfit(y, locationcov = [ExplanatoryVariable("x₁", x₁)], logscalecov = [ExplanatoryVariable("x₂", x₂)])
 
       @test fm.θ̂ ≈ θ atol = 0.05
 
@@ -142,7 +142,7 @@ end
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      fm = Extremes.gpfit(y, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
+      fm = Extremes.gpfit(y, logscalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
 
       @test fm.θ̂ ≈ θ atol = 0.05
 

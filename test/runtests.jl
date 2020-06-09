@@ -42,7 +42,7 @@ using LinearAlgebra
 
       y = rand.(pd)
 
-      model = BlockMaxima(y, locationcov = [ExplanatoryVariable("x₁", x₁)], scalecov = [ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
+      model = BlockMaxima(y, locationcov = [ExplanatoryVariable("x₁", x₁)], logscalecov = [ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
 
       fd = Extremes.getdistribution(model, θ)
 
@@ -86,7 +86,7 @@ using LinearAlgebra
       pd = GeneralizedPareto.(σ, ξ)
       y = rand.(pd)
 
-      model = ThresholdExceedance(y, scalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
+      model = ThresholdExceedance(y, logscalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
 
       fd = Extremes.getdistribution(model, θ)
 

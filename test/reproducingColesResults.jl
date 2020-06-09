@@ -85,7 +85,7 @@ end
     @test Extremes.loglike(fm.model, fm.θ̂) ≈ 50.6 rtol = 0.1
 
     # Linear trend in both μ and ϕ
-    fm = gevfit(df[:, :SeaLevel], locationcov = [evt], scalecov = [evt])
+    fm = gevfit(df[:, :SeaLevel], locationcov = [evt], logscalecov = [evt])
     @test Extremes.loglike(fm.model, fm.θ̂) ≈ 50.7 rtol = 0.1
 
     # μ as a function of the SOI

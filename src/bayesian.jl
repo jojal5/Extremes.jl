@@ -1,14 +1,14 @@
 """
     gevfitbayes(y::Vector{<:Real};
         locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-        scalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
+        logscalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
         shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
         niter::Int=5000, warmup::Int=2000)
 
-Fit a non-stationary Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data contained in the vector y.
+Fit the Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data `y`.
 
 The optional parameter `locationcov` is a vector containing the covariates for the parameter μ.
-The optional parameter `scalecov` is a vector containing the covariates for the parameter σ.
+The optional parameter `logscalecov` is a vector containing the covariates for the parameter σ.
 The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
 
 The covariate may be standardized to facilitate the estimation.
@@ -33,17 +33,17 @@ pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
 
 # Estimate the parameters
-gevfitbayes(y, locationcov = [x])
+gevfitbayes(y, locationcov = [ExplanatoryVariable("x", x)])
 ```
 
 """
 function gevfitbayes(y::Vector{<:Real};
     locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-    model = BlockMaxima(y, locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
+    model = BlockMaxima(y, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -54,7 +54,7 @@ end
 """
     gevfitbayes(df::DataFrame, datacol::Symbol;
         locationcovid::Vector{Symbol}=Symbol[],
-        scalecovid::Vector{Symbol}=Symbol[],
+        logscalecovid::Vector{Symbol}=Symbol[],
         shapecovid::Vector{Symbol}=Symbol[],
         niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
 
@@ -63,15 +63,15 @@ Fit a Generalized Extreme Value (GEV) distribution under the Bayesian paradigm t
 """
 function gevfitbayes(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
-    scalecovid::Vector{Symbol}=Symbol[],
+    logscalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[],
     niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
 
     locationcov = buildExplanatoryVariables(df, locationcovid)
-    scalecov = buildExplanatoryVariables(df, scalecovid)
+    logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = BlockMaxima(df[:,datacol], locationcov = locationcov, scalecov = scalecov, shapecov = shapecov)
+    model = BlockMaxima(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -92,13 +92,14 @@ function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)::Bay
 end
 
 """
-gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
-     scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BayesianEVA
+    gpfitbayes(y::Vector{<:Real};
+         logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+         shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+         niter::Int=5000, warmup::Int=2000,)::BayesianEVA
 
 Fit a non-stationary Generalized Pareto (GEV) distribution under the Bayesian paradigm to the vector of data contained in the Vector y.
 
-The optional parameter `scalecov` is a vector containing the covariates for the parameter σ.
+The optional parameter `logscalecov` is a vector containing the covariates for the parameter σ.
 The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
 
 The covariate may be standardized to facilitate the estimation.
@@ -124,15 +125,16 @@ pd = GeneralizedPareto.(σ,.1)
 y = rand.(pd)
 
 # Estimate the parameters
-gpfitbayes(y, scalecov = [x])
+gpfitbayes(y, logscalecov = [ExplanatoryVariable("x", x)])
 ```
 
 """
-function gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
-     scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BayesianEVA
+function gpfitbayes(y::Vector{<:Real};
+     logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+     niter::Int=5000, warmup::Int=2000,)::BayesianEVA
 
-    model = ThresholdExceedance(y, scalecov = scalecov, shapecov = shapecov)
+    model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -141,23 +143,23 @@ function gpfitbayes(y::Vector{<:Real}; niter::Int=5000, warmup::Int=2000,
 end
 
 """
-gpfitbayes(df::DataFrame, datacol::Symbol;
-    niter::Int=5000, warmup::Int=2000,
-    scalecovid::Vector{Symbol}=Symbol[],
-    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    gpfitbayes(df::DataFrame, datacol::Symbol;
+        logscalecovid::Vector{Symbol}=Symbol[],
+        shapecovid::Vector{Symbol}=Symbol[],
+        niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
 
 Fit a Generalized Pareto (GP) distribution under the Bayesian paradigm to the vector of data contained in the dataframe `df` at the column `datacol`.
 
 """
 function gpfitbayes(df::DataFrame, datacol::Symbol;
-    niter::Int=5000, warmup::Int=2000,
-    scalecovid::Vector{Symbol}=Symbol[],
-    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    logscalecovid::Vector{Symbol}=Symbol[],
+    shapecovid::Vector{Symbol}=Symbol[],
+    niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
 
-    scalecov = buildExplanatoryVariables(df, scalecovid)
+    logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = ThresholdExceedance(df[:,datacol], scalecov = scalecov, shapecov = shapecov)
+    model = ThresholdExceedance(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 

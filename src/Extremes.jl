@@ -32,7 +32,7 @@ end
 """
     BlockMaxima(data::Vector{<:Real};
         locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-        scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+        logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
         shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima
 
 Creates a BlockMaxima structure.
@@ -40,14 +40,14 @@ Creates a BlockMaxima structure.
 """
 function BlockMaxima(data::Vector{<:Real};
     locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima
 
     locationfun = computeparamfunction(locationcov)
-    logscalefun = computeparamfunction(scalecov)
+    logscalefun = computeparamfunction(logscalecov)
     shapefun = computeparamfunction(shapecov)
 
-    return BlockMaxima(data, paramfun(locationcov, locationfun), paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
+    return BlockMaxima(data, paramfun(locationcov, locationfun), paramfun(logscalecov, logscalefun), paramfun(shapecov, shapefun))
 
 end
 
@@ -59,20 +59,20 @@ end
 
 """
     ThresholdExceedance(exceedances::Vector{<:Real};
-        scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+        logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
         shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::ThresholdExceedance
 
 Creates a ThresholdExceedance structure.
 
 """
 function ThresholdExceedance(exceedances::Vector{<:Real};
-    scalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::ThresholdExceedance
 
-    logscalefun = computeparamfunction(scalecov)
+    logscalefun = computeparamfunction(logscalecov)
     shapefun = computeparamfunction(shapecov)
 
-    return ThresholdExceedance(exceedances, paramfun(scalecov, logscalefun), paramfun(shapecov, shapefun))
+    return ThresholdExceedance(exceedances, paramfun(logscalecov, logscalefun), paramfun(shapecov, shapefun))
 
 end
 
