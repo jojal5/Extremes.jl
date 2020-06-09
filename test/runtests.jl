@@ -3,6 +3,7 @@ using Distributions, Extremes
 using Test
 using LinearAlgebra
 
+@testset begin
 @testset "Test of getdistribution" begin
 
       # Model BlockMaxima - stationary
@@ -99,3 +100,4 @@ include("maximumlikelihood.jl")
 include("probabilityweightedmoment.jl")
 include("reproducingColesResults.jl")
 include("utils.jl")
+end

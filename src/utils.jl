@@ -1,30 +1,101 @@
 """
-    pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)::Real
+    getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)::DataFrame
 
-Compute the empirical probability weighted moments defined by:
-```math
-M_{p,r,s} = \\mathbb{E}\\left[ X^p F^r(X) \\left\\{ 1-F(X) \\right\\}^s  \\right].
-```
-The unbiased empirical estimate is computed using the formula given by Landwehr et al. (1979).
-
-*Reference:*
-Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
-    some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
-    15(5), 1055–1064.
+Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
 
 """
-function pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)::Real
+function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0.0)::DataFrame
 
-    @assert sign(p)>=0 "p should be a non-negative integer."
-    @assert sign(r)>=0 "r should be a non-negative integer."
-    @assert sign(s)>=0 "s should be a non-negative integer."
-
-    y = sort(x)
     n = length(y)
 
-    m = 1/n*sum( y[i]^p * binomial(i-1,r)/binomial(n-1,r) * binomial(n-i,s)/binomial(n-1,s) for i=1:n )
+    clusterBegin  = Int64[]
+    clusterLength = Int64[]
+    clusterMax    = Float64[]
+    clusterPosMax = Int64[]
+    clusterSum    = Float64[]
 
-    return m
+    exceedancePosition = findall(y .> u₁)
+
+    clusterEnd = 0
+
+    for i in exceedancePosition
+
+            if i > clusterEnd
+
+               j = 1
+
+                while (i-j) > 0
+                    if y[i-j] > u₂
+                        j += 1
+                    else
+                        break
+                    end
+                end
+
+                k = 1
+
+                while (i+k) < (n+1)
+                    if y[i+k] > u₂
+                        k += 1
+                    else
+                        break
+                    end
+                end
+
+            ind = i-(j-1) : i+(k-1)
+
+            maxval, idxmax = findmax(y[ind])
+
+            push!(clusterMax, maxval)
+            push!(clusterPosMax, idxmax+ind[1]-1)
+            push!(clusterSum, sum(y[ind]) )
+            push!(clusterLength, length(ind) )
+            push!(clusterBegin, ind[1] )
+
+            clusterEnd = ind[end]
+
+            end
+
+    end
+
+
+    P = clusterMax./clusterSum
+
+    cluster = DataFrame(Begin=clusterBegin, Length=clusterLength, Max=clusterMax, Position=clusterPosMax, Sum=clusterSum, P=P)
+
+    return cluster
+
+end
+
+"""
+    getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)::DataFrame
+
+Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
+
+"""
+function getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)::DataFrame
+
+    coltype = describe(df)[:,:eltype]
+
+    @assert coltype[1]==Date || coltype[1]==DateTime "The first dataframe column should be of type Date."
+    @assert coltype[2]<:Real "The second dataframe column should be of any subtypes of Real."
+
+    cluster = DataFrame(Begin=Int64[], Length=Int64[], Max=Float64[], Position=Int64[], Sum=Float64[], P=Float64[])
+
+    years = unique(year.(df[:,1]))
+
+    for yr in years
+
+        ind = year.(df[:,1]) .== yr
+        c = getcluster(df[ind,2], u₁, u₂)
+        c[!,:Begin] = findfirst(ind) .+ c[:,:Begin] .- 1
+        append!(cluster, c)
+
+    end
+
+    cluster[!,:Begin] = df[cluster[:,:Begin],1]
+
+    return cluster
 
 end
 
