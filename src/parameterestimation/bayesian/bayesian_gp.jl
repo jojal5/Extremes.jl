@@ -39,7 +39,7 @@ gpfitbayes(y, logscalecov = [ExplanatoryVariable("x", x)])
 function gpfitbayes(y::Vector{<:Real};
      logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
      shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-     niter::Int=5000, warmup::Int=2000,)::BayesianEVA
+     niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)
 
