@@ -1,9 +1,12 @@
 @testset "probabilityweightedmoment_gumbel.jl" begin
     @testset "gumbelfitpwm(y)" begin
+        # TODO : add test for model building
 
     end
 
     @testset "gumbelfitpwm(model)" begin
+        # TODO : Add non-stationary warn test
+
         # stationary Gumbel fit by pwm
         n = 10000
         θ = [0.0 ; 1.0]

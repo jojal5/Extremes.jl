@@ -1,21 +1,27 @@
 @testset "blockmaxima.jl" begin
     @testset "BlockMaxima(data; locationcov, logscalecov, shapecov)" begin
+        # TODO : Build with all optional parameters set
 
     end
 
     @testset "paramindex(model)" begin
+        # TODO : Test using a model with stationary and non-stationary parameters
 
     end
 
     @testset "getcovariatenumber(model)" begin
+        # TODO : Test using a model with stationary and non-stationary parameters
 
     end
 
     @testset "nparameter(model)" begin
+        # TODO : Test using a model with stationary and non-stationary parameters
 
     end
 
     @testset "getdistribution(model, θ)" begin
+        # TODO : Test with length(θ) != nparameter(model)
+
         # stationary
         n = 100
 
@@ -61,15 +67,20 @@
     end
 
     @testset "getinitialvalue(::Type{GeneralizedExtremeValue},y)" begin
+        # TODO : Test with valid_initialvalues
+
+        # TODO : Test with !valid_initialvalues
 
     end
 
     @testset "getinitialvalue(model)" begin
+        # TODO : Test with known values
 
     end
 
     @testset "showEVA(io, obj; prefix)" begin
-
+        # TODO : Test outputs correctly
+        
     end
 
 end

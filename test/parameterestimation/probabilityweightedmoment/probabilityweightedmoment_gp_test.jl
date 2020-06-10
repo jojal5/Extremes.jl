@@ -1,9 +1,12 @@
 @testset "probabilityweightedmoment_gp.jl" begin
     @testset "gpfitpwm(y)" begin
+        # TODO : add test for model building
 
     end
 
     @testset "gpfitpwm(model)" begin
+        # TODO : Add non-stationary warn test
+
         # stationary GP fit by pwm
         n = 10000
         θ = [1.0 ; .2]
