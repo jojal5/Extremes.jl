@@ -1,11 +1,14 @@
 @testset "probabilityweightedmoment.jl" begin
     @testset "pwm(x, p, r, s)" begin
-        # TODO : Test with p < 0 error
+        # p < 0 throws error
+        @test_throws AssertionError Extremes.pwm([1.0], -1, 1, 1)
 
-        # TODO : Test with r < 0 error
+        # r < 0 throws error
+        @test_throws AssertionError Extremes.pwm([1.0], 1, -1, 1)
 
-        # TODO : Test with s < 0 error
-        
+        #  s < 0 throws error
+        @test_throws AssertionError Extremes.pwm([1.0], 1, 1, -1)
+
         # Probability weighted moment with p=1, r=0 and s=k
         μ = .5
         σ = 1.0
