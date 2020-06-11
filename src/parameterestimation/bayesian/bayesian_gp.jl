@@ -61,7 +61,7 @@ Fit a Generalized Pareto (GP) distribution under the Bayesian paradigm to the ve
 function gpfitbayes(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[],
-    niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
+    niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
@@ -84,7 +84,7 @@ A random sample from the posterior distribution is generated using the NUTS algo
 Only flat prior is now supported.
 
 """
-function gpfitbayes(model::ThresholdExceedance, niter::Int=5000, warmup::Int=2000)::BayesianEVA
+function gpfitbayes(model::ThresholdExceedance; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     return fitbayes(model, niter=niter, warmup=warmup)
 
