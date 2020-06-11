@@ -128,5 +128,48 @@
         @test Extremes.loglike(fm.model, fm.θ̂) ≈ -485.1 rtol = 0.1
         @test V̂ ≈ V rtol = 0.1
 
+        r = returnlevel(fm, [threshold], size(df,1), 365, 100)
+
+        @test r.value[] ≈ 106.3 rtol = .1
+
+    end
+
+    @testset "Dow Jones example from Coles (2001), Section 4.4.2" begin
+        df = load("dowjones")
+
+        X = df[:,:Index]
+
+
+        X̃ = 100*[ log(X[i+1]) - log(X[i])  for i in 1:(length(X)-1)]
+
+        n = length(X̃)
+
+        threshold = 2.0
+
+        z = X̃[X̃ .> threshold] .- threshold
+
+        fm = gpfit(z)
+
+        θ̂ = fm.θ̂
+
+        # Approximate variance-covariance matrix of the parameter estimates
+        V̂ = Extremes.parametervar(fm)
+
+        # correction factor for using ϕ instead of σ (computation using the delta method)
+        c = [
+            exp(2*θ̂[1]) exp(θ̂[1])
+            exp(θ̂[1]) 1.0
+        ]
+
+        V̂ = c.*V̂
+
+        # Test the Generalized Pareto estimates
+        @test exp(fm.θ̂[1]) ≈ .495 rtol = 0.1
+        @test fm.θ̂[2] ≈ .288 rtol = 0.1
+
+        # Test the standard errors of estimates
+        @test sqrt(V̂[1,1]) ≈ .150 rtol = 0.1
+        @test sqrt(V̂[2,2]) ≈ .258 rtol = 0.1
+
     end
 end
