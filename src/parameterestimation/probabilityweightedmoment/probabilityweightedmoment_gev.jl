@@ -51,8 +51,9 @@ function gevfitpwm(model::BlockMaxima)::pwmEVA
     μ̂ = b₀ - σ̂/k*( 1-gamma(1+k) )
 
     ξ̂ = -k
+    ϕ̂ = log(σ̂)
 
-    θ̂ = [μ̂; σ̂; ξ̂]
+    θ̂ = [μ̂; ϕ̂; ξ̂]
 
     fm = pwmEVA(model, θ̂)
 

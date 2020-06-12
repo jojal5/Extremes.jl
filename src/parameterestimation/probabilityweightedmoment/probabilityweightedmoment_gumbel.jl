@@ -44,7 +44,9 @@ function gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
     μ̂ = a₀ - Base.MathConstants.eulergamma*σ̂
 
-    θ̂ = [μ̂, σ̂, 0.0]
+    ϕ̂ = log(σ̂)
+
+    θ̂ = [μ̂, ϕ̂, 0.0]
 
     fm = pwmEVA(model,θ̂)
 
