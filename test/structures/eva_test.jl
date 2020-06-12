@@ -1,37 +1,113 @@
 @testset "eva.jl" begin
     @testset "computeparamfunction(covariates)" begin
-        # TODO : Test with empty covariates
+        # function returned for empty covariates should not modify θ
+        θ = [1.0]
+        fsame = Extremes.computeparamfunction(ExplanatoryVariable[])
+        θtransformed = fsame(θ)
 
-        # TODO : Test with covariates not empty
+        @test θ == θtransformed
+
+        # function returned for not empty covariates should modify θ
+        θ = [1.0, 1.0]
+        ev = ExplanatoryVariable("t", collect(1:100))
+        ftrans = Extremes.computeparamfunction([ev])
+        θtransformed = ftrans(θ)
+
+        @test θ != θtransformed
 
     end
 
     @testset "loglike(model, θ)" begin
-        # TODO : Test with known values
+        # TODO: Test BlockMaxima with known values (J)
+
+        # TODO: Test ThresholdExceedance with known values (J)
 
     end
 
     @testset "quantile(model, θ, p)" begin
-        # TODO : Test with p < 0 or p > 1
+        #  p outside of [0, 1] throws
+        n = 1000
+        θ = [0.0, 1.0, 0.1]
+        pd = GeneralizedExtremeValue(θ...)
+        y = rand(pd, n)
+        model = Extremes.BlockMaxima(y)
 
-        # TODO : Test with known values
+        @test_throws AssertionError quantile(model, θ, -1)
+
+        # TODO: Test BlockMaxima with known values (J)
+
+        # TODO: Test ThresholdExceedance with known values (J)
 
     end
 
     @testset "validatestationarity(model)" begin
-        # TODO : Test with non-stationary model
+        n = 1000
+        y = collect(1:n)
+        ev = [ExplanatoryVariable("x", rand(n))]
+        smodel = nothing
 
-        # TODO : Test with stationary model
+        # non-stationary BlockMaxima model
+        model = Extremes.BlockMaxima(y, locationcov = ev, logscalecov = ev, shapecov = ev)
+        @test_logs (:warn, "covariates cannot be included in the model when estimating the
+            paramters by the probability weighted moment parameter estimation.
+            The estimates for the stationary model is returned.") smodel = Extremes.validatestationarity(model)
+
+        @test length(smodel.location.covariate) == 0
+        @test length(smodel.logscale.covariate) == 0
+        @test length(smodel.shape.covariate) == 0
+
+        # non-stationary ThresholdExceedance model
+        model = Extremes.ThresholdExceedance(y, logscalecov = ev, shapecov = ev)
+        @test_logs (:warn, "covariates cannot be included in the model when estimating the
+            paramters by the probability weighted moment parameter estimation.
+            The estimates for the stationary model is returned.") smodel = Extremes.validatestationarity(model)
+
+        @test length(smodel.logscale.covariate) == 0
+        @test length(smodel.shape.covariate) == 0
+
+        # stationary BlockMaxima model
+        model = Extremes.BlockMaxima(y)
+        @test_logs smodel = Extremes.validatestationarity(model)
+
+        @test length(smodel.location.covariate) == 0
+        @test length(smodel.logscale.covariate) == 0
+        @test length(smodel.shape.covariate) == 0
+
+        # stationary ThresholdExceedance model
+        model = Extremes.ThresholdExceedance(y)
+        @test_logs smodel = Extremes.validatestationarity(model)
+
+        @test length(smodel.logscale.covariate) == 0
+        @test length(smodel.shape.covariate) == 0
 
     end
 
     @testset "Base.show(io, obj)" begin
-        # TODO : Test outputs correctly
+        # print BlockMaxima does not throw
+        model = Extremes.BlockMaxima(collect(1:100))
+        buffer = IOBuffer()
+        @test_logs Base.show(buffer, model)
+
+        # print ThresholdExceedance does not throw
+        model = Extremes.ThresholdExceedance(collect(1:100))
+        buffer = IOBuffer()
+        @test_logs Base.show(buffer, model)
 
     end
 
     @testset "showparamfun(name, param)" begin
-        # TODO : Test with known values
+        f(β) = identity(β)
+        # stationary param
+        param = Extremes.paramfun(ExplanatoryVariable[], f)
+
+        @test Extremes.showparamfun("μ", param) == "μ ~ 1"
+
+        # non-stationary param
+        n = 100
+        param = Extremes.paramfun([ExplanatoryVariable("t", collect(1:n)), ExplanatoryVariable("x", rand(n))], f)
+
+        @test Extremes.showparamfun("μ", param) == "μ ~ 1 + t + x"
+
     end
 
     include(joinpath("eva", "blockmaxima_test.jl"))

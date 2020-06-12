@@ -1,26 +1,59 @@
 @testset "blockmaxima.jl" begin
+    n = 10000
+
+    pd = GeneralizedExtremeValue(0.0, 1.0, 0.1)
+    y = rand(pd, n)
+
+    x = rand(n)
+
+    ev = [ExplanatoryVariable("x", x)]
+
+    smodel = Extremes.BlockMaxima(y)
+    nsmodel = Extremes.BlockMaxima(y, locationcov = ev, logscalecov = ev, shapecov = ev)
+
     @testset "BlockMaxima(data; locationcov, logscalecov, shapecov)" begin
-        # TODO : Build with all optional parameters set
+        # Build with all optional parameters set
+        @test nsmodel.data == y
+        @test nsmodel.location.covariate == ev
+        @test nsmodel.logscale.covariate == ev
+        @test nsmodel.shape.covariate == ev
 
     end
 
     @testset "paramindex(model)" begin
-        # TODO : Test using a model with stationary and non-stationary parameters
+        # model with stationary and non-stationary parameters
+        model = Extremes.BlockMaxima(y, locationcov = ev)
+
+        paramin = Extremes.paramindex(model)
+
+        @test length(paramin) == 3
+        @test paramin[:μ] == [1, 2]
+        @test paramin[:ϕ] == [3]
+        @test paramin[:ξ] == [4]
 
     end
 
     @testset "getcovariatenumber(model)" begin
-        # TODO : Test using a model with stationary and non-stationary parameters
+        # stationary
+        @test Extremes.getcovariatenumber(smodel) == 0
+
+        # non-stationary
+        @test Extremes.getcovariatenumber(nsmodel) == 3
 
     end
 
     @testset "nparameter(model)" begin
-        # TODO : Test using a model with stationary and non-stationary parameters
+        # stationary
+        @test Extremes.nparameter(smodel) == 3
+
+        # non-stationary
+        @test Extremes.nparameter(nsmodel) == 6
 
     end
 
     @testset "getdistribution(model, θ)" begin
-        # TODO : Test with length(θ) != nparameter(model)
+        # length(θ) != nparameter(model) throws
+        @test_throws AssertionError Extremes.getdistribution(smodel, [1.0])
 
         # stationary
         n = 100
@@ -67,20 +100,21 @@
     end
 
     @testset "getinitialvalue(::Type{GeneralizedExtremeValue},y)" begin
-        # TODO : Test with valid_initialvalues
+        # TODO : Test with valid_initialvalues (J)
 
-        # TODO : Test with !valid_initialvalues
+        # TODO : Test with !valid_initialvalues (J)
 
     end
 
     @testset "getinitialvalue(model)" begin
-        # TODO : Test with known values
+        # TODO : Test with known values (J)
 
     end
 
     @testset "showEVA(io, obj; prefix)" begin
-        # TODO : Test outputs correctly
-        
+        # print does not throw
+        buffer = IOBuffer()
+        @test_logs Extremes.showEVA(buffer, smodel, prefix = "\t")
     end
 
 end
