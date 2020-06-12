@@ -32,6 +32,28 @@ end
 
 
 """
+    quantilevar(fm::pwmEVA, level::Real, nboot::Int=1000)::Vector{<:Real}
+
+Compute the  approximate variance of the quantile of level `level` from the fitted model `fm` by bootstrap.
+
+"""
+function quantilevar(fm::pwmEVA, level::Real, nboot::Int=1000)::Vector{<:Real}
+
+    @assert nboot>0 "the number of bootstrap samples should be positive."
+
+    V = parametervar(fm)
+
+    f(θ::DenseVector) = quantile(fm.model,θ,level)[]  # With the pwm method, the model is stationary
+    Δf(θ::DenseVector) = ForwardDiff.gradient(f, θ)
+    G = Δf(θ̂)
+
+    qv = G'*V*G
+
+    return qv
+end
+
+
+"""
     Base.show(io::IO, obj::pwmEVA)
 
 Override of the show function for the objects of type pwmEVA.

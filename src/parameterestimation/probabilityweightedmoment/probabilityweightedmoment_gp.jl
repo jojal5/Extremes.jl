@@ -44,8 +44,9 @@ function gpfitpwm(model::ThresholdExceedance)::pwmEVA
     k = a₀ / (a₀ - 2*a₁) - 2
 
     ξ̂ = - k
+    ϕ̂ = log(σ̂)
 
-    θ̂ = [σ̂; ξ̂]
+    θ̂ = [ϕ̂; ξ̂]
 
     fm = pwmEVA(model, θ̂)
 
