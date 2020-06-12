@@ -9,9 +9,9 @@
 
         # stationary Gumbel fit by pwm
         n = 10000
-        θ = [0.0 ; 1.0]
+        θ = [0.0 ; 0.0]
 
-        pd = Gumbel(θ...)
+        pd = Gumbel(θ[1],exp(θ[2]))
         y = rand(pd, n)
 
         model = Extremes.BlockMaxima(y)

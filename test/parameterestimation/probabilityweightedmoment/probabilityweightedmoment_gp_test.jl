@@ -9,9 +9,9 @@
 
         # stationary GP fit by pwm
         n = 10000
-        θ = [1.0 ; .2]
+        θ = [0.0 ; .2]
 
-        pd = GeneralizedPareto(θ...)
+        pd = GeneralizedPareto(exp(θ[1]), θ[2])
         y = rand(pd, n)
 
         model = Extremes.ThresholdExceedance(y)

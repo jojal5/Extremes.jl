@@ -9,9 +9,9 @@
 
         # stationary GEV fit by pwm
         n = 10000
-        θ = [0.0;1.0;.2]
+        θ = [0.0;0.0;.2]
 
-        pd = GeneralizedExtremeValue(θ...)
+        pd = GeneralizedExtremeValue(θ[1], exp(θ[2]), θ[3])
         y = rand(pd, n)
 
         model = Extremes.BlockMaxima(y)
