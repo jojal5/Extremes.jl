@@ -128,7 +128,7 @@
         @test Extremes.loglike(fm.model, fm.θ̂) ≈ -485.1 rtol = 0.1
         @test V̂ ≈ V rtol = 0.1
 
-        r = returnlevel(fm, [threshold], size(df,1), 365, 100)
+        r = returnlevel(fm, threshold, size(df,1), 365, 100)
 
         @test r.value[] ≈ 106.3 rtol = .1
 
