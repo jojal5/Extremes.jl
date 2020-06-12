@@ -59,7 +59,21 @@
     end
 
     @testset "buildExplanatoryVariables(df, ids)" begin
-        # TODO : Test with known values
+        val = rand(10)
+        name = "x"
+
+        df = DataFrame(x = val)
+
+        # stationary
+        evs = Extremes.buildExplanatoryVariables(df, Symbol[])
+        @test length(evs) == 0
+
+        # non-stationary
+        evs = Extremes.buildExplanatoryVariables(df, [:x])
+
+        @test length(evs) == 1
+        @test evs[1].name == name
+        @test evs[1].value == val
 
     end
 
