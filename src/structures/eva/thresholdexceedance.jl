@@ -89,33 +89,6 @@ function getdistribution(model::ThresholdExceedance, θ::Vector{<:Real})::Vector
 
 end
 
-"""
-     getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
-
-Compute the initial values of the GP parameters given the data `y`.
-
-"""
-function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
-
-    # Fit the model with by the probability weigthed moments
-    fm = gpfitpwm(y)
-
-    # Convert to fitted model in a Distribution object
-    fd = getdistribution(fm.model, fm.θ̂)[]
-
-    if all(insupport(fd,y))
-        σ₀ = scale(fd)
-        ξ₀ = Distributions.shape(fd)
-    else
-        σ₀ = mean(y)
-        ξ₀ = 0.0
-    end
-
-    initialvalues = [σ₀, ξ₀]
-
-    return initialvalues
-
-end
 
 """
     getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
@@ -128,9 +101,9 @@ function getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
     y = model.data
 
     # Compute stationary initial values
-    σ₀,ξ₀ = getinitialvalue(GeneralizedPareto, y)
+    ϕ₀,ξ₀ = getinitialvalue(GeneralizedPareto, y)
     # Store them in a dictionary
-    θ₀ = Dict(:ϕ => log(σ₀), :ξ => ξ₀)
+    θ₀ = Dict(:ϕ => ϕ₀, :ξ => ξ₀)
 
     initialvalues = zeros(nparameter(model))
     pi = paramindex(model)
