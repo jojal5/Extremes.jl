@@ -65,7 +65,7 @@ function gevfitbayes(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
     logscalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[],
-    niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
+    niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     locationcov = buildExplanatoryVariables(df, locationcovid)
     logscalecov = buildExplanatoryVariables(df, logscalecovid)

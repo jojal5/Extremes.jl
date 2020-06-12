@@ -1,6 +1,6 @@
 @testset "maximumlikelihood.jl" begin
     @testset "fit(model)" begin
-        # TODO : Add no solution warn test
+        # TODO : Add no solution warn test (J)
 
         # stationary GEV fit by ML
         n = 10000
