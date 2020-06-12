@@ -5,12 +5,29 @@ struct pwmEVA{T<:EVA} <: fittedEVA
     θ̂::Vector{Float64}
 end
 
+
+"""
+    quantile(fm::pwmEVA, p::Real)::Vector{<:Real}
+
+Compute the quantile of level `p` from the fitted model. For the probability weighted moment method, the model has to be stationary.
+
+"""
+function quantile(fm::pwmEVA, p::Real)::Vector{<:Real}
+
+    @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
+
+    q = quantile(fm.model, fm.θ̂, p)
+
+    return q
+
+end
+
 """
     parametervar(fm::pwmEVA, nboot::Int=1000)
 
 Estimate the parameter estimates covariance matrix by bootstrap.
 """
-function parametervar(fm::pwmEVA, nboot::Int=1000)
+function parametervar(fm::pwmEVA, nboot::Int=1000)::Array{Float64, 2}
 
     @assert nboot>0 "the number of bootstrap samples should be positive."
 
@@ -20,8 +37,8 @@ function parametervar(fm::pwmEVA, nboot::Int=1000)
     θ̂ = Array{Float64}(undef, nboot, length(fm.θ̂))
 
     for i=1:nboot
-        y = rand(y, n)            # Generate a bootstrap sample
-        θ̂[i,:] = gevfitpwm(y).θ̂   # Compute the parameter estimates
+        ind = rand(1:n, n)            # Generate a bootstrap sample
+        θ̂[i,:] = gevfitpwm(y[ind]).θ̂   # Compute the parameter estimates
     end
 
     V = cov(θ̂)                    # Compute the approximate covariance matrix
@@ -39,17 +56,18 @@ Compute the  approximate variance of the quantile of level `level` from the fitt
 """
 function quantilevar(fm::pwmEVA, level::Real, nboot::Int=1000)::Vector{<:Real}
 
-    @assert nboot>0 "the number of bootstrap samples should be positive."
+    # Compute the approximate covariance matrice of the parameter estimates by bootstrap
+    V = parametervar(fm, nboot)
 
-    V = parametervar(fm)
-
+    # Compute the approximate quantile variance by the delta method
     f(θ::DenseVector) = quantile(fm.model,θ,level)[]  # With the pwm method, the model is stationary
     Δf(θ::DenseVector) = ForwardDiff.gradient(f, θ)
-    G = Δf(θ̂)
+    G = Δf(fm.θ̂)
 
     qv = G'*V*G
 
-    return qv
+    return [qv]
+
 end
 
 
