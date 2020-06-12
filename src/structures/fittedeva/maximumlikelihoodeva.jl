@@ -148,8 +148,10 @@ end
 
 Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
 
+The threshold should be a scalar. A varying threshold is not yet implemented.
+
 """
-function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
+function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
     α = (1 - confidencelevel)
@@ -160,7 +162,7 @@ function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::V
     # Appropriate quantile level given the probability exceedance and the number of obs per year
     p = 1-1/(returnPeriod * nobsperblock * ζ)
 
-    q = threshold + quantile(fm, p)
+    q = threshold .+ quantile(fm, p)
 
     # Computing the variance corresponding to ζ
     f(θ::Vector{<:Real}) = Extremes.quantile(fm.model,fm.θ̂,1-1/(returnPeriod * nobsperblock * θ[]))[]
