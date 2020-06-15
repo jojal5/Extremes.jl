@@ -16,6 +16,10 @@ function ThresholdExceedance(exceedances::Vector{<:Real};
     logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::ThresholdExceedance
 
+    n = length(exceedances)
+    validatelength(n, logscalecov)
+    validatelength(n, shapecov)
+
     logscalefun = computeparamfunction(logscalecov)
     shapefun = computeparamfunction(shapecov)
 

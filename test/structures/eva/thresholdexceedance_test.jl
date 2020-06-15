@@ -12,6 +12,14 @@
     nsmodel = Extremes.ThresholdExceedance(y, logscalecov = ev, shapecov = ev)
 
     @testset "ThresholdExceedance(exceedances; logscalecov, shapecov)" begin
+        ev10 = Extremes.ExplanatoryVariable("t", collect(1:n+10))
+
+        # Build with logscalecov length != y length
+        @test_throws AssertionError Extremes.ThresholdExceedance(y, logscalecov = [ev10])
+
+        # Build with shapecov length != y length
+        @test_throws AssertionError Extremes.ThresholdExceedance(y, shapecov = [ev10])
+
         # Build with all optional parameters set
         @test nsmodel.data == y
         @test nsmodel.logscale.covariate == ev
