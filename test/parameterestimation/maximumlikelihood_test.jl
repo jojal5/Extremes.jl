@@ -2,6 +2,25 @@
     @testset "fit(model)" begin
         # TODO : Add no solution warn test (J)
 
+        # Add no solution warn test
+        Random.seed!(12)
+
+        n = 10
+
+        μ = 0.0
+        σ = 1.0
+        ξ = .8
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+
+        y = rand(pd, n)
+
+        @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") Extremes.fit(model)
+
+
         # stationary GEV fit by ML
         n = 10000
 
