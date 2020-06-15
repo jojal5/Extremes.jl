@@ -200,9 +200,9 @@ Override of the show function for the objects of type EVA.
 function Base.show(io::IO, obj::MaximumLikelihoodEVA)
 
     println(io, "MaximumLikelihoodEVA")
-    println("model :")
+    println(io, "model :")
     showEVA(io, obj.model, prefix = "\t")
-    println()
+    println(io)
     println(io, "θ̂  :\t", obj.θ̂)
 
 end

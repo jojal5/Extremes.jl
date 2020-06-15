@@ -80,9 +80,9 @@ Override of the show function for the objects of type pwmEVA.
 function Base.show(io::IO, obj::pwmEVA)
 
     println(io, "pwmEVA")
-    println("model :")
+    println(io, "model :")
     showEVA(io, obj.model, prefix = "\t")
-    println()
+    println(io)
     println(io, "θ̂  :\t", obj.θ̂)
 
 end

@@ -87,9 +87,9 @@ Override of the show function for the objects of type BayesianEVA.
 function Base.show(io::IO, obj::BayesianEVA)
 
     println(io, "BayesianEVA")
-    println("model :")
+    println(io, "model :")
     showEVA(io, obj.model, prefix = "\t")
-    println()
+    println(io)
     println(io, "sim :\t", typeof(obj.sim))
 
 end
