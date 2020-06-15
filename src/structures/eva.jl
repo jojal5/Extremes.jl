@@ -122,6 +122,19 @@ function showparamfun(name::String, param::paramfun)::String
 
 end
 
+"""
+    validatelength(length::Real, explvariables::Vector{ExplanatoryVariable})
+
+Validates that the values of the explanatory variables are of length `length`.
+"""
+function validatelength(n::Real, explvariables::Vector{ExplanatoryVariable})
+
+    for explvariable in explvariables
+        @assert length(explvariable.value) == n "The explanatory variable length should match data length."
+    end
+
+end
+
 
 include(joinpath("eva", "blockmaxima.jl"))
 include(joinpath("eva", "thresholdexceedance.jl"))

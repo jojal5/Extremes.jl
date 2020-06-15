@@ -110,6 +110,25 @@
 
     end
 
+    @testset "validatelength(length, explvariables)" begin
+        n = 100
+        evn = ExplanatoryVariable("tn", collect(1:n))
+        evnx = ExplanatoryVariable("xn", rand(n))
+        evn10 = ExplanatoryVariable("tn10", collect(1:n+10))
+        # empty explvariables shold not throw
+        @test_logs Extremes.validatelength(n, ExplanatoryVariable[])
+
+        # explvariables length all == length should not throw
+        @test_logs Extremes.validatelength(n, [evn, evnx])
+
+        # first explanatory variable length != length throws
+        @test_throws AssertionError Extremes.validatelength(n, [evn10, evn])
+
+        # second explanatory variable length != length throws
+        @test_throws AssertionError Extremes.validatelength(n, [evn, evn10])
+
+    end
+
     include(joinpath("eva", "blockmaxima_test.jl"))
     include(joinpath("eva", "thresholdexceedance_test.jl"))
 
