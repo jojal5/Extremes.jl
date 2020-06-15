@@ -1,8 +1,10 @@
 using DataFrames, Dates, SpecialFunctions
 using Distributions, Extremes
 using Test
-using LinearAlgebra
+using LinearAlgebra, Random
 using Mamba
+
+Random.seed!(12345)
 
 @testset "Extremes.jl" begin
     include("data_test.jl")
