@@ -154,6 +154,9 @@ The threshold should be a scalar. A varying threshold is not yet implemented.
 function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
+    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+    @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
     α = (1 - confidencelevel)
 
     # Exceedance probability
