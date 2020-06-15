@@ -19,6 +19,11 @@ function BlockMaxima(data::Vector{<:Real};
     logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima
 
+    n = length(data)
+    validatelength(n, locationcov)
+    validatelength(n, logscalecov)
+    validatelength(n, shapecov)
+
     locationfun = computeparamfunction(locationcov)
     logscalefun = computeparamfunction(logscalecov)
     shapefun = computeparamfunction(shapecov)

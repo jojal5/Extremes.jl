@@ -12,6 +12,17 @@
     nsmodel = Extremes.BlockMaxima(y, locationcov = ev, logscalecov = ev, shapecov = ev)
 
     @testset "BlockMaxima(data; locationcov, logscalecov, shapecov)" begin
+        ev10 = Extremes.ExplanatoryVariable("t", collect(1:n+10))
+
+        # Build with locationcov length != y length
+        @test_throws AssertionError Extremes.BlockMaxima(y, locationcov = [ev10])
+
+        # Build with logscalecov length != y length
+        @test_throws AssertionError Extremes.BlockMaxima(y, logscalecov = [ev10])
+
+        # Build with shapecov length != y length
+        @test_throws AssertionError Extremes.BlockMaxima(y, shapecov = [ev10])
+
         # Build with all optional parameters set
         @test nsmodel.data == y
         @test nsmodel.location.covariate == ev
