@@ -9,7 +9,11 @@
         # stationary model building
         fm = Extremes.gumbelfitpwm(y)
 
-        @test fm.θ̂[1:2] ≈ θ rtol = .05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂[1:2] .- var[1:2] <= θ
+        @test θ <= fm.θ̂[1:2] .+ var[1:2]
 
     end
 
@@ -26,7 +30,11 @@
 
         fm = Extremes.gumbelfitpwm(model)
 
-        @test fm.θ̂[1:2] ≈ θ rtol = .05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂[1:2] .- var[1:2] <= θ
+        @test θ <= fm.θ̂[1:2] .+ var[1:2]
 
     end
 end

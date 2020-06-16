@@ -1,5 +1,5 @@
 @testset "probabilityweightedmoment_gev.jl" begin
-    n = 10000
+    n = 5000
     θ = [0.0;0.0;.2]
 
     pd = GeneralizedExtremeValue(θ[1], exp(θ[2]), θ[3])
@@ -9,7 +9,11 @@
         # stationary model building
         fm = Extremes.gevfitpwm(y)
 
-        @test fm.θ̂ ≈ θ rtol = .05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
     end
 
@@ -26,7 +30,11 @@
 
         fm = Extremes.gevfitpwm(model)
 
-        @test fm.θ̂ ≈ θ rtol = .05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
     end
 end
