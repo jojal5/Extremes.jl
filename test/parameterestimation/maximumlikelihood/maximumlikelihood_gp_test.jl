@@ -19,7 +19,11 @@
             logscalecov = [ExplanatoryVariable("x₁", x₁)],
             shapecov = [ExplanatoryVariable("x₂", x₂)])
 
-            @test fm.θ̂ ≈ θ atol = 0.1
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
     end
 
@@ -29,7 +33,11 @@
 
         fm = Extremes.gpfit(df, :y, logscalecovid = [:x1], shapecovid = [:x2])
 
-        @test fm.θ̂ ≈ θ atol = 0.1
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
     end
 
@@ -41,7 +49,11 @@
 
         fm = Extremes.gpfit(model)
 
-        @test fm.θ̂ ≈ θ atol = 0.1
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
     end
 
