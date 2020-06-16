@@ -9,7 +9,8 @@ makedocs(sitename = "Extremes.jl",
     ),
     pages = [
        "index.md",
-       #"examples.md",
+       "getting_started.md",
+       "contributing.md",
        #"functions.md",
        ]
 
