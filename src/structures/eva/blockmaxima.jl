@@ -1,4 +1,4 @@
-struct BlockMaxima <: EVA
+struct BlockMaxima{T<:Distribution} <: EVA
     data::Vector{<:Real}
     location::paramfun
     logscale::paramfun
@@ -17,7 +17,8 @@ Creates a BlockMaxima structure.
 function BlockMaxima(data::Vector{<:Real};
     locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
     logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima
+    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    dist::Type{<:Distribution} = GeneralizedExtremeValue)::BlockMaxima
 
     n = length(data)
     validatelength(n, locationcov)
@@ -28,8 +29,25 @@ function BlockMaxima(data::Vector{<:Real};
     logscalefun = computeparamfunction(logscalecov)
     shapefun = computeparamfunction(shapecov)
 
-    return BlockMaxima(data, paramfun(locationcov, locationfun), paramfun(logscalecov, logscalefun), paramfun(shapecov, shapefun))
+    return BlockMaxima{dist}(data, paramfun(locationcov, locationfun), paramfun(logscalecov, logscalefun), paramfun(shapecov, shapefun))
 
+end
+
+"""
+    BlockMaxima{T}(data::Vector{<:Real};
+        locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+        logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+        shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima where T<:Distribution
+
+Creates a BlockMaxima structure.
+
+"""
+function BlockMaxima{T}(data::Vector{<:Real};
+    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima where T<:Distribution
+
+    return BlockMaxima(data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov, dist = T)
 end
 
 """

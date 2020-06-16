@@ -115,7 +115,7 @@ end
 Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
