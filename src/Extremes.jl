@@ -1,17 +1,53 @@
 module Extremes
 
 using Distributions, DataFrames, Dates
-using Optim, NLSolversBase
-using SpecialFunctions, LinearAlgebra
+using Optim, NLSolversBase, ForwardDiff
+using SpecialFunctions, LinearAlgebra, Statistics
+using Mamba, ProgressMeter
 
 import CSV
-import Distributions.GeneralizedExtremeValue
+import Distributions.quantile
+import Statistics.var
 
-include("functions.jl")
-include("mle_functions.jl")
-include("bayes_functions.jl")
-include("data_functions.jl")
+include("utils.jl")
+include("structures.jl")
+include("parameterestimation.jl")
+include("data.jl")
 
-export getcluster, gevfit, gpdfit, gevfitbayes, gpdfitbayes, load
+export
+
+    # Generic types
+    EVA,
+    fittedEVA,
+
+    # Explanatory variable type
+    ExplanatoryVariable,
+
+    # Extreme value analysis type
+    BlockMaxima,
+    ThresholdExceedance,
+
+    # Fitted extreme value analysis model
+    pwmEVA,
+    MaximumLikelihoodEVA,
+    BayesianEVA,
+
+    # Other types
+    ReturnLevel,
+
+    # Data related functions
+    load,
+    getcluster,
+
+    # Fitting functions
+    gevfit,
+    gevfitbayes,
+    gevfitpwm,
+    gpfit,
+    gpfitbayes,
+    gpfitpwm,
+
+    # Other functions
+    returnlevel
 
 end # module
