@@ -8,7 +8,7 @@ makedocs(sitename = "Extremes.jl",
     prettyurls = CI,
     ),
     pages = [
-       "index.md",       
+       "index.md",
        #"examples.md",
        #"functions.md",
        ]
