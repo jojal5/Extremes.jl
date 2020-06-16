@@ -23,9 +23,11 @@
             shapecov = [ExplanatoryVariable("x₃", x₃)],
             niter=1000, warmup=500)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        @test θ̂ ≈ θ atol = 0.1
+        @test infq <= θ
+        @test θ <= supq
 
     end
 
@@ -35,9 +37,11 @@
 
         fm = Extremes.gevfitbayes(df, :y, locationcovid = [:x1], logscalecovid = [:x2], shapecovid = [:x3], niter=1000, warmup=500)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        @test θ̂ ≈ θ atol = .1
+        @test infq <= θ
+        @test θ <= supq
 
     end
 
@@ -50,9 +54,11 @@
 
         fm = Extremes.gevfitbayes(model, niter=1000, warmup=500)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        @test θ̂ ≈ θ atol = .1
+        @test infq <= θ
+        @test θ <= supq
 
     end
 
