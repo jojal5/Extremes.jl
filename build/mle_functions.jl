@@ -296,7 +296,7 @@ end
 Fit the Generalized Pareto (GP) distribution to data using maximum likelihood.
 
 - `gpdfit(y)`: Fits the GP distribution to the data `y`.
-- `gpdfit(y)`: Fits the GP distribution to the data `y` with the threshold `threshold`.
+- `gpdfit(y, threshold= threshold)`: Fits the GP distribution to the data `y` with the threshold `threshold`.
 - `gpdfit(y, initialvalues=initialvalues)`: Fits the GP distribution to the data `y` using `initialvalues` as initial values.
 - `gpdfit(y, ...)`
 """

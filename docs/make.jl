@@ -1,13 +1,24 @@
 using Documenter, Extremes, DataFrames
 
-makedocs(sitename = "Extremes.jl",    
+CI = get(ENV, "CI", nothing) == "true"
+
+makedocs(sitename = "Extremes.jl",
+    #doctest = false,
+    format = Documenter.HTML(
+    prettyurls = CI,
+    ),
     pages = [
-       "index.md",       
+       "index.md",
+       "getting_started.md",
+       "contributing.md",
+       #"functions.md",
        ]
 
 )
 
-deploydocs(
+if CI
+    deploydocs(
     repo   = "github.com/jojal5/Extremes.jl.git",
-    target = "build"    
-)
+    target = "build"
+    )
+end
