@@ -1,5 +1,8 @@
 @testset "probabilityweightedmoment.jl" begin
     @testset "pwm(x, p, r, s)" begin
+
+        Random.seed!(12)
+
         # p < 0 throws error
         @test_throws AssertionError Extremes.pwm([1.0], -1, 1, 1)
 

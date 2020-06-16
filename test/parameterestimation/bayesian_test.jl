@@ -1,5 +1,8 @@
 @testset "bayesian.jl" begin
     @testset "fitbayes(model; niter, warmup)" begin
+
+        Random.seed!(12)
+
         # stationary GEV Bayesian fit
         n = 10000
 
@@ -71,7 +74,7 @@
         θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
 
         # Test of parameter estimates
-        @test θ̂ ≈ θ atol = .05
+        @test θ̂ ≈ θ atol = .08
 
         # non-stationary location and logscale GEV Bayesian fit
         n = 10000

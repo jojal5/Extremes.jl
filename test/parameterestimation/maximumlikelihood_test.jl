@@ -1,10 +1,10 @@
 @testset "maximumlikelihood.jl" begin
     @testset "fit(model)" begin
-        # TODO : Add no solution warn test (J)
 
-        # Add no solution warn test
+        # Set the seed for reproductible test results
         Random.seed!(12)
 
+        # No solution warn test
         n = 10
 
         μ = 0.0
@@ -22,6 +22,7 @@
 
 
         # stationary GEV fit by ML
+        # Random.seed!(12)
         n = 10000
 
         μ = 0.0
@@ -41,6 +42,7 @@
         @test fm.θ̂ ≈ θ atol = 0.05
 
         # non-stationary location GEV fit by ML
+        # Random.seed!(123)
         n = 10000
 
         x₁ = randn(n)
@@ -63,6 +65,7 @@
         @test fm.θ̂ ≈ θ atol = 0.05
 
         # non-stationary logscale GEV fit by ML
+        # Random.seed!(1234)
         n = 10000
 
         x₁ = randn(n) / 3
@@ -85,6 +88,7 @@
         @test fm.θ̂ ≈ θ atol = 0.05
 
         # non-stationary location and logscale GEV fit by ML
+        # Random.seed!(12345)
         n = 10000
 
         x₁ = randn(n)
@@ -128,6 +132,7 @@
         # @test fm.θ̂ ≈ θ atol = 0.1
 
         # stationary GP fit by ML
+        # Random.seed!(12)
         n = 10000
 
         σ = 1.0
@@ -146,6 +151,7 @@
         @test fm.θ̂ ≈ θ atol = 0.05
 
         # non-stationary logscale GP fit by ML
+        # Random.seed!(1234)
         n = 10000
 
         x₁ = randn(n) / 3
