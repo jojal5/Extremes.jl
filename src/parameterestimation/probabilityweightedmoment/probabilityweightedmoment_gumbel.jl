@@ -11,7 +11,7 @@ Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted m
 """
 function gumbelfitpwm(y::Vector{<:Real})::pwmEVA
 
-    model = BlockMaxima(y)
+    model = BlockMaxima(y, dist = Gumbel)
 
     fittedmodel = gumbelfitpwm(model)
 
@@ -31,7 +31,7 @@ Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted m
     15(5), 1055–1064.
 
 """
-function gumbelfitpwm(model::BlockMaxima)::pwmEVA
+function gumbelfitpwm(model::BlockMaxima{Gumbel})::pwmEVA
 
     model = validatestationarity(model)
 
