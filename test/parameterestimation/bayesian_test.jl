@@ -1,8 +1,6 @@
 @testset "bayesian.jl" begin
     @testset "fitbayes(model; niter, warmup)" begin
 
-        Random.seed!(12)
-
         # stationary GEV Bayesian fit
         n = 10000
 

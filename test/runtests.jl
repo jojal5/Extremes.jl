@@ -3,6 +3,10 @@ using Distributions, Extremes
 using Test
 using LinearAlgebra, Random
 using Mamba
+using Statistics
+
+# Set the seed for reproductible test results
+Random.seed!(12)
 
 @testset "Extremes.jl" begin
     include("data_test.jl")
