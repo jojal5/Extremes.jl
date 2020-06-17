@@ -82,26 +82,25 @@ Returns a DataFrame with clusters for exceedance models. A cluster is defined as
 """
 function getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)
 
-    coltype = describe(df)[:eltype]#colwise(eltype, df)
+    coltype = describe(df)[:,:eltype]#colwise(eltype, df)
 
     @assert coltype[1]==Date || coltype[1]==DateTime "The first dataframe column should be of type Date."
     @assert coltype[2]<:Real "The second dataframe column should be of any subtypes of Real."
 
     cluster = DataFrame(Begin=Int64[], Length=Int64[], Max=Float64[], Position=Int64[], Sum=Float64[], P=Float64[])
 
-    years = unique(year.(df[1]))
+    years = unique(year.(df[:,1]))
 
     for yr in years
 
-        ind = year.(df[1]) .== yr
+        ind = year.(df[:,1]) .== yr
         c = getcluster(df[ind,2], u₁, u₂)
-        c[:Begin] = findfirst(ind) .+ c[:Begin] .-1
+        c[!,:Begin] = findfirst(ind) .+ c[:,:Begin] .- 1
         append!(cluster, c)
 
     end
 
-    d = df[1]
-    cluster[:Begin] = d[cluster[:Begin]]
+    cluster[!,:Begin] = df[cluster[:,:Begin],1]
 
     return cluster
 

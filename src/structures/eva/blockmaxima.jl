@@ -119,42 +119,6 @@ function getdistribution(model::BlockMaxima, θ::Vector{<:Real})::Vector{<:Distr
 end
 
 """
-    getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vector{<:Real}
-
-Compute the initial values of the GEV parameters given the data `y`.
-
-"""
-function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vector{<:Real}
-
-    # Fit the model with by the probability weigthed moments
-    fm = gevfitpwm(y)
-
-    # Convert to fitted model in a Distribution object
-    fd = getdistribution(fm.model, fm.θ̂)[]
-
-    # check if initial values are in the domain of the GEV
-    valid_initialvalues = all(insupport(fd,y))
-
-    #= If one at least one value does not lie in the support, then the initial
-     values are replaced by the Gumbel initial values. =#
-    if valid_initialvalues
-        μ₀ = location(fd)
-        σ₀ = scale(fd)
-        ξ₀ = Distributions.shape(fd)
-    else
-        fm = gumbelfitpwm(y)
-        μ₀ = fm.θ̂[1]
-        σ₀ = fm.θ̂[2]
-        ξ₀ = 0.0
-    end
-
-    initialvalues = [μ₀, σ₀, ξ₀]
-
-    return initialvalues
-
-end
-
-"""
     getinitialvalue(model::BlockMaxima)::Vector{<:Real}
 
 Get an initial values vector for the parameters of model.
@@ -165,9 +129,9 @@ function getinitialvalue(model::BlockMaxima)::Vector{<:Real}
     y = model.data
 
     # Compute stationary initial values
-    μ₀,σ₀,ξ₀ = getinitialvalue(GeneralizedExtremeValue,y)
+    μ₀,ϕ₀,ξ₀ = getinitialvalue(GeneralizedExtremeValue,y)
     # Store them in a dictionary
-    θ₀ = Dict(:μ => μ₀, :ϕ => log(σ₀), :ξ => ξ₀)
+    θ₀ = Dict(:μ => μ₀, :ϕ => ϕ₀, :ξ => ξ₀)
 
     initialvalues = zeros(nparameter(model))
     pi = paramindex(model)
