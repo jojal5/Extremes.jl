@@ -1,7 +1,8 @@
 @testset "bayesian.jl" begin
     @testset "fitbayes(model; niter, warmup)" begin
+
         # stationary GEV Bayesian fit
-        n = 10000
+        n = 5000
 
         μ = 0.0
         σ = 1.0
@@ -17,10 +18,11 @@
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        # Test of parameter estimates
-        @test θ̂ ≈ θ atol = .05
+        @test infq <= θ
+        @test θ <= supq
 
 
         # non-stationary location GEV Bayesian fit
@@ -43,10 +45,11 @@
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        # Test of parameter estimates
-        @test θ̂ ≈ θ atol = .05
+        @test infq <= θ
+        @test θ <= supq
 
         # non-stationary logscale GEV Bayesian fit
         n = 10000
@@ -68,10 +71,11 @@
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        # Test of parameter estimates
-        @test θ̂ ≈ θ atol = .05
+        @test infq <= θ
+        @test θ <= supq
 
         # non-stationary location and logscale GEV Bayesian fit
         n = 10000
@@ -93,10 +97,11 @@
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        # Test of parameter estimates
-        @test θ̂ ≈ θ atol = .05
+        @test infq <= θ
+        @test θ <= supq
 
         # non-stationary shape GEV Bayesian fit
         # n = 100000
@@ -117,10 +122,11 @@
         #
         # fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
         #
-        # θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
-        #
-        # # Test of parameter estimates
-        # @test θ̂ ≈ θ atol = .05
+        #infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        #supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
+
+        #@test infq <= θ
+        #@test θ <= supq5
 
         # stationary GP bayes fit
         n = 10000
@@ -138,9 +144,11 @@
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        @test θ̂ ≈ θ atol = 0.05
+        @test infq <= θ
+        @test θ <= supq
 
         # non-stationary logscale GP Bayesian fit
         n = 10000
@@ -161,9 +169,11 @@
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
-        θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
+        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
 
-        @test θ̂ ≈ θ atol = 0.05
+        @test infq <= θ
+        @test θ <= supq
 
         # # non-stationary shape GP Bayesian fit
         # n = 100000
@@ -184,9 +194,11 @@
         #
         # fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
         #
-        # θ̂ = dropdims(mean(fm.sim.value[:,:,1], dims=1)',dims=2)
-        #
-        # @test θ̂ ≈ θ atol = 0.1
+        #infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
+        #supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
+
+        #@test infq <= θ
+        #@test θ <= supq
 
     end
 

@@ -1,9 +1,24 @@
 @testset "maximumlikelihood.jl" begin
     @testset "fit(model)" begin
-        # TODO : Add no solution warn test
+
+        # No solution warn test
+        n = 10
+
+        μ = 0.0
+        σ = 1.0
+        ξ = .8
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+
+        y = rand(pd, n)
+
+        @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") gevfit(y)
 
         # stationary GEV fit by ML
-        n = 10000
+        n = 5000
 
         μ = 0.0
         σ = 1.0
@@ -19,7 +34,11 @@
 
         fm = Extremes.fit(model)
 
-        @test fm.θ̂ ≈ θ atol = 0.05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
         # non-stationary location GEV fit by ML
         n = 10000
@@ -41,7 +60,11 @@
 
         fm = Extremes.fit(model)
 
-        @test fm.θ̂ ≈ θ atol = 0.05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
         # non-stationary logscale GEV fit by ML
         n = 10000
@@ -63,7 +86,11 @@
 
         fm = Extremes.fit(model)
 
-        @test fm.θ̂ ≈ θ atol = 0.05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
         # non-stationary location and logscale GEV fit by ML
         n = 10000
@@ -85,7 +112,11 @@
 
         fm = Extremes.fit(model)
 
-        @test fm.θ̂ ≈ θ atol = 0.05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
         # # non-stationary shape GEV fit by ML
         # n = 10000
@@ -106,7 +137,11 @@
         #
         # fm = Extremes.fit(model)
         #
-        # @test fm.θ̂ ≈ θ atol = 0.1
+        #varM = Extremes.parametervar(fm)
+        #var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        #@test fm.θ̂ .- var <= θ
+        #@test θ <= fm.θ̂ .+ var
 
         # stationary GP fit by ML
         n = 10000
@@ -124,7 +159,11 @@
 
         fm = Extremes.fit(model)
 
-        @test fm.θ̂ ≈ θ atol = 0.05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
         # non-stationary logscale GP fit by ML
         n = 10000
@@ -145,7 +184,11 @@
 
         fm = Extremes.fit(model)
 
-        @test fm.θ̂ ≈ θ atol = 0.05
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
 
         # # non-stationary shape GP fit by ML
         # n = 10000
@@ -166,7 +209,11 @@
         #
         # fm = Extremes.fit(model)
         #
-        # @test fm.θ̂ ≈ θ atol = 0.1
+        #varM = Extremes.parametervar(fm)
+        #var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+        #
+        #@test fm.θ̂ .- var <= θ
+        #@test θ <= fm.θ̂ .+ var
 
     end
 

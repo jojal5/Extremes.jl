@@ -1,9 +1,12 @@
 @testset "data.jl" begin
     @testset "load(name)" begin
-        # TODO : Test with nonexistent file
+        # nonexistent file throws
+        @test_throws ErrorException load("nonexistant")
 
-        # TODO : Test with existing file
-        
+        # portpirie loading
+        df = load("portpirie")
+        @test size(df, 1) == 65
+        @test size(df, 2) == 2
     end
 
 end

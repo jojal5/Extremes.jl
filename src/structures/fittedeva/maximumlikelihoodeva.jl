@@ -115,7 +115,7 @@ end
 Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -153,6 +153,9 @@ The threshold should be a scalar. A varying threshold is not yet implemented.
 """
 function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+    @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
     α = (1 - confidencelevel)
 
@@ -197,9 +200,9 @@ Override of the show function for the objects of type EVA.
 function Base.show(io::IO, obj::MaximumLikelihoodEVA)
 
     println(io, "MaximumLikelihoodEVA")
-    println("model :")
+    println(io, "model :")
     showEVA(io, obj.model, prefix = "\t")
-    println()
+    println(io)
     println(io, "θ̂  :\t", obj.θ̂)
 
 end
