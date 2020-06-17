@@ -2,7 +2,7 @@
     @testset "fitbayes(model; niter, warmup)" begin
 
         # stationary GEV Bayesian fit
-        n = 10000
+        n = 5000
 
         μ = 0.0
         σ = 1.0
