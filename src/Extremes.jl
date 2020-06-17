@@ -21,7 +21,7 @@ export
     fittedEVA,
 
     # Explanatory variable type
-    ExplanatoryVariable,
+    ExplanatoryVariable, Variable, VariableStd, DataItem,
 
     # Extreme value analysis type
     BlockMaxima,
