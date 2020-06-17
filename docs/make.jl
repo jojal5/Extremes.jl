@@ -11,7 +11,7 @@ makedocs(sitename = "Extremes.jl",
        "index.md",
        "getting_started.md",
        "contributing.md",
-       #"functions.md",
+       "functions.md"
        ]
 
 )
