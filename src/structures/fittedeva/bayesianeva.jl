@@ -93,3 +93,92 @@ function Base.show(io::IO, obj::BayesianEVA)
     println(io, "sim :\t", typeof(obj.sim))
 
 end
+
+
+"""
+    transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})
+
+Transform the fitted model for the original covariate scales.
+"""
+function transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})
+
+    locationcovstd = fm.model.location.covariate
+    logscalecovstd = fm.model.logscale.covariate
+    shapecovstd = fm.model.shape.covariate
+
+    locationcov = Extremes.reconstruct.(locationcovstd)
+    logscalecov = Extremes.reconstruct.(logscalecovstd)
+    shapecov = Extremes.reconstruct.(shapecovstd)
+
+    # Model on the original covariate scale
+    model = BlockMaxima(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+
+    # Transformation of the parameter estimates
+    z = fm.sim.value[:,:,1]
+
+    x = deepcopy(z)
+    ind = Extremes.paramindex(fm.model)
+
+    for (var, par) in zip([locationcovstd, logscalecovstd, shapecovstd],[:μ, :ϕ, :ξ])
+        if !isempty(var)
+            a = getfield.(var, :scale)
+            b = getfield.(var, :offset)
+
+            for i=1:length(a)
+                x[:,ind[par][1]] = x[:,ind[par][1]] - z[:,ind[par][1+i]] * b[i]/a[i]
+                x[:,ind[par][1+i]] = z[:,ind[par][1+i]]/a[i]
+            end
+        end
+    end
+
+    sim = fm.sim
+    sim.value[:,:,1] = x
+
+    # Contruction of the fittedEVA structure
+    return BayesianEVA(model, sim)
+
+end
+
+
+
+"""
+    transform(fm::BayesianEVA{ThresholdExceedance})
+
+Transform the fitted model for the original covariate scales.
+"""
+function transform(fm::BayesianEVA{ThresholdExceedance})
+
+    logscalecovstd = fm.model.logscale.covariate
+    shapecovstd = fm.model.shape.covariate
+
+    logscalecov = Extremes.reconstruct.(logscalecovstd)
+    shapecov = Extremes.reconstruct.(shapecovstd)
+
+    # Model on the original covariate scale
+    model = ThresholdExceedance(fm.model.data, logscalecov = logscalecov, shapecov = shapecov)
+
+    # Transformation of the parameter estimates
+    z = fm.sim.value[:,:,1]
+
+    x = deepcopy(z)
+    ind = Extremes.paramindex(fm.model)
+
+    for (var, par) in zip([logscalecovstd, shapecovstd],[:ϕ, :ξ])
+        if !isempty(var)
+            a = getfield.(var, :scale)
+            b = getfield.(var, :offset)
+
+            for i=1:length(a)
+                x[:,ind[par][1]] = x[:,ind[par][1]] - z[:,ind[par][1+i]] * b[i]/a[i]
+                x[:,ind[par][1+i]] = z[:,ind[par][1+i]]/a[i]
+            end
+        end
+    end
+
+    sim = fm.sim
+    sim.value[:,:,1] = x
+
+    # Contruction of the fittedEVA structure
+    return BayesianEVA(model, sim)
+
+end

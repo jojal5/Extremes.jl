@@ -7,17 +7,17 @@ end
 
 """
     BlockMaxima(data::Vector{<:Real};
-        locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-        logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-        shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima
+        locationcov::Vector{Variable} = Vector{Variable}(),
+        logscalecov::Vector{Variable} = Vector{Variable}(),
+        shapecov::Vector{Variable} = Vector{Variable}())::BlockMaxima
 
 Creates a BlockMaxima structure.
 
 """
 function BlockMaxima(data::Vector{<:Real};
-    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    locationcov::Vector{<:DataItem} = Vector{Variable}(),
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}(),
     dist::Type{<:Distribution} = GeneralizedExtremeValue)::BlockMaxima
 
     n = length(data)
@@ -35,17 +35,17 @@ end
 
 """
     BlockMaxima{T}(data::Vector{<:Real};
-        locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-        logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-        shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima where T<:Distribution
+        locationcov::Vector{Variable} = Vector{Variable}(),
+        logscalecov::Vector{Variable} = Vector{Variable}(),
+        shapecov::Vector{Variable} = Vector{Variable}())::BlockMaxima where T<:Distribution
 
 Creates a BlockMaxima structure.
 
 """
 function BlockMaxima{T}(data::Vector{<:Real};
-    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::BlockMaxima where T<:Distribution
+    locationcov::Vector{<:DataItem} = Vector{Variable}(),
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::BlockMaxima where T<:Distribution
 
     return BlockMaxima(data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov, dist = T)
 end

@@ -1,8 +1,8 @@
 """
     gpfitbayes(y::Vector{<:Real};
-         logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-         shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-         niter::Int=5000, warmup::Int=2000,)::BayesianEVA
+         logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+         shapecov::Vector{<:DataItem} = Vector{Variable}(),
+         niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
 Fit a non-stationary Generalized Pareto (GEV) distribution under the Bayesian paradigm to the vector of data contained in the Vector y.
 
@@ -32,20 +32,23 @@ pd = GeneralizedPareto.(σ,.1)
 y = rand.(pd)
 
 # Estimate the parameters
-gpfitbayes(y, logscalecov = [ExplanatoryVariable("x", x)])
+gpfitbayes(y, logscalecov = [Variable("x", x)])
 ```
 
 """
 function gpfitbayes(y::Vector{<:Real};
-     logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+     shapecov::Vector{<:DataItem} = Vector{Variable}(),
      niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-    model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)
+     logscalecovstd = standardize.(logscalecov)
+     shapecovstd = standardize.(shapecov)
+
+    model = ThresholdExceedance(y, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
-    return fittedmodel
+    return transform(fittedmodel)
 
 end
 
@@ -66,11 +69,9 @@ function gpfitbayes(df::DataFrame, datacol::Symbol;
     logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = ThresholdExceedance(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov)
+    fm = gpfitbayes(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov, niter = niter, warmup = warmup)
 
-    fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
-
-    return fittedmodel
+    return fm
 
 end
 

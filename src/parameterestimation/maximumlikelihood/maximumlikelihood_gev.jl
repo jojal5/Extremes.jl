@@ -28,22 +28,26 @@ pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
 
 # Estimate the parameters
-gevfit(y, locationcov = [ExplanatoryVariable("x", x)])
+gevfit(y, locationcov = [Variable("x", x)])
 ```
 
 The covariate may be standardized to facilitate the estimation.
 
 """
 function gevfit(y::Vector{<:Real};
-    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::MaximumLikelihoodEVA
+    locationcov::Vector{<:DataItem} = Vector{Variable}(),
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
 
-    model = BlockMaxima(y, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    locationcovstd = standardize.(locationcov)
+    logscalecovstd = standardize.(logscalecov)
+    shapecovstd = standardize.(shapecov)
+
+    model = BlockMaxima(y, locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fit(model)
 
-    return fittedmodel
+    return transform(fittedmodel)
 
 end
 
@@ -65,11 +69,10 @@ function gevfit(df::DataFrame, datacol::Symbol;
     logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = BlockMaxima(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    fm = gevfit(df[:,datacol], locationcov = locationcov,
+        logscalecov = logscalecov, shapecov = shapecov)
 
-    fittedmodel = fit(model)
-
-    return fittedmodel
+    return fm
 
 end
 

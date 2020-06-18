@@ -16,8 +16,8 @@
     @testset "gpfit(y; logscalecov, shapecov)" begin
         # model building with non-stationary logscale and shape
         fm = Extremes.gpfit(y,
-            logscalecov = [ExplanatoryVariable("x₁", x₁)],
-            shapecov = [ExplanatoryVariable("x₂", x₂)])
+            logscalecov = [Variable("x₁", x₁)],
+            shapecov = [Variable("x₂", x₂)])
 
         varM = Extremes.parametervar(fm)
         var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
@@ -44,8 +44,8 @@
     @testset "gpfit(model)" begin
         # non-stationary location, logscale and shape
         model = Extremes.ThresholdExceedance(y,
-            logscalecov = [ExplanatoryVariable("x₁", x₁)],
-            shapecov = [ExplanatoryVariable("x₂", x₂)])
+            logscalecov = [Variable("x₁", x₁)],
+            shapecov = [Variable("x₂", x₂)])
 
         fm = Extremes.gpfit(model)
 

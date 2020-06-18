@@ -2,14 +2,14 @@
     @testset "computeparamfunction(covariates)" begin
         # function returned for empty covariates should not modify θ
         θ = [1.0]
-        fsame = Extremes.computeparamfunction(ExplanatoryVariable[])
+        fsame = Extremes.computeparamfunction(Variable[])
         θtransformed = fsame(θ)
 
         @test θ == θtransformed
 
         # function returned for not empty covariates should modify θ
         θ = [1.0, 1.0]
-        ev = ExplanatoryVariable("t", collect(1:100))
+        ev = Variable("t", collect(1:100))
         ftrans = Extremes.computeparamfunction([ev])
         θtransformed = ftrans(θ)
 
@@ -43,7 +43,7 @@
     @testset "validatestationarity(model)" begin
         n = 1000
         y = collect(1:n)
-        ev = [ExplanatoryVariable("x", rand(n))]
+        ev = [Variable("x", rand(n))]
         smodel = nothing
 
         # non-stationary BlockMaxima model
@@ -98,13 +98,13 @@
     @testset "showparamfun(name, param)" begin
         f(β) = identity(β)
         # stationary param
-        param = Extremes.paramfun(ExplanatoryVariable[], f)
+        param = Extremes.paramfun(Variable[], f)
 
         @test Extremes.showparamfun("μ", param) == "μ ~ 1"
 
         # non-stationary param
         n = 100
-        param = Extremes.paramfun([ExplanatoryVariable("t", collect(1:n)), ExplanatoryVariable("x", rand(n))], f)
+        param = Extremes.paramfun([Variable("t", collect(1:n)), Variable("x", rand(n))], f)
 
         @test Extremes.showparamfun("μ", param) == "μ ~ 1 + t + x"
 
@@ -112,11 +112,11 @@
 
     @testset "validatelength(length, explvariables)" begin
         n = 100
-        evn = ExplanatoryVariable("tn", collect(1:n))
-        evnx = ExplanatoryVariable("xn", rand(n))
-        evn10 = ExplanatoryVariable("tn10", collect(1:n+10))
+        evn = Variable("tn", collect(1:n))
+        evnx = Variable("xn", rand(n))
+        evn10 = Variable("tn10", collect(1:n+10))
         # empty explvariables shold not throw
-        @test_logs Extremes.validatelength(n, ExplanatoryVariable[])
+        @test_logs Extremes.validatelength(n, Variable[])
 
         # explvariables length all == length should not throw
         @test_logs Extremes.validatelength(n, [evn, evnx])

@@ -18,9 +18,9 @@
     @testset "gevfitbayes(y; locationcov, logscalecov, shapecov, niter, warmup)" begin
         # model building with non-stationary location, logscale and shape
         fm = Extremes.gevfitbayes(y,
-            locationcov = [ExplanatoryVariable("x₁", x₁)],
-            logscalecov = [ExplanatoryVariable("x₂", x₂)],
-            shapecov = [ExplanatoryVariable("x₃", x₃)],
+            locationcov = [Variable("x₁", x₁)],
+            logscalecov = [Variable("x₂", x₂)],
+            shapecov = [Variable("x₃", x₃)],
             niter=1000, warmup=500)
 
         infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
@@ -48,9 +48,9 @@
     @testset "gevfitbayes(model; niter, warmup)" begin
         # non-stationary location, logscale and shape
         model = Extremes.BlockMaxima(y,
-            locationcov = [ExplanatoryVariable("x₁", x₁)],
-            logscalecov = [ExplanatoryVariable("x₂", x₂)],
-            shapecov = [ExplanatoryVariable("x₃", x₃)])
+            locationcov = [Variable("x₁", x₁)],
+            logscalecov = [Variable("x₂", x₂)],
+            shapecov = [Variable("x₃", x₃)])
 
         fm = Extremes.gevfitbayes(model, niter=1000, warmup=500)
 

@@ -19,7 +19,7 @@
 
     @testset "gevfitpwm(model)" begin
         # non-stationary warn
-        model = Extremes.BlockMaxima(y, locationcov = [ExplanatoryVariable("t", collect(1:n))])
+        model = Extremes.BlockMaxima(y, locationcov = [Variable("t", collect(1:n))])
 
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.

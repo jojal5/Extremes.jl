@@ -33,21 +33,25 @@ pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
 
 # Estimate the parameters
-gevfitbayes(y, locationcov = [ExplanatoryVariable("x", x)])
+gevfitbayes(y, locationcov = [Variable("x", x)])
 ```
 
 """
 function gevfitbayes(y::Vector{<:Real};
-    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    locationcov::Vector{<:DataItem} = Vector{Variable}(),
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}(),
     niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-    model = BlockMaxima(y, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    locationcovstd = standardize.(locationcov)
+    logscalecovstd = standardize.(logscalecov)
+    shapecovstd = standardize.(shapecov)
+
+    model = BlockMaxima(y, locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
-    return fittedmodel
+    return transform(fittedmodel)
 
 end
 
@@ -71,11 +75,10 @@ function gevfitbayes(df::DataFrame, datacol::Symbol;
     logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = BlockMaxima(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    fm = gevfitbayes(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov,
+        shapecov = shapecov, niter = niter, warmup = warmup)
 
-    fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
-
-    return fittedmodel
+    return fm
 
 end
 
