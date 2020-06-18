@@ -75,9 +75,9 @@
         @test Ŝ ≈ S rtol = 0.1
         @test Extremes.loglike(fm.model, θ̂) ≈ 49.9 rtol = 0.1
 
-        evt = ExplanatoryVariable("t", t)
-        evt² = ExplanatoryVariable("t²", t .^ 2)
-        evSOI = ExplanatoryVariable("SOI", df[:, :SOI])
+        evt = Variable("t", t)
+        evt² = Variable("t²", t .^ 2)
+        evSOI = Variable("SOI", df[:, :SOI])
 
         # Quadratic trend in μ
         fm = gevfit(df[:, :SeaLevel], locationcov = [evt, evt²])

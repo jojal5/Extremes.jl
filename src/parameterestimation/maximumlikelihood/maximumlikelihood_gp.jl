@@ -30,14 +30,17 @@ The covariate may be standardized to facilitate the estimation.
 
 """
 function gpfit(y::Vector{<:Real};
-    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::MaximumLikelihoodEVA
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
 
-    model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)
+    logscalecovstd = standardize.(logscalecov)
+    shapecovstd = standardize.(shapecov)
+
+    model = ThresholdExceedance(y, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fit(model)
 
-    return fittedmodel
+    return transform(fittedmodel)
 
 end
 
@@ -56,11 +59,9 @@ function gpfit(df::DataFrame, datacol::Symbol;
     logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = ThresholdExceedance(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov)
+    fm = gpfit(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov)
 
-    fittedmodel = fit(model)
-
-    return fittedmodel
+    return fm
 
 end
 

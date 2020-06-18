@@ -234,7 +234,7 @@ function unslicematrix(B::Array{Array{T,1},1}; dims::Int=1)::AbstractMatrix{T} w
 end
 
 """
-    buildExplanatoryVariables(df::DataFrame, ids::Vector{Symbol})::Vector{ExplanatoryVariable}
+    buildExplanatoryVariables(df::DataFrame, ids::Vector{Symbol})::Vector{Variable}
 
 Creates the explanatory variables with names corresponding to the symbols.
 

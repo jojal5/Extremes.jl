@@ -246,3 +246,43 @@ function transform(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}
     return MaximumLikelihoodEVA(model, θ̂)
 
 end
+
+
+
+"""
+    transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
+
+Transform the fitted model for the original covariate scales.
+"""
+function transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
+
+    logscalecovstd = fm.model.logscale.covariate
+    shapecovstd = fm.model.shape.covariate
+
+    logscalecov = Extremes.reconstruct.(logscalecovstd)
+    shapecov = Extremes.reconstruct.(shapecovstd)
+
+    # Model on the original covariate scale
+    model = ThresholdExceedance(fm.model.data, logscalecov = logscalecov, shapecov = shapecov)
+
+    # Transformation of the parameter estimates
+    θ̂ = deepcopy(fm.θ̂)
+    ind = Extremes.paramindex(fm.model)
+
+    for (var, par) in zip([logscalecovstd, shapecovstd],[:ϕ, :ξ])
+        if !isempty(var)
+            a = getfield.(var, :scale)
+            b = getfield.(var, :offset)
+
+            θ̂[ind[par][1]] = fm.θ̂[ind[par][1]] - sum( fm.θ̂[ind[par][1+i]] * b[i]/a[i] for i=1:length(a) )
+
+            for i=1:length(a)
+                θ̂[ind[par][1+i]] = fm.θ̂[ind[par][1+i]]/a[i]
+            end
+        end
+    end
+
+    # Contruction of the fittedEVA structure
+    return MaximumLikelihoodEVA(model, θ̂)
+
+end

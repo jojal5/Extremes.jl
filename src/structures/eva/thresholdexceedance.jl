@@ -6,15 +6,15 @@ end
 
 """
     ThresholdExceedance(exceedances::Vector{<:Real};
-        logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-        shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::ThresholdExceedance
+        logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}())::ThresholdExceedance
 
 Creates a ThresholdExceedance structure.
 
 """
 function ThresholdExceedance(exceedances::Vector{<:Real};
-    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}())::ThresholdExceedance
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::ThresholdExceedance
 
     n = length(exceedances)
     validatelength(n, logscalecov)

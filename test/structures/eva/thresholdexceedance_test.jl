@@ -12,7 +12,7 @@
     nsmodel = Extremes.ThresholdExceedance(y, logscalecov = ev, shapecov = ev)
 
     @testset "ThresholdExceedance(exceedances; logscalecov, shapecov)" begin
-        ev10 = Extremes.ExplanatoryVariable("t", collect(1:n+10))
+        ev10 = Extremes.Variable("t", collect(1:n+10))
 
         # Build with logscalecov length != y length
         @test_throws AssertionError Extremes.ThresholdExceedance(y, logscalecov = [ev10])
@@ -92,7 +92,7 @@
         pd = GeneralizedPareto.(σ, ξ)
         y = rand.(pd)
 
-        model = ThresholdExceedance(y, logscalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
+        model = ThresholdExceedance(y, logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
 
         fd = Extremes.getdistribution(model, θ)
 
