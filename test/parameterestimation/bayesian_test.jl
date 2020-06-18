@@ -41,7 +41,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, locationcov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
+        model = Extremes.BlockMaxima(y, locationcov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -67,7 +67,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, logscalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
+        model = Extremes.BlockMaxima(y, logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -93,7 +93,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, locationcov = [ExplanatoryVariable("x₁", x₁)], logscalecov = [ExplanatoryVariable("x₂", x₂)])
+        model = Extremes.BlockMaxima(y, locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)])
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -118,7 +118,7 @@
         # pd = GeneralizedExtremeValue.(μ, σ, ξ)
         # y = rand.(pd)
         #
-        # model = Extremes.BlockMaxima(y, shapecov = [ExplanatoryVariable("x₁", x₁)])
+        # model = Extremes.BlockMaxima(y, shapecov = [Variable("x₁", x₁)])
         #
         # fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
         #
@@ -165,7 +165,7 @@
         pd = GeneralizedPareto.(σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.ThresholdExceedance(y, logscalecov = [ExplanatoryVariable("x₁", x₁), ExplanatoryVariable("x₂", x₂)])
+        model = Extremes.ThresholdExceedance(y, logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -190,7 +190,7 @@
         # pd = GeneralizedPareto.(μ, σ, ξ)
         # y = rand.(pd)
         #
-        # model = Extremes.ThresholdExceedance(y, shapecov = [ExplanatoryVariable("x₁", x₁)])
+        # model = Extremes.ThresholdExceedance(y, shapecov = [Variable("x₁", x₁)])
         #
         # fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
         #

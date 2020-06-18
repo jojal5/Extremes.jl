@@ -16,8 +16,8 @@
     @testset "gpfitbayes(y; logscalecov, shapecov, niter, warmup)" begin
         # model building with non-stationary logscale and shape
         fm = Extremes.gpfitbayes(y,
-            logscalecov = [ExplanatoryVariable("x₁", x₁)],
-            shapecov = [ExplanatoryVariable("x₂", x₂)],
+            logscalecov = [Variable("x₁", x₁)],
+            shapecov = [Variable("x₂", x₂)],
             niter=1000, warmup=500)
 
             infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
@@ -44,8 +44,8 @@
     @testset "gpfitbayes(model; niter, warmup)" begin
         # non-stationary location, logscale and shape
         model = Extremes.ThresholdExceedance(y,
-            logscalecov = [ExplanatoryVariable("x₁", x₁)],
-            shapecov = [ExplanatoryVariable("x₂", x₂)])
+            logscalecov = [Variable("x₁", x₁)],
+            shapecov = [Variable("x₂", x₂)])
 
         fm = Extremes.gpfitbayes(model, niter=1000, warmup=500)
 

@@ -1,8 +1,8 @@
 """
     gpfitbayes(y::Vector{<:Real};
-         logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-         shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-         niter::Int=5000, warmup::Int=2000,)::BayesianEVA
+         logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+         shapecov::Vector{<:DataItem} = Vector{Variable}(),
+         niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
 Fit a non-stationary Generalized Pareto (GEV) distribution under the Bayesian paradigm to the vector of data contained in the Vector y.
 
@@ -32,13 +32,13 @@ pd = GeneralizedPareto.(σ,.1)
 y = rand.(pd)
 
 # Estimate the parameters
-gpfitbayes(y, logscalecov = [ExplanatoryVariable("x", x)])
+gpfitbayes(y, logscalecov = [Variable("x", x)])
 ```
 
 """
 function gpfitbayes(y::Vector{<:Real};
-     logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-     shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+     shapecov::Vector{<:DataItem} = Vector{Variable}(),
      niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)

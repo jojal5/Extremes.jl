@@ -23,7 +23,7 @@ pd = GeneralizedPareto.(σ,.1)
 y = rand.(pd)
 
 # Estimate the parameters
-gpfit(y, logscalecov = [ExplanatoryVariable("x", x)])
+gpfit(y, logscalecov = [Variable("x", x)])
 ```
 
 The covariate may be standardized to facilitate the estimation.

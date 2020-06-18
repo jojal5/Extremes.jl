@@ -1,10 +1,5 @@
 abstract type EVA end
 
-struct ExplanatoryVariable
-    name::String
-    value::Vector{<:Real}
-end
-
 struct paramfun
     covariate::Vector{<:DataItem}
     fun::Function

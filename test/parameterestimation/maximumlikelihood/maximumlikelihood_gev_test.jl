@@ -18,9 +18,9 @@
     @testset "gevfit(y; locationcov, logscalecov, shapecov)" begin
         # model building with non-stationary location, logscale and shape
         fm = Extremes.gevfit(y,
-            locationcov = [ExplanatoryVariable("x₁", x₁)],
-            logscalecov = [ExplanatoryVariable("x₂", x₂)],
-            shapecov = [ExplanatoryVariable("x₃", x₃)])
+            locationcov = [Variable("x₁", x₁)],
+            logscalecov = [Variable("x₂", x₂)],
+            shapecov = [Variable("x₃", x₃)])
 
         varM = Extremes.parametervar(fm)
         var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
@@ -47,9 +47,9 @@
     @testset "gevfit(model)" begin
         # non-stationary location, logscale and shape
         model = Extremes.BlockMaxima(y,
-            locationcov = [ExplanatoryVariable("x₁", x₁)],
-            logscalecov = [ExplanatoryVariable("x₂", x₂)],
-            shapecov = [ExplanatoryVariable("x₃", x₃)])
+            locationcov = [Variable("x₁", x₁)],
+            logscalecov = [Variable("x₂", x₂)],
+            shapecov = [Variable("x₃", x₃)])
 
         fm = Extremes.gevfit(model)
 

@@ -33,14 +33,14 @@ pd = GeneralizedExtremeValue.(μ,1,.1)
 y = rand.(pd)
 
 # Estimate the parameters
-gevfitbayes(y, locationcov = [ExplanatoryVariable("x", x)])
+gevfitbayes(y, locationcov = [Variable("x", x)])
 ```
 
 """
 function gevfitbayes(y::Vector{<:Real};
-    locationcov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    logscalecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
-    shapecov::Vector{ExplanatoryVariable} = Vector{ExplanatoryVariable}(),
+    locationcov::Vector{<:DataItem} = Vector{Variable}(),
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}(),
     niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     model = BlockMaxima(y, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
