@@ -52,7 +52,7 @@
 
         t = collect(1:n)
 
-        fm = gevfit(df[:, :SeaLevel], locationcov = [ExplanatoryVariable("t", t)])
+        fm = gevfit(df[:, :SeaLevel], locationcov = [Variable("t", t)])
 
         # Parameter estimates
         θ̂ = fm.θ̂

@@ -6,7 +6,7 @@
 
     x = rand(n)
 
-    ev = [ExplanatoryVariable("x", x)]
+    ev = [Variable("x", x)]
 
     smodel = Extremes.ThresholdExceedance(y)
     nsmodel = Extremes.ThresholdExceedance(y, logscalecov = ev, shapecov = ev)

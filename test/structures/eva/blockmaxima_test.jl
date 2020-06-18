@@ -6,13 +6,13 @@
 
     x = rand(n)
 
-    ev = [ExplanatoryVariable("x", x)]
+    ev = [Variable("x", x)]
 
     smodel = Extremes.BlockMaxima(y)
     nsmodel = Extremes.BlockMaxima(y, locationcov = ev, logscalecov = ev, shapecov = ev)
 
     @testset "BlockMaxima(data; locationcov, logscalecov, shapecov)" begin
-        ev10 = Extremes.ExplanatoryVariable("t", collect(1:n+10))
+        ev10 = Extremes.Variable("t", collect(1:n+10))
 
         # Build with locationcov length != y length
         @test_throws AssertionError Extremes.BlockMaxima(y, locationcov = [ev10])
@@ -102,7 +102,7 @@
 
         y = rand.(pd)
 
-        model = BlockMaxima(y, locationcov = [ExplanatoryVariable("x₁", x₁)], logscalecov = [ExplanatoryVariable("x₂", x₂)], shapecov = [ExplanatoryVariable("x₃", x₃)])
+        model = BlockMaxima(y, locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
 
         fd = Extremes.getdistribution(model, θ)
 

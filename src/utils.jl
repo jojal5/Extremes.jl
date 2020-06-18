@@ -244,7 +244,7 @@ function buildExplanatoryVariables(df::DataFrame, ids::Vector{Symbol})::Vector{V
     variables = Vector{Variable}()
 
     for id in ids
-        push!(variables, ExplanatoryVariable(string(id), df[:,id]))
+        push!(variables, Variable(string(id), df[:,id]))
     end
 
     return variables
