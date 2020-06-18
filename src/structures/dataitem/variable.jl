@@ -4,6 +4,11 @@ struct Variable <: DataItem
     value :: Vector{<:Real}
 end
 
+"""
+    standardize(v::Variable)::VariableStd
+
+Standardize the vector of values in `v.values`. The function returns an object of type `VariableStd`.
+"""
 function standardize(v::Variable)::VariableStd
 
     x = v.value
