@@ -14,7 +14,7 @@ model is non-stationary, a matrix of quantiles is returned, where each row
 corresponds to a MCMC step and each column to a covariate.
 
 """
-function quantile(fm::BayesianEVA,p::Real)::Real
+function quantile(fm::BayesianEVA,p::Real)::Array{<:Real}
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
