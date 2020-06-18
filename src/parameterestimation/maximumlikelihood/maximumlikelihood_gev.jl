@@ -47,7 +47,7 @@ function gevfit(y::Vector{<:Real};
 
     fittedmodel = fit(model)
 
-    return fittedmodel
+    return transform(fittedmodel)
 
 end
 
@@ -73,7 +73,7 @@ function gevfit(df::DataFrame, datacol::Symbol;
 
     fittedmodel = fit(model)
 
-    return fittedmodel
+    return transform(fittedmodel)
 
 end
 
