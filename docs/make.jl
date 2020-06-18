@@ -19,6 +19,7 @@ makedocs(sitename = "Extremes.jl",
 if CI
     deploydocs(
     repo   = "github.com/jojal5/Extremes.jl.git",
+    devbranch = "dev",
     target = "build"
     )
 end
