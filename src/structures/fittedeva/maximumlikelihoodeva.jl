@@ -234,9 +234,10 @@ function transform(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}
             a = getfield.(var, :scale)
             b = getfield.(var, :offset)
 
-            θ̂[ind[par][1]] = fm.θ̂[ind[par][1]] - sum( fm.θ̂[ind[par][1+i]] * b[i]/a[i] for i=1:length(a) )
+            # θ̂[ind[par][1]] = fm.θ̂[ind[par][1]] - sum( fm.θ̂[ind[par][1+i]] * b[i]/a[i] for i=1:length(a) )
 
             for i=1:length(a)
+                θ̂[ind[par][1]] -= fm.θ̂[ind[par][1+i]]*b[i]/a[i]
                 θ̂[ind[par][1+i]] = fm.θ̂[ind[par][1+i]]/a[i]
             end
         end
@@ -274,9 +275,10 @@ function transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
             a = getfield.(var, :scale)
             b = getfield.(var, :offset)
 
-            θ̂[ind[par][1]] = fm.θ̂[ind[par][1]] - sum( fm.θ̂[ind[par][1+i]] * b[i]/a[i] for i=1:length(a) )
+            # θ̂[ind[par][1]] = fm.θ̂[ind[par][1]] - sum( fm.θ̂[ind[par][1+i]] * b[i]/a[i] for i=1:length(a) )
 
             for i=1:length(a)
+                θ̂[ind[par][1]] -= fm.θ̂[ind[par][1+i]]*b[i]/a[i]
                 θ̂[ind[par][1+i]] = fm.θ̂[ind[par][1+i]]/a[i]
             end
         end

@@ -41,11 +41,14 @@ function gpfitbayes(y::Vector{<:Real};
      shapecov::Vector{<:DataItem} = Vector{Variable}(),
      niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-    model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)
+     logscalecovstd = standardize.(logscalecov)
+     shapecovstd = standardize.(shapecov)
+
+    model = ThresholdExceedance(y, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
-    return fittedmodel
+    return transform(fittedmodel)
 
 end
 
@@ -66,11 +69,9 @@ function gpfitbayes(df::DataFrame, datacol::Symbol;
     logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = ThresholdExceedance(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov)
+    fm = gpfitbayes(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov, niter = niter, warmup = warmup)
 
-    fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
-
-    return fittedmodel
+    return fm
 
 end
 
