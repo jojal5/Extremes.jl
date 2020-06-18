@@ -7,7 +7,7 @@ end
 """
     standardize(v::Variable)::VariableStd
 
-Standardize the vector of values in `v.values`. The function returns an object of type `VariableStd`.
+Standardize the vector of values in `v.values` and return a type `VariableStd`.
 """
 function standardize(v::Variable)::VariableStd
 
