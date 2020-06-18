@@ -69,11 +69,10 @@ function gevfit(df::DataFrame, datacol::Symbol;
     logscalecov = buildExplanatoryVariables(df, logscalecovid)
     shapecov = buildExplanatoryVariables(df, shapecovid)
 
-    model = BlockMaxima(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    fm = gevfit(df[:,datacol], locationcov = locationcov,
+        logscalecov = logscalecov, shapecov = shapecov)
 
-    fittedmodel = fit(model)
-
-    return transform(fittedmodel)
+    return fm
 
 end
 

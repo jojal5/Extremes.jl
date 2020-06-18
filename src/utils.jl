@@ -239,9 +239,9 @@ end
 Creates the explanatory variables with names corresponding to the symbols.
 
 """
-function buildExplanatoryVariables(df::DataFrame, ids::Vector{Symbol})::Vector{ExplanatoryVariable}
+function buildExplanatoryVariables(df::DataFrame, ids::Vector{Symbol})::Vector{Variable}
 
-    variables = Vector{ExplanatoryVariable}()
+    variables = Vector{Variable}()
 
     for id in ids
         push!(variables, ExplanatoryVariable(string(id), df[:,id]))
