@@ -6,19 +6,19 @@ struct ExplanatoryVariable
 end
 
 struct paramfun
-    covariate::Vector{ExplanatoryVariable}
+    covariate::Vector{<:DataItem}
     fun::Function
 end
 
 Base.Broadcast.broadcastable(obj::EVA) = Ref(obj)
 
 """
-    computeparamfunction(covariates::Vector{ExplanatoryVariable})::Function
+    computeparamfunction(covariates::Vector{Variable})::Function
 
 Establish the parameter as function of the corresponding covariates.
 
 """
-function computeparamfunction(covariates::Vector{ExplanatoryVariable})::Function
+function computeparamfunction(covariates::Vector{<:DataItem})::Function
 
     fun =
     if isempty(covariates)
@@ -123,11 +123,11 @@ function showparamfun(name::String, param::paramfun)::String
 end
 
 """
-    validatelength(length::Real, explvariables::Vector{ExplanatoryVariable})
+    validatelength(length::Real, explvariables::Vector{Variable})
 
 Validates that the values of the explanatory variables are of length `length`.
 """
-function validatelength(n::Real, explvariables::Vector{ExplanatoryVariable})
+function validatelength(n::Real, explvariables::Vector{<:DataItem})
 
     for explvariable in explvariables
         @assert length(explvariable.value) == n "The explanatory variable length should match data length."
