@@ -24,6 +24,11 @@
         @test vstd.offset == 0 # integer comparison
         @test vstd.scale == 1 # integer comparison
 
+        v = Variable("x", ones(10))
+        vstd = Extremes.standardize(v)
+
+        @test vstd.scale == 1 # integer comparison
+
     end
 
 end

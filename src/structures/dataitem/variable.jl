@@ -17,7 +17,7 @@ function standardize(v::Variable)::VariableStd
     s = std(x)
 
     offset = isapprox(x̄,0) ? zero(typeof(x[1])) : x̄
-    scale = isapprox(s,1) ? one(typeof(x[1])) : s
+    scale = (isapprox(s,1) || isapprox(s,0.0)) ? one(typeof(x[1])) : s
 
     z = (x .- offset) ./ scale
 
