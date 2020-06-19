@@ -30,6 +30,15 @@
 
     end
 
+    @testset "gevfit(y, initialvalues; locationcov, logscalecov, shapecov)" begin
+        # Using initialvalues does not throw nor warn
+        @test_logs fm = Extremes.gevfit(y, zeros(Float64, 6),
+            locationcov = [Variable("x₁", x₁)],
+            logscalecov = [Variable("x₂", x₂)],
+            shapecov = [Variable("x₃", x₃)])
+
+    end
+
     @testset "gevfit(df, datacol; locationcovid, logscalecovid, shapecovid)" begin
         # model building with non-stationary location, logscale and shape
         df = DataFrame(y = y, x1 = x₁, x2 = x₂, x3 = x₃)
@@ -41,6 +50,14 @@
 
         @test fm.θ̂ .- var <= θ
         @test θ <= fm.θ̂ .+ var
+
+    end
+
+    @testset "gevfit(df, datacol, initialvalues; locationcovid, logscalecovid, shapecovid)" begin
+        # Using initialvalues does not throw nor warn
+        df = DataFrame(y = y, x1 = x₁, x2 = x₂, x3 = x₃)
+
+        @test_logs Extremes.gevfit(df, :y, zeros(Float64, 6), locationcovid = [:x1], logscalecovid = [:x2], shapecovid = [:x3])
 
     end
 
