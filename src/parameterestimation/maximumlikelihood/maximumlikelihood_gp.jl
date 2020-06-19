@@ -56,12 +56,14 @@ function gpfit(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
 
-    logscalecov = buildVariables(df, logscalecovid)
-    shapecov = buildVariables(df, shapecovid)
+    logscalecovstd = standardize.(buildVariables(df, logscalecovid))
+    shapecovstd = standardize.(buildVariables(df, shapecovid))
 
-    fm = gpfit(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov)
+    model = ThresholdExceedance(df[:, datacol], logscalecov = logscalecovstd, shapecov = shapecovstd)
 
-    return fm
+    fittedmodel = fit(model)
+
+    return transform(fittedmodel)
 
 end
 

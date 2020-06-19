@@ -65,14 +65,15 @@ function gevfit(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
 
-    locationcov = buildVariables(df, locationcovid)
-    logscalecov = buildVariables(df, logscalecovid)
-    shapecov = buildVariables(df, shapecovid)
+    locationcovstd = standardize.(buildVariables(df, locationcovid))
+    logscalecovstd = standardize.(buildVariables(df, logscalecovid))
+    shapecovstd = standardize.(buildVariables(df, shapecovid))
 
-    fm = gevfit(df[:,datacol], locationcov = locationcov,
-        logscalecov = logscalecov, shapecov = shapecov)
+    model = BlockMaxima(df[:, datacol], locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
-    return fm
+    fittedmodel = fit(model)
+
+    return transform(fittedmodel)
 
 end
 
