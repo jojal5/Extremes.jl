@@ -58,18 +58,18 @@
 
     end
 
-    @testset "buildExplanatoryVariables(df, ids)" begin
+    @testset "buildVariables(df, ids)" begin
         val = rand(10)
         name = "x"
 
         df = DataFrame(x = val)
 
         # stationary
-        evs = Extremes.buildExplanatoryVariables(df, Symbol[])
+        evs = Extremes.buildVariables(df, Symbol[])
         @test length(evs) == 0
 
         # non-stationary
-        evs = Extremes.buildExplanatoryVariables(df, [:x])
+        evs = Extremes.buildVariables(df, [:x])
 
         @test length(evs) == 1
         @test evs[1].name == name

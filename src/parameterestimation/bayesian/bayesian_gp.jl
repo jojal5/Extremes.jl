@@ -66,8 +66,8 @@ function gpfitbayes(df::DataFrame, datacol::Symbol;
     shapecovid::Vector{Symbol}=Symbol[],
     niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-    logscalecov = buildExplanatoryVariables(df, logscalecovid)
-    shapecov = buildExplanatoryVariables(df, shapecovid)
+    logscalecov = buildVariables(df, logscalecovid)
+    shapecov = buildVariables(df, shapecovid)
 
     fm = gpfitbayes(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov, niter = niter, warmup = warmup)
 

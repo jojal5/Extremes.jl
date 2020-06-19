@@ -65,9 +65,9 @@ function gevfit(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
 
-    locationcov = buildExplanatoryVariables(df, locationcovid)
-    logscalecov = buildExplanatoryVariables(df, logscalecovid)
-    shapecov = buildExplanatoryVariables(df, shapecovid)
+    locationcov = buildVariables(df, locationcovid)
+    logscalecov = buildVariables(df, logscalecovid)
+    shapecov = buildVariables(df, shapecovid)
 
     fm = gevfit(df[:,datacol], locationcov = locationcov,
         logscalecov = logscalecov, shapecov = shapecov)

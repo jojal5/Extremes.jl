@@ -71,9 +71,9 @@ function gevfitbayes(df::DataFrame, datacol::Symbol;
     shapecovid::Vector{Symbol}=Symbol[],
     niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-    locationcov = buildExplanatoryVariables(df, locationcovid)
-    logscalecov = buildExplanatoryVariables(df, logscalecovid)
-    shapecov = buildExplanatoryVariables(df, shapecovid)
+    locationcov = buildVariables(df, locationcovid)
+    logscalecov = buildVariables(df, logscalecovid)
+    shapecov = buildVariables(df, shapecovid)
 
     fm = gevfitbayes(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov,
         shapecov = shapecov, niter = niter, warmup = warmup)

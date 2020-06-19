@@ -56,8 +56,8 @@ function gpfit(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
 
-    logscalecov = buildExplanatoryVariables(df, logscalecovid)
-    shapecov = buildExplanatoryVariables(df, shapecovid)
+    logscalecov = buildVariables(df, logscalecovid)
+    shapecov = buildVariables(df, shapecovid)
 
     fm = gpfit(df[:,datacol], logscalecov = logscalecov, shapecov = shapecov)
 
