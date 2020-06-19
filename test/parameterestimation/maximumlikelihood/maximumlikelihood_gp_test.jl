@@ -47,7 +47,7 @@
             logscalecov = [Variable("x₁", x₁)],
             shapecov = [Variable("x₂", x₂)])
 
-        fm = Extremes.gpfit(model)
+        fm = Extremes.gpfit(model, zeros(Float64, 4))
 
         varM = Extremes.parametervar(fm)
         var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)

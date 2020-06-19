@@ -73,8 +73,8 @@ end
 Fit the Generalized Pareto (GP) distribution by maximum likelihood to the ThresholdExceedance model.
 
 """
-function gpfit(model::ThresholdExceedance)::MaximumLikelihoodEVA
+function gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
-    return fit(model)
+    return fit(model, initialvalues = initialvalues)
 
 end
