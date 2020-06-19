@@ -9,7 +9,8 @@ function fit(model::EVA; initialvalues::Union{Vector{<:Real}, Nothing} = nothing
     if isnothing(initialvalues)
         initialvalues = getinitialvalue(model)
     else
-        @assert length(initialvalues) == nparameter(model) "The initial value vector's length must correspond to the number of parameters."
+        fd = getdistribution(model, initialvalues)[]
+        @assert all(insupport(fd, model.data)) "The initial value vector is not a member of the set of possible solutions. At least one data lies outside the distribution support."
     end
 
     fobj(θ) = -loglike(model, θ)
