@@ -19,14 +19,14 @@
 
     @testset "gpfitpwm(model)" begin
         # non-stationary warn
-        model = Extremes.ThresholdExceedance(y, logscalecov = [Variable("t", collect(1:n))])
+        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("t", collect(1:n))])
 
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned.") Extremes.gpfitpwm(model)
 
         # stationary GP fit by pwm
-        model = Extremes.ThresholdExceedance(y)
+        model = Extremes.ThresholdExceedance(Variable("y", y))
 
         fm = Extremes.gpfitpwm(model)
 

@@ -4,7 +4,7 @@
     pd = GeneralizedExtremeValue(0.0, 1.0, 0.1)
     y = rand(pd, n)
 
-    bm_model = Extremes.BayesianEVA(Extremes.BlockMaxima(y), Mamba.Chains(100, 3))
+    bm_model = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y)), Mamba.Chains(100, 3))
 
     @testset "quantile(fm, p)" begin
         # p not in [0, 1] throws

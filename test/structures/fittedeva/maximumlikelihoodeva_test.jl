@@ -5,7 +5,7 @@
     pd = GeneralizedExtremeValue(θ...)
     y = rand(pd, n)
 
-    bm_model = Extremes.MaximumLikelihoodEVA(Extremes.BlockMaxima(y), θ)
+    bm_model = Extremes.MaximumLikelihoodEVA(Extremes.BlockMaxima(Variable("y", y)), θ)
 
     @testset "hessian(model)" begin
         # TODO : Test with known values (J)
@@ -36,7 +36,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = MaximumLikelihoodEVA(BlockMaxima(y), θ)
+        model = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), θ)
 
         fd = Extremes.getdistribution(model)[]
 
@@ -75,7 +75,7 @@
         pd = GeneralizedExtremeValue(θ...)
         y = rand(pd, n)
 
-        te_model = Extremes.MaximumLikelihoodEVA(Extremes.ThresholdExceedance(y), θ)
+        te_model = Extremes.MaximumLikelihoodEVA(Extremes.ThresholdExceedance(Variable("y", y)), θ)
 
         # returnPeriod < 0 throws
         @test_throws AssertionError Extremes.returnlevel(te_model, 0, n, 1, -1, 0.95)

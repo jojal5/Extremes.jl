@@ -1,5 +1,5 @@
 struct BlockMaxima{T<:Distribution} <: EVA
-    data::Vector{<:Real}
+    data::Variable
     location::paramfun
     logscale::paramfun
     shape::paramfun
@@ -14,13 +14,13 @@ end
 Creates a BlockMaxima structure.
 
 """
-function BlockMaxima(data::Vector{<:Real};
+function BlockMaxima(data::Variable;
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
     shapecov::Vector{<:DataItem} = Vector{Variable}(),
     dist::Type{<:Distribution} = GeneralizedExtremeValue)::BlockMaxima
 
-    n = length(data)
+    n = length(data.value)
     validatelength(n, locationcov)
     validatelength(n, logscalecov)
     validatelength(n, shapecov)
@@ -42,7 +42,7 @@ end
 Creates a BlockMaxima structure.
 
 """
-function BlockMaxima{T}(data::Vector{<:Real};
+function BlockMaxima{T}(data::Variable;
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
     shapecov::Vector{<:DataItem} = Vector{Variable}())::BlockMaxima where T<:Distribution
@@ -126,7 +126,7 @@ Get an initial values vector for the parameters of model.
 """
 function getinitialvalue(model::BlockMaxima)::Vector{<:Real}
 
-    y = model.data
+    y = model.data.value
 
     # Compute stationary initial values
     μ₀,ϕ₀,ξ₀ = getinitialvalue(GeneralizedExtremeValue,y)
@@ -153,7 +153,7 @@ Displays a BlockMaxima with the prefix `prefix` before every line.
 function showEVA(io::IO, obj::BlockMaxima; prefix::String = "")
 
     println(io, prefix, "BlockMaxima")
-    println(io, prefix, "data :\t\t", typeof(obj.data), "[", length(obj.data), "]")
+    println(io, prefix, "data :\t\t", typeof(obj.data.value), "[", length(obj.data.value), "]")
     println(io, prefix, "location :\t", showparamfun("μ", obj.location))
     println(io, prefix, "logscale :\t", showparamfun("ϕ", obj.logscale))
     println(io, prefix, "shape :\t\t", showparamfun("ξ", obj.shape))

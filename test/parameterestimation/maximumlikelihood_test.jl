@@ -14,7 +14,7 @@
 
         y = rand(pd, n)
 
-        @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") gevfit(y)
+        @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") Extremes.fit(BlockMaxima(Variable("y", y)))
 
         # Initial value vector length != nparameter throws
         n = 5000
@@ -29,7 +29,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.BlockMaxima(y)
+        model = Extremes.BlockMaxima(Variable("y", y))
 
         @test_throws AssertionError Extremes.fit(model, initialvalues = [0.0, 0.0, 0.0, 0.0])
 
@@ -46,7 +46,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.BlockMaxima(y)
+        model = Extremes.BlockMaxima(Variable("y", y))
 
         @test_throws AssertionError Extremes.fit(model, initialvalues = [Inf, Inf, Inf])
 
@@ -63,7 +63,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.BlockMaxima(y)
+        model = Extremes.BlockMaxima(Variable("y", y))
 
         @test_logs Extremes.fit(model, initialvalues = [0.0, 0.0, 0.0])
 
@@ -80,7 +80,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.BlockMaxima(y)
+        model = Extremes.BlockMaxima(Variable("y", y))
 
         fm = Extremes.fit(model)
 
@@ -106,7 +106,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, locationcov = [Variable("x₁", x₁), Variable("x₂", x₂)])
+        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fit(model)
 
@@ -132,7 +132,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
+        model = Extremes.BlockMaxima(Variable("y", y), logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fit(model)
 
@@ -158,7 +158,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)])
+        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)])
 
         fm = Extremes.fit(model)
 
@@ -205,7 +205,7 @@
         pd = GeneralizedPareto(σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.ThresholdExceedance(y)
+        model = Extremes.ThresholdExceedance(Variable("y", y))
 
         fm = Extremes.fit(model)
 
@@ -230,7 +230,7 @@
         pd = GeneralizedPareto.(σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.ThresholdExceedance(y, logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
+        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fit(model)
 

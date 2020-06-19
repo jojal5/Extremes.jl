@@ -5,7 +5,7 @@
     pd = GeneralizedExtremeValue(θ...)
     y = rand(pd, n)
 
-    pwm_model = Extremes.pwmEVA(Extremes.BlockMaxima(y), θ)
+    pwm_model = Extremes.pwmEVA(Extremes.BlockMaxima(Variable("y", y)), θ)
 
     @testset "quantile(fm, p)" begin
         # p outside of [0, 1] throws

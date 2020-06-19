@@ -47,7 +47,7 @@
 
     @testset "gevfitbayes(model; niter, warmup)" begin
         # non-stationary location, logscale and shape
-        model = Extremes.BlockMaxima(y,
+        model = Extremes.BlockMaxima(Variable("y", y),
             locationcov = [Variable("x₁", x₁)],
             logscalecov = [Variable("x₂", x₂)],
             shapecov = [Variable("x₃", x₃)])

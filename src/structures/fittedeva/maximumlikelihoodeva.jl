@@ -160,7 +160,7 @@ function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::R
     α = (1 - confidencelevel)
 
     # Exceedance probability
-    ζ = length(fm.model.data)/nobservation
+    ζ = length(fm.model.data.value)/nobservation
 
     # Appropriate quantile level given the probability exceedance and the number of obs per year
     p = 1-1/(returnPeriod * nobsperblock * ζ)

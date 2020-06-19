@@ -8,23 +8,23 @@
 
     ev = [Variable("x", x)]
 
-    smodel = Extremes.BlockMaxima(y)
-    nsmodel = Extremes.BlockMaxima(y, locationcov = ev, logscalecov = ev, shapecov = ev)
+    smodel = Extremes.BlockMaxima(Variable("y", y))
+    nsmodel = Extremes.BlockMaxima(Variable("y", y), locationcov = ev, logscalecov = ev, shapecov = ev)
 
     @testset "BlockMaxima(data; locationcov, logscalecov, shapecov)" begin
         ev10 = Extremes.Variable("t", collect(1:n+10))
 
         # Build with locationcov length != y length
-        @test_throws AssertionError Extremes.BlockMaxima(y, locationcov = [ev10])
+        @test_throws AssertionError Extremes.BlockMaxima(Variable("y", y), locationcov = [ev10])
 
         # Build with logscalecov length != y length
-        @test_throws AssertionError Extremes.BlockMaxima(y, logscalecov = [ev10])
+        @test_throws AssertionError Extremes.BlockMaxima(Variable("y", y), logscalecov = [ev10])
 
         # Build with shapecov length != y length
-        @test_throws AssertionError Extremes.BlockMaxima(y, shapecov = [ev10])
+        @test_throws AssertionError Extremes.BlockMaxima(Variable("y", y), shapecov = [ev10])
 
         # Build with all optional parameters set
-        @test nsmodel.data == y
+        @test nsmodel.data.value == y
         @test nsmodel.location.covariate == ev
         @test nsmodel.logscale.covariate == ev
         @test nsmodel.shape.covariate == ev
@@ -33,7 +33,7 @@
 
     @testset "paramindex(model)" begin
         # model with stationary and non-stationary parameters
-        model = Extremes.BlockMaxima(y, locationcov = ev)
+        model = Extremes.BlockMaxima(Variable("y", y), locationcov = ev)
 
         paramin = Extremes.paramindex(model)
 
@@ -79,7 +79,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = BlockMaxima(y)
+        model = BlockMaxima(Variable("y", y))
 
         fd = Extremes.getdistribution(model, θ)[]
 
@@ -102,7 +102,7 @@
 
         y = rand.(pd)
 
-        model = BlockMaxima(y, locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
+        model = BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
 
         fd = Extremes.getdistribution(model, θ)
 

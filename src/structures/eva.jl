@@ -42,7 +42,7 @@ Compute the model loglikelihood evaluated at θ.
 """
 function loglike(model::EVA, θ::Vector{<:Real})::Real
 
-    y = model.data
+    y = model.data.value
 
     pd = getdistribution(model, θ)
 

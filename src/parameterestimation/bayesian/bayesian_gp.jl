@@ -44,7 +44,7 @@ function gpfitbayes(y::Vector{<:Real};
      logscalecovstd = standardize.(logscalecov)
      shapecovstd = standardize.(shapecov)
 
-    model = ThresholdExceedance(y, logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = ThresholdExceedance(Variable("y", y), logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -69,7 +69,7 @@ function gpfitbayes(df::DataFrame, datacol::Symbol;
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
     shapecovstd = standardize.(buildVariables(df, shapecovid))
 
-    model = ThresholdExceedance(df[:, datacol], logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = ThresholdExceedance(Variable(string(datacol), df[:, datacol]), logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
