@@ -68,7 +68,7 @@
             logscalecov = [Variable("x₂", x₂)],
             shapecov = [Variable("x₃", x₃)])
 
-        fm = Extremes.gevfit(model, [0.0; 0.0; 0.0; 0.0; 0.0; 0.0])
+        fm = Extremes.gevfit(model, zeros(Float64, 6))
 
         varM = Extremes.parametervar(fm)
         var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
