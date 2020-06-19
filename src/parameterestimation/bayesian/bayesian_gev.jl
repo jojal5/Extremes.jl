@@ -71,14 +71,15 @@ function gevfitbayes(df::DataFrame, datacol::Symbol;
     shapecovid::Vector{Symbol}=Symbol[],
     niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-    locationcov = buildExplanatoryVariables(df, locationcovid)
-    logscalecov = buildExplanatoryVariables(df, logscalecovid)
-    shapecov = buildExplanatoryVariables(df, shapecovid)
+    locationcovstd = standardize.(buildVariables(df, locationcovid))
+    logscalecovstd = standardize.(buildVariables(df, logscalecovid))
+    shapecovstd = standardize.(buildVariables(df, shapecovid))
 
-    fm = gevfitbayes(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov,
-        shapecov = shapecov, niter = niter, warmup = warmup)
+    model = BlockMaxima(df[:, datacol], locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
-    return fm
+    fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
+
+    return transform(fittedmodel)
 
 end
 
