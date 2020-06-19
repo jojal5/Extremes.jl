@@ -1,6 +1,5 @@
 @testset "maximumlikelihood.jl" begin
     @testset "fit(model)" begin
-
         # No solution warn test
         n = 10
 
@@ -16,6 +15,40 @@
         y = rand(pd, n)
 
         @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") gevfit(y)
+
+        # Initial value vector length != nparameter throws
+        n = 5000
+
+        μ = 0.0
+        σ = 1.0
+        ξ = 0.1
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+        y = rand(pd, n)
+
+        model = Extremes.BlockMaxima(y)
+
+        @test_throws AssertionError Extremes.fit(model, initialvalues = [0.0, 0.0, 0.0, 0.0])
+
+        # Initial value vector length == nparameter does not throw
+        n = 5000
+
+        μ = 0.0
+        σ = 1.0
+        ξ = 0.1
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+        y = rand(pd, n)
+
+        model = Extremes.BlockMaxima(y)
+
+        @test_logs Extremes.fit(model, initialvalues = [0.0, 0.0, 0.0])
 
         # stationary GEV fit by ML
         n = 5000

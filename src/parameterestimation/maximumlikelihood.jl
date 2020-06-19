@@ -4,9 +4,13 @@
 Fit the extreme value model by maximum likelihood.
 
 """
-function fit(model::EVA)::MaximumLikelihoodEVA
+function fit(model::EVA; initialvalues::Union{Vector{<:Real}, Nothing} = nothing)::MaximumLikelihoodEVA
 
-    initialvalues = getinitialvalue(model)
+    if isnothing(initialvalues)
+        initialvalues = getinitialvalue(model)
+    else
+        @assert length(initialvalues) == nparameter(model) "The initial value vector's length must correspond to the number of parameters."
+    end
 
     fobj(θ) = -loglike(model, θ)
 
