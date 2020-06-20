@@ -65,7 +65,7 @@ function gpfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
 
     model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)
 
-    return fit(model, initialvalues = initialvalues)
+    return fit(model, initialvalues)
 
 end
 
@@ -109,7 +109,7 @@ function gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
 
     model = ThresholdExceedance(df[:, datacol], logscalecov = logscalecov, shapecov = shapecov)
 
-    return fit(model, initialvalues = initialvalues)
+    return fit(model, initialvalues)
 
 end
 
@@ -121,6 +121,6 @@ Fit the Generalized Pareto (GP) distribution by maximum likelihood to the Thresh
 """
 function gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
-    return fit(model, initialvalues = initialvalues)
+    return fit(model, initialvalues)
 
 end

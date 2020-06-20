@@ -1,21 +1,5 @@
 @testset "maximumlikelihood.jl" begin
-    @testset "fit(model)" begin
-        # No solution warn test
-        n = 10
-
-        μ = 0.0
-        σ = 1.0
-        ξ = .8
-
-        ϕ = log(σ)
-        θ = [μ; ϕ; ξ]
-
-        pd = GeneralizedExtremeValue(μ, σ, ξ)
-
-        y = rand(pd, n)
-
-        @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") gevfit(y)
-
+    @testset "fit(model, initialvalues)" begin
         # Initial value vector length != nparameter throws
         n = 5000
 
@@ -31,7 +15,7 @@
 
         model = Extremes.BlockMaxima(y)
 
-        @test_throws AssertionError Extremes.fit(model, initialvalues = [0.0, 0.0, 0.0, 0.0])
+        @test_throws AssertionError Extremes.fit(model, [0.0, 0.0, 0.0, 0.0])
 
         # Initial value vector invalid throws
         n = 5000
@@ -48,7 +32,7 @@
 
         model = Extremes.BlockMaxima(y)
 
-        @test_throws AssertionError Extremes.fit(model, initialvalues = [Inf, Inf, Inf])
+        @test_throws AssertionError Extremes.fit(model, [Inf, Inf, Inf])
 
         # Initial value vector valid and length == nparameter does not throw
         n = 5000
@@ -65,7 +49,26 @@
 
         model = Extremes.BlockMaxima(y)
 
-        @test_logs Extremes.fit(model, initialvalues = [0.0, 0.0, 0.0])
+        @test_logs Extremes.fit(model, [0.0, 0.0, 0.0])
+
+    end
+
+    @testset "fit(model)" begin
+        # No solution warn test
+        n = 10
+
+        μ = 0.0
+        σ = 1.0
+        ξ = .8
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+
+        y = rand(pd, n)
+
+        @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") gevfit(y)
 
         # stationary GEV fit by ML
         n = 5000
