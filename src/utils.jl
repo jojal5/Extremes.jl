@@ -1,5 +1,5 @@
 """
-    getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0)::DataFrame
+    getcluster(y::Vector{<:Real}, u₁::Real, u₂::Real)::Vector{Cluster}
 
 Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
 
@@ -53,6 +53,18 @@ function getcluster(y::Vector{<:Real}, u₁::Real, u₂::Real)::Vector{Cluster}
     end
 
     return cluster
+
+end
+
+"""
+    getcluster(y::Vector{<:Real}, u::Real)::Vector{Cluster}
+
+Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u.
+
+"""
+function getcluster(y::Vector{<:Real}, u::Real)::Vector{Cluster}
+
+    return getcluster(y, u, u)
 
 end
 
