@@ -8,6 +8,7 @@ using Mamba, ProgressMeter
 import CSV
 import Distributions.quantile
 import Statistics.var
+import Base.length, Base.maximum, Base.sum
 
 include("utils.jl")
 include("structures.jl")

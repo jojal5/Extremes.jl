@@ -17,9 +17,36 @@ struct Cluster
     end
 end
 
-
-
 Base.Broadcast.broadcastable(obj::Cluster) = Ref(obj)
+
+"""
+    length(c::Cluster)
+
+Compute the cluster length.
+"""
+function length(c::Cluster)
+    return length(c.position)
+end
+
+"""
+    max(c::Cluster)
+
+Compute the cluster maximum.
+"""
+function maximum(c::Cluster)
+    return maximum(c.value)
+end
+
+
+"""
+    sum(c::Cluster)
+
+Compute the cluster sum.
+"""
+function sum(c::Cluster)
+    return sum(c.value)
+end
+
 
 """
     Base.show(io::IO, obj::Cluster)

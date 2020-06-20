@@ -57,4 +57,45 @@
         @test cluster[3].value == ones(Int64,2)
     end
 
+    @testset "length(c::Cluster)" begin
+
+        # Test with known values
+        y = zeros(Int64,10)
+        y[1:3] .= 1
+        y[5] = 1
+        y[9:10] .= 1
+
+        cluster = getcluster(y,.5)
+
+        @test length.(cluster) == [3; 1; 2]
+    end
+
+    @testset "max(c::Cluster)" begin
+
+        # Test with known values
+        y = zeros(Int64,10)
+        y[1] = 5
+        y[2] = 2
+        y[3] = 1
+        y[5] = 3
+        y[9:10] .= 1
+
+        cluster = getcluster(y,.5)
+
+        @test maximum.(cluster) == [5; 3; 1]
+    end
+
+    @testset "sum(c::Cluster)" begin
+
+        # Test with known values
+        y = zeros(Int64,10)
+        y[1:3] .= 1
+        y[5] = 1
+        y[9:10] .= 1
+
+        cluster = getcluster(y,.5)
+
+        @test sum.(cluster) == [3; 1; 2]
+    end
+
 end
