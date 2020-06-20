@@ -1,18 +1,20 @@
 @testset "bayesianeva.jl" begin
-    n = 1000
 
-    pd = GeneralizedExtremeValue(0.0, 1.0, 0.1)
-    y = rand(pd, n)
 
-    bm_model = Extremes.BayesianEVA(Extremes.BlockMaxima(y), Mamba.Chains(100, 3))
+    μ, σ, ξ = 100.0, 5.0, 0.1
+
+    pd = GeneralizedExtremeValue(μ, σ, ξ)
+    y = [100.0]
+
+    fm = Extremes.BayesianEVA(Extremes.BlockMaxima(y), Mamba.Chains([100.0 log(5.0) .1]))
+
 
     @testset "quantile(fm, p)" begin
         # p not in [0, 1] throws
-        @test_throws AssertionError Extremes.quantile(bm_model, -1)
+        @test_throws AssertionError Extremes.quantile(fm, -1)
 
-        # TODO : Test with known values (J)
-        #        If creating a Mamba.Chains is too complicated, fitbayes could be
-        #        called once for the whole bayesianeva.jl testset.
+        # Test with known values
+        @test quantile(fm, .95)[] ≈ quantile(pd, .95)
 
     end
 
@@ -23,7 +25,8 @@
         # confidencelevel not in [0, 1]
         @test_throws AssertionError Extremes.returnlevel(bm_model, 1, -1)
 
-        # TODO : Test with known values (J)
+        # Test with known values
+        @test returnlevel(fm, 100, .95).value[] ≈ quantile(pd, 1-1/100)
 
     end
 
