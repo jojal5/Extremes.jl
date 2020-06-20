@@ -16,12 +16,15 @@ include("data.jl")
 
 export
 
+    # Variable type
+    Variable, VariableStd, DataItem,
+
+    # Cluster type
+    Cluster,
+
     # Generic types
     EVA,
     fittedEVA,
-
-    # Explanatory variable type
-    Variable, VariableStd, DataItem,
 
     # Extreme value analysis type
     BlockMaxima,
