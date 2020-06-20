@@ -4,19 +4,17 @@
 Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
 
 """
-function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0.0)::DataFrame
+function getcluster(y::Vector{<:Real}, u₁::Real, u₂::Real)::Vector{Cluster}
+
+    @assert u₁ >= u₂ "the second threshold should not be higher than the first one."
 
     n = length(y)
-
-    clusterBegin  = Int64[]
-    clusterLength = Int64[]
-    clusterMax    = Float64[]
-    clusterPosMax = Int64[]
-    clusterSum    = Float64[]
 
     exceedancePosition = findall(y .> u₁)
 
     clusterEnd = 0
+
+    cluster = Vector{Cluster}()
 
     for i in exceedancePosition
 
@@ -44,56 +42,15 @@ function getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0.0)::DataFrame
 
             ind = i-(j-1) : i+(k-1)
 
-            maxval, idxmax = findmax(y[ind])
-
-            push!(clusterMax, maxval)
-            push!(clusterPosMax, idxmax+ind[1]-1)
-            push!(clusterSum, sum(y[ind]) )
-            push!(clusterLength, length(ind) )
-            push!(clusterBegin, ind[1] )
-
             clusterEnd = ind[end]
+
+            c = Cluster(u₁, u₂, collect(ind), y[ind])
+
+            push!(cluster, c)
 
             end
 
     end
-
-
-    P = clusterMax./clusterSum
-
-    cluster = DataFrame(Begin=clusterBegin, Length=clusterLength, Max=clusterMax, Position=clusterPosMax, Sum=clusterSum, P=P)
-
-    return cluster
-
-end
-
-"""
-    getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)::DataFrame
-
-Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
-
-"""
-function getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)::DataFrame
-
-    coltype = describe(df)[:,:eltype]
-
-    @assert coltype[1]==Date || coltype[1]==DateTime "The first dataframe column should be of type Date."
-    @assert coltype[2]<:Real "The second dataframe column should be of any subtypes of Real."
-
-    cluster = DataFrame(Begin=Int64[], Length=Int64[], Max=Float64[], Position=Int64[], Sum=Float64[], P=Float64[])
-
-    years = unique(year.(df[:,1]))
-
-    for yr in years
-
-        ind = year.(df[:,1]) .== yr
-        c = getcluster(df[ind,2], u₁, u₂)
-        c[!,:Begin] = findfirst(ind) .+ c[:,:Begin] .- 1
-        append!(cluster, c)
-
-    end
-
-    cluster[!,:Begin] = df[cluster[:,:Begin],1]
 
     return cluster
 
