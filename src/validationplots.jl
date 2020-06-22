@@ -12,7 +12,7 @@ function ecdf(y::Vector{<:Real}) # TODO : Return value
     p = collect(1:n)/(n+1)
 
     return ys, p
-end  # TODO : test
+end
 
 include(joinpath("validationplots", "plots.jl"))
 include(joinpath("validationplots", "plots_std.jl"))
