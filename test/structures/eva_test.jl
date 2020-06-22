@@ -28,7 +28,6 @@
     y = [6]
 
     pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
-    y = rand(pd, 1)
 
     model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
 
