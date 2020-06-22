@@ -1,12 +1,14 @@
 """
-    fit(model::EVA)
+    fit(model::EVA; initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
 Fit the extreme value model by maximum likelihood.
 
 """
-function fit(model::EVA)::MaximumLikelihoodEVA
+function fit(model::EVA, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
-    initialvalues = getinitialvalue(model)
+    # Initial values validation
+    fd = getdistribution(model, initialvalues)
+    @assert all(insupport.(fd, model.data)) "The initial value vector is not a member of the set of possible solutions. At least one data lies outside the distribution support."
 
     fobj(θ) = -loglike(model, θ)
 
@@ -22,6 +24,20 @@ function fit(model::EVA)::MaximumLikelihoodEVA
     fittedmodel = MaximumLikelihoodEVA(model, θ̂)
 
     return fittedmodel
+
+end
+
+"""
+    fit(model::EVA)::MaximumLikelihoodEVA
+
+Fit the extreme value model by maximum likelihood.
+
+"""
+function fit(model::EVA)::MaximumLikelihoodEVA
+
+    initialvalues = getinitialvalue(model)
+
+    return fit(model, initialvalues)
 
 end
 

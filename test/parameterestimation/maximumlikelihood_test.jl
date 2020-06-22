@@ -1,6 +1,59 @@
 @testset "maximumlikelihood.jl" begin
-    @testset "fit(model)" begin
+    @testset "fit(model, initialvalues)" begin
+        # Initial value vector length != nparameter throws
+        n = 5000
 
+        μ = 0.0
+        σ = 1.0
+        ξ = 0.1
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+        y = rand(pd, n)
+
+        model = Extremes.BlockMaxima(y)
+
+        @test_throws AssertionError Extremes.fit(model, [0.0, 0.0, 0.0, 0.0])
+
+        # Initial value vector invalid throws
+        n = 5000
+
+        μ = 0.0
+        σ = 1.0
+        ξ = 0.1
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+        y = rand(pd, n)
+
+        model = Extremes.BlockMaxima(y)
+
+        @test_throws AssertionError Extremes.fit(model, [Inf, Inf, Inf])
+
+        # Initial value vector valid and length == nparameter does not throw
+        n = 5000
+
+        μ = 0.0
+        σ = 1.0
+        ξ = 0.1
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+        y = rand(pd, n)
+
+        model = Extremes.BlockMaxima(y)
+
+        @test_logs Extremes.fit(model, [0.0, 0.0, 0.0])
+
+    end
+
+    @testset "fit(model)" begin
         # No solution warn test
         n = 10
 

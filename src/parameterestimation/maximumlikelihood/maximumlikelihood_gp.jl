@@ -1,5 +1,7 @@
 """
-    gpfit(y::Vector{<:Real})
+    gpfit(y::Vector{<:Real};
+        logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
 
 Fit the Generalized Pareto (GP) distribution by maximum likelihood to the vector of data `y`.
 
@@ -45,6 +47,29 @@ function gpfit(y::Vector{<:Real};
 end
 
 """
+    gpfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
+        logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+
+Fit the Generalized Pareto (GP) distribution by maximum likelihood to the vector of data `y` using the initial values `initialvalues`.
+
+The optional parameter `logscalecov` is a vector containing the covariates for the parameter σ.
+The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
+
+The covariate may be standardized to facilitate the estimation.
+
+"""
+function gpfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+
+    model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)
+
+    return fit(model, initialvalues)
+
+end
+
+"""
     gpfit(df::DataFrame, datacol::Symbol;
         logscalecovid::Vector{Symbol}=Symbol[],
         shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
@@ -68,13 +93,34 @@ function gpfit(df::DataFrame, datacol::Symbol;
 end
 
 """
+    gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
+        logscalecovid::Vector{Symbol}=Symbol[],
+        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+Fit a Generalized Pareto (GP) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol` using the initial values `initialvalues`.
+
+"""
+function gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
+    logscalecovid::Vector{Symbol}=Symbol[],
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+    logscalecov = buildVariables(df, logscalecovid)
+    shapecov = buildVariables(df, shapecovid)
+
+    model = ThresholdExceedance(df[:, datacol], logscalecov = logscalecov, shapecov = shapecov)
+
+    return fit(model, initialvalues)
+
+end
+
+"""
     gpfit(model::ThresholdExceedance)::MaximumLikelihoodEVA
 
 Fit the Generalized Pareto (GP) distribution by maximum likelihood to the ThresholdExceedance model.
 
 """
-function gpfit(model::ThresholdExceedance)::MaximumLikelihoodEVA
+function gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
-    return fit(model)
+    return fit(model, initialvalues)
 
 end

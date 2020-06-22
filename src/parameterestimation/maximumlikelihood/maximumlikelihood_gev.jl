@@ -52,6 +52,28 @@ function gevfit(y::Vector{<:Real};
 end
 
 """
+    gevfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
+        locationcov::Vector{<:DataItem} = Vector{Variable}(),
+        logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}(),)::MaximumLikelihoodEVA
+
+Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y` using the intial values `initialvalues`.
+
+The covariate may be standardized to facilitate the estimation.
+
+"""
+function gevfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
+    locationcov::Vector{<:DataItem} = Vector{Variable}(),
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}(),)::MaximumLikelihoodEVA
+
+    model = BlockMaxima(y, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+
+    return fit(model, initialvalues)
+
+end
+
+"""
     gevfit(df::DataFrame, datacol::Symbol;
         locationcovid::Vector{Symbol}=Symbol[],
         logscalecovid::Vector{Symbol}=Symbol[],
@@ -77,6 +99,30 @@ function gevfit(df::DataFrame, datacol::Symbol;
 
 end
 
+"""
+    gevfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
+        locationcovid::Vector{Symbol}=Symbol[],
+        logscalecovid::Vector{Symbol}=Symbol[],
+        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol` using the initial values `ìnitialvalues`.
+
+"""
+function gevfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
+    locationcovid::Vector{Symbol}=Symbol[],
+    logscalecovid::Vector{Symbol}=Symbol[],
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+
+    locationcov = buildVariables(df, locationcovid)
+    logscalecov = buildVariables(df, logscalecovid)
+    shapecov = buildVariables(df, shapecovid)
+
+    model = BlockMaxima(df[:,datacol], locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+
+    return fit(model, initialvalues)
+
+end
+
 
 """
     gevfit(model::BlockMaxima)
@@ -84,8 +130,8 @@ end
 Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood of the BlockMaxima model `model`.
 
 """
-function gevfit(model::BlockMaxima)::MaximumLikelihoodEVA
+function gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
-    fit(model)
+    fit(model, initialvalues)
 
 end
