@@ -4,6 +4,7 @@ using Distributions, DataFrames, Dates
 using Optim, NLSolversBase, ForwardDiff
 using SpecialFunctions, LinearAlgebra, Statistics
 using Mamba, ProgressMeter
+using Gadfly
 
 import CSV
 import Distributions.quantile
