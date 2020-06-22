@@ -14,6 +14,7 @@ include("utils.jl")
 include("structures.jl")
 include("parameterestimation.jl")
 include("data.jl")
+include("validationplots.jl")
 
 export
 
@@ -52,6 +53,6 @@ export
     gpfitpwm,
 
     # Other functions
-    returnlevel
+    returnlevel, diagnosticplots, diagnosticplots_std
 
 end # module
