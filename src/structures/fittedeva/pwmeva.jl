@@ -31,7 +31,7 @@ function parametervar(fm::pwmEVA, nboot::Int=1000)::Array{Float64, 2}
 
     @assert nboot>0 "the number of bootstrap samples should be positive."
 
-    y = fm.model.data
+    y = fm.model.data.value
     n = length(y)
 
     θ̂ = Array{Float64}(undef, nboot, length(fm.θ̂))

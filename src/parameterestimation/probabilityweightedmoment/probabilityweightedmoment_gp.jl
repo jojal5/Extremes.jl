@@ -11,7 +11,7 @@ Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation fo
 """
 function gpfitpwm(y::Vector{<:Real})::pwmEVA
 
-    model = ThresholdExceedance(y)
+    model = ThresholdExceedance(Variable("y", y))
 
     fittedmodel = gpfitpwm(model)
 
@@ -34,7 +34,7 @@ function gpfitpwm(model::ThresholdExceedance)::pwmEVA
 
     model = validatestationarity(model)
 
-    y = model.data
+    y = model.data.value
 
     a₀ = pwm(y,1,0,0)
     a₁ = pwm(y,1,0,1)

@@ -59,7 +59,7 @@
 
     @testset "gpfit(model)" begin
         # non-stationary location, logscale and shape
-        model = Extremes.ThresholdExceedance(y,
+        model = Extremes.ThresholdExceedance(Variable("y", y),
             logscalecov = [Variable("x₁", x₁)],
             shapecov = [Variable("x₂", x₂)])
 

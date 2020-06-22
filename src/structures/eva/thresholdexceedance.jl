@@ -1,5 +1,5 @@
 struct ThresholdExceedance <: EVA
-    data::Vector{<:Real}
+    data::Variable
     logscale::paramfun
     shape::paramfun
 end
@@ -12,11 +12,11 @@ end
 Creates a ThresholdExceedance structure.
 
 """
-function ThresholdExceedance(exceedances::Vector{<:Real};
+function ThresholdExceedance(exceedances::Variable;
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
     shapecov::Vector{<:DataItem} = Vector{Variable}())::ThresholdExceedance
 
-    n = length(exceedances)
+    n = length(exceedances.value)
     validatelength(n, logscalecov)
     validatelength(n, shapecov)
 
@@ -102,7 +102,7 @@ Get an initial values vector for the parameters of model.
 """
 function getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
 
-    y = model.data
+    y = model.data.value
 
     # Compute stationary initial values
     ϕ₀,ξ₀ = getinitialvalue(GeneralizedPareto, y)
@@ -129,7 +129,7 @@ Displays a ThresholdExceedance with the prefix `prefix` before every line.
 function showEVA(io::IO, obj::ThresholdExceedance; prefix::String = "")
 
     println(io, prefix, "ThresholdExceedance")
-    println(io, prefix, "data :\t\t",typeof(obj.data), "[", length(obj.data), "]")
+    println(io, prefix, "data :\t\t",typeof(obj.data.value), "[", length(obj.data.value), "]")
     println(io, prefix, "logscale :\t", showparamfun("ϕ", obj.logscale))
     println(io, prefix, "shape :\t\t", showparamfun("ξ", obj.shape))
 

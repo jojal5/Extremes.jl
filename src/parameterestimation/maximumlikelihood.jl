@@ -8,7 +8,7 @@ function fit(model::EVA, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
     # Initial values validation
     fd = getdistribution(model, initialvalues)
-    @assert all(insupport.(fd, model.data)) "The initial value vector is not a member of the set of possible solutions. At least one data lies outside the distribution support."
+    @assert all(insupport.(fd, model.data.value)) "The initial value vector is not a member of the set of possible solutions. At least one data lies outside the distribution support."
 
     fobj(θ) = -loglike(model, θ)
 

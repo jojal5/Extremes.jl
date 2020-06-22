@@ -11,7 +11,7 @@ Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the gener
 """
 function gevfitpwm(y::Vector{<:Real})::pwmEVA
 
-    model = BlockMaxima(y)
+    model = BlockMaxima(Variable("y", y))
 
     fittedmodel = gevfitpwm(model)
 
@@ -37,7 +37,7 @@ function gevfitpwm(model::BlockMaxima{GeneralizedExtremeValue})::pwmEVA
 
     model = validatestationarity(model)
 
-    y = model.data
+    y = model.data.value
 
     # Computing the estimates of the probability weighted moments M_{1,q,0} for q ∈ {0,1,2}.
     b₀ = pwm(y,1,0,0)

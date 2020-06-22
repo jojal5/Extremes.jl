@@ -14,7 +14,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.BlockMaxima(y)
+        model = Extremes.BlockMaxima(Variable("y", y))
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -41,7 +41,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, locationcov = [Variable("x₁", x₁), Variable("x₂", x₂)])
+        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -67,7 +67,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
+        model = Extremes.BlockMaxima(Variable("y", y), logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -93,7 +93,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(y, locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)])
+        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)])
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -140,7 +140,7 @@
         pd = GeneralizedPareto(σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.ThresholdExceedance(y)
+        model = Extremes.ThresholdExceedance(Variable("y", y))
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 
@@ -165,7 +165,7 @@
         pd = GeneralizedPareto.(σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.ThresholdExceedance(y, logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
+        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
 
         fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
 

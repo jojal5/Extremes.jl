@@ -6,7 +6,7 @@
     pd = GeneralizedExtremeValue(μ, σ, ξ)
     y = [100.0]
 
-    fm = Extremes.BayesianEVA(Extremes.BlockMaxima(y), Mamba.Chains([100.0 log(5.0) .1]))
+    fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y)), Mamba.Chains([100.0 log(5.0) .1]))
 
 
     @testset "quantile(fm, p)" begin

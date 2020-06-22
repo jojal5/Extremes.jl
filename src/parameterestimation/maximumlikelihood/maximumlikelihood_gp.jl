@@ -38,7 +38,7 @@ function gpfit(y::Vector{<:Real};
     logscalecovstd = standardize.(logscalecov)
     shapecovstd = standardize.(shapecov)
 
-    model = ThresholdExceedance(y, logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = ThresholdExceedance(Variable("y", y), logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fit(model)
 
@@ -63,7 +63,7 @@ function gpfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
     shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
 
-    model = ThresholdExceedance(y, logscalecov = logscalecov, shapecov = shapecov)
+    model = ThresholdExceedance(Variable("y", y), logscalecov = logscalecov, shapecov = shapecov)
 
     return fit(model, initialvalues)
 
@@ -84,7 +84,7 @@ function gpfit(df::DataFrame, datacol::Symbol;
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
     shapecovstd = standardize.(buildVariables(df, shapecovid))
 
-    model = ThresholdExceedance(df[:, datacol], logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = ThresholdExceedance(Variable(string(datacol), df[:, datacol]), logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fit(model)
 
@@ -107,7 +107,7 @@ function gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
     logscalecov = buildVariables(df, logscalecovid)
     shapecov = buildVariables(df, shapecovid)
 
-    model = ThresholdExceedance(df[:, datacol], logscalecov = logscalecov, shapecov = shapecov)
+    model = ThresholdExceedance(Variable(string(datacol), df[:, datacol]), logscalecov = logscalecov, shapecov = shapecov)
 
     return fit(model, initialvalues)
 

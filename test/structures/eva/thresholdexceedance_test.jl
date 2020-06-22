@@ -8,27 +8,27 @@
 
     ev = [Variable("x", x)]
 
-    smodel = Extremes.ThresholdExceedance(y)
-    nsmodel = Extremes.ThresholdExceedance(y, logscalecov = ev, shapecov = ev)
+    smodel = Extremes.ThresholdExceedance(Variable("y", y))
+    nsmodel = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = ev, shapecov = ev)
 
     @testset "ThresholdExceedance(exceedances; logscalecov, shapecov)" begin
         ev10 = Extremes.Variable("t", collect(1:n+10))
 
         # Build with logscalecov length != y length
-        @test_throws AssertionError Extremes.ThresholdExceedance(y, logscalecov = [ev10])
+        @test_throws AssertionError Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [ev10])
 
         # Build with shapecov length != y length
-        @test_throws AssertionError Extremes.ThresholdExceedance(y, shapecov = [ev10])
+        @test_throws AssertionError Extremes.ThresholdExceedance(Variable("y", y), shapecov = [ev10])
 
         # Build with all optional parameters set
-        @test nsmodel.data == y
+        @test nsmodel.data.value == y
         @test nsmodel.logscale.covariate == ev
         @test nsmodel.shape.covariate == ev
     end
 
     @testset "paramindex(model)" begin
         # model with stationary and non-stationary parameters
-        model = Extremes.ThresholdExceedance(y, logscalecov = ev)
+        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = ev)
 
         paramin = Extremes.paramindex(model)
 
@@ -69,7 +69,7 @@
         pd = GeneralizedPareto(σ, ξ)
         y = rand(pd,n)
 
-        model = ThresholdExceedance(y)
+        model = ThresholdExceedance(Variable("y", y))
 
         fd = Extremes.getdistribution(model, θ)[]
 
@@ -92,7 +92,7 @@
         pd = GeneralizedPareto.(σ, ξ)
         y = rand.(pd)
 
-        model = ThresholdExceedance(y, logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
+        model = ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
 
         fd = Extremes.getdistribution(model, θ)
 
@@ -120,14 +120,14 @@
     @testset "getinitialvalue(model)" begin
         # Test with valid pwm GPD estimates
         y = [0.0, 1.0, 2.0]
-        model = ThresholdExceedance(y)
+        model = ThresholdExceedance(Variable("y", y))
         ini = Extremes.getinitialvalue(model)
         @test ini[1] ≈ .-.693 atol = .001
         @test ini[2] ≈ .5 atol = .001
 
         # Test with invalid pwm GPD estimates
         y = [0.0 , 1.0, 1.0, 1.0, 3.0]
-        model = ThresholdExceedance(y)
+        model = ThresholdExceedance(Variable("y", y))
         ini = Extremes.getinitialvalue(model)
         @test ini[1] ≈ .182 atol = .001
         @test ini[2] ≈ 0 atol = .001

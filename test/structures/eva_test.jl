@@ -28,19 +28,20 @@
     y = [6]
 
     pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
-    model = BlockMaxima(y, locationcov=[x₂; x₃], logscalecov = [x₁])
+
+    model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
 
     @testset "loglike(model, θ)" begin
 
 
         # Test BlockMaxima with known values
         pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
-        model = BlockMaxima(y, locationcov=[x₂; x₃], logscalecov = [x₁])
+        model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
         @test Extremes.loglike(model, [1; 1; 1; -.5; 1; .1]) ≈ logpdf(pd,y[])
 
         # Test ThresholdExceedance with known values
         pd = GeneralizedPareto(exp(ϕ), ξ)
-        model = ThresholdExceedance(y, logscalecov = [x₁])
+        model = ThresholdExceedance(Variable("y", y), logscalecov = [x₁])
         @test Extremes.loglike(model, [-.5; 1; .1]) ≈ logpdf(pd,y[])
 
     end
@@ -51,12 +52,12 @@
 
         # Test BlockMaxima with known values
         pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
-        model = BlockMaxima(y, locationcov=[x₂; x₃], logscalecov = [x₁])
+        model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
         @test Extremes.quantile(model, [1; 1; 1; -.5; 1; .1],.99)[] ≈ quantile(pd,.99)
 
         # Test ThresholdExceedance with known values
         pd = GeneralizedPareto(exp(ϕ), ξ)
-        model = ThresholdExceedance(y, logscalecov = [x₁])
+        model = ThresholdExceedance(Variable("y", y), logscalecov = [x₁])
         @test Extremes.quantile(model, [-.5; 1; .1], .99)[] ≈ quantile(pd,.99)
 
     end
@@ -68,7 +69,7 @@
         smodel = nothing
 
         # non-stationary BlockMaxima model
-        model = Extremes.BlockMaxima(y, locationcov = ev, logscalecov = ev, shapecov = ev)
+        model = Extremes.BlockMaxima(Variable("y", y), locationcov = ev, logscalecov = ev, shapecov = ev)
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned.") smodel = Extremes.validatestationarity(model)
@@ -78,7 +79,7 @@
         @test length(smodel.shape.covariate) == 0
 
         # non-stationary ThresholdExceedance model
-        model = Extremes.ThresholdExceedance(y, logscalecov = ev, shapecov = ev)
+        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = ev, shapecov = ev)
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned.") smodel = Extremes.validatestationarity(model)
@@ -87,7 +88,7 @@
         @test length(smodel.shape.covariate) == 0
 
         # stationary BlockMaxima model
-        model = Extremes.BlockMaxima(y)
+        model = Extremes.BlockMaxima(Variable("y", y))
         @test_logs smodel = Extremes.validatestationarity(model)
 
         @test length(smodel.location.covariate) == 0
@@ -95,7 +96,7 @@
         @test length(smodel.shape.covariate) == 0
 
         # stationary ThresholdExceedance model
-        model = Extremes.ThresholdExceedance(y)
+        model = Extremes.ThresholdExceedance(Variable("y", y))
         @test_logs smodel = Extremes.validatestationarity(model)
 
         @test length(smodel.logscale.covariate) == 0
@@ -105,12 +106,12 @@
 
     @testset "Base.show(io, obj)" begin
         # print BlockMaxima does not throw
-        model = Extremes.BlockMaxima(collect(1:100))
+        model = Extremes.BlockMaxima(Variable("y", collect(1:100)))
         buffer = IOBuffer()
         @test_logs Base.show(buffer, model)
 
         # print ThresholdExceedance does not throw
-        model = Extremes.ThresholdExceedance(collect(1:100))
+        model = Extremes.ThresholdExceedance(Variable("y", collect(1:100)))
         buffer = IOBuffer()
         @test_logs Base.show(buffer, model)
 
