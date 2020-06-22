@@ -1,23 +1,25 @@
 @testset "pwmeva.jl" begin
-    n = 1000
+
     θ = [0.0, 1.0, 0.1]
 
     pd = GeneralizedExtremeValue(θ...)
-    y = rand(pd, n)
 
-    pwm_model = Extremes.pwmEVA(Extremes.BlockMaxima(Variable("y", y)), θ)
+    y = [0]
+
+    fm = Extremes.pwmEVA(Extremes.BlockMaxima(Variable("y", y)), [θ[1]; log(θ[2]); θ[3]])
 
     @testset "quantile(fm, p)" begin
         # p outside of [0, 1] throws
-        @test_throws AssertionError Extremes.quantile(pwm_model, -1)
+        @test_throws AssertionError Extremes.quantile(fm, -1)
 
-        # TODO : test with known values (J)
+        # Test with known values
+        @test quantile(fm, .99)[] ≈ quantile(pd,.99)
 
     end
 
     @testset "parametervar(fm, nboot)" begin
         # nboot < 0 throws
-        @test_throws AssertionError Extremes.parametervar(pwm_model, -1)
+        @test_throws AssertionError Extremes.parametervar(fm, -1)
 
         # TODO : test with known values (J)
 
@@ -31,7 +33,7 @@
     @testset "Base.show(io, obj)" begin
         # print does not throw
         buffer = IOBuffer()
-        @test_logs Base.show(buffer, pwm_model)
+        @test_logs Base.show(buffer, fm)
 
     end
 

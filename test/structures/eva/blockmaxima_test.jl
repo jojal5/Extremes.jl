@@ -111,14 +111,38 @@
     end
 
     @testset "getinitialvalue(::Type{GeneralizedExtremeValue},y)" begin
-        # TODO : Test with valid_initialvalues (J)
+        # Test with valid pwm GEV estimates
+        y = [0.0, 1.0, 2.0]
+        ini = Extremes.getinitialvalue(GeneralizedExtremeValue,y)
+        @test !isapprox(ini[3],0)
+        pd = GeneralizedExtremeValue(ini[1], exp(ini[2]), ini[3])
+        @test all(insupport.(pd,y))
 
-        # TODO : Test with !valid_initialvalues (J)
+        # Test with invalid pwm GEV estimates
+        y = [0.0 , 1.0, 1.0, 1.0, 3.0,-5.0]
+        ini = Extremes.getinitialvalue(GeneralizedExtremeValue,y)
+        @test ini[3] ≈ 0
+        pd = GeneralizedExtremeValue(ini[1], exp(ini[2]), ini[3])
+        @test all(insupport.(pd,y))
 
     end
 
     @testset "getinitialvalue(model)" begin
-        # TODO : Test with known values (J)
+        # Test with valid pwm GEV estimates
+        y = [0.0, 1.0, 2.0]
+        model = BlockMaxima(Variable("y", y))
+        ini = Extremes.getinitialvalue(model)
+        @test ini[1] ≈ .586 atol = .001
+        @test ini[2] ≈ .164 atol = .001
+        @test ini[3] ≈ -.285 atol = .001
+
+        # Test with invalid pwm GEV estimates
+        y = [0.0 , 1.0, 1.0, 1.0, 3.0,-5.0]
+        model = BlockMaxima(Variable("y", y))
+        ini = Extremes.getinitialvalue(model)
+        @test ini[1] ≈ -1.027 atol = .001
+        @test ini[2] ≈ -.319 atol = .001
+        @test ini[3] ≈ 0 atol = .001
 
     end
 

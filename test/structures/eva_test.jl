@@ -17,26 +17,49 @@
 
     end
 
-    @testset "loglike(model, θ)" begin
-        # TODO: Test BlockMaxima with known values (J)
+    x₁ = Variable("x₁", [1])
+    x₂ = Variable("x₂", [2])
+    x₃ = Variable("x₂", [3])
 
-        # TODO: Test ThresholdExceedance with known values (J)
+    μ = 1 + x₂.value[] + x₃.value[]
+    ϕ = -.5 + x₁.value[]
+    ξ = .1
+
+    y = [6]
+
+    pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
+    y = rand(pd, 1)
+
+    model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
+
+    @testset "loglike(model, θ)" begin
+
+
+        # Test BlockMaxima with known values
+        pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
+        model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
+        @test Extremes.loglike(model, [1; 1; 1; -.5; 1; .1]) ≈ logpdf(pd,y[])
+
+        # Test ThresholdExceedance with known values
+        pd = GeneralizedPareto(exp(ϕ), ξ)
+        model = ThresholdExceedance(Variable("y", y), logscalecov = [x₁])
+        @test Extremes.loglike(model, [-.5; 1; .1]) ≈ logpdf(pd,y[])
 
     end
 
     @testset "quantile(model, θ, p)" begin
         #  p outside of [0, 1] throws
-        n = 1000
-        θ = [0.0, 1.0, 0.1]
-        pd = GeneralizedExtremeValue(θ...)
-        y = rand(pd, n)
-        model = Extremes.BlockMaxima(Variable("y", y))
+        @test_throws AssertionError quantile(model, [-.5; 1; .1], -1)
 
-        @test_throws AssertionError quantile(model, θ, -1)
+        # Test BlockMaxima with known values
+        pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
+        model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
+        @test Extremes.quantile(model, [1; 1; 1; -.5; 1; .1],.99)[] ≈ quantile(pd,.99)
 
-        # TODO: Test BlockMaxima with known values (J)
-
-        # TODO: Test ThresholdExceedance with known values (J)
+        # Test ThresholdExceedance with known values
+        pd = GeneralizedPareto(exp(ϕ), ξ)
+        model = ThresholdExceedance(Variable("y", y), logscalecov = [x₁])
+        @test Extremes.quantile(model, [-.5; 1; .1], .99)[] ≈ quantile(pd,.99)
 
     end
 

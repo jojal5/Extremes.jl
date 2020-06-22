@@ -1,54 +1,46 @@
 @testset "maximumlikelihoodeva.jl" begin
-    n = 1000
-    θ = [0.0, 1.0, 0.1]
 
-    pd = GeneralizedExtremeValue(θ...)
-    y = rand(pd, n)
+    x₁ = Variable("x₁", [1])
+    x₂ = Variable("x₂", [2])
+    x₃ = Variable("x₂", [3])
 
-    bm_model = Extremes.MaximumLikelihoodEVA(Extremes.BlockMaxima(Variable("y", y)), θ)
+    μ = 1 + x₂.value[] + x₃.value[]
+    ϕ = -.5 + x₁.value[]
+    ξ = .1
+
+    pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
+
+    model = BlockMaxima(Variable("y", [6]), locationcov=[x₂; x₃], logscalecov = [x₁])
+
+    fm = Extremes.MaximumLikelihoodEVA(model, [1; 1; 1; -.5; 1; .1])
+
 
     @testset "hessian(model)" begin
-        # TODO : Test with known values (J)
+        # TODO : Test with known values
 
     end
 
     @testset "parametervar(fm)" begin
-        # TODO : Test with known values (J)
+        # TODO : Test with known values
 
     end
 
     @testset "loglike(fd)" begin
-        # TODO : Test with known values (J)
+        # Test with known values
+        @test Extremes.loglike(fm) ≈ logpdf(pd,6)
 
     end
 
     @testset "getdistribution(fittedmodel)" begin
-        # stationary
-        n = 100
-
-        μ = 0.0
-        σ = 1.0
-        ξ = 0.1
-        ϕ = log(σ)
-
-        θ = [μ; ϕ; ξ]
-
-        pd = GeneralizedExtremeValue(μ, σ, ξ)
-        y = rand(pd, n)
-
-        model = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), θ)
-
-        fd = Extremes.getdistribution(model)[]
-
-        @test fd == pd
-
+        @test Extremes.getdistribution(fm)[] == pd
     end
 
     @testset "quantile(fm, p)" begin
         # p not in [0, 1] throws
-        @test_throws AssertionError Extremes.quantile(bm_model, -1)
+        @test_throws AssertionError Extremes.quantile(fm, -1)
 
-        # TODO : Test with known values
+        # Test with known values
+        @test quantile(fm, .99)[] ≈ quantile(pd,.99)
 
     end
 
@@ -59,12 +51,12 @@
 
     @testset "returnlevel(fm, returnPeriod, confidencelevel)" begin
         # returnPeriod < 0 throws
-        @test_throws AssertionError Extremes.returnlevel(bm_model, -1, 0.95)
+        @test_throws AssertionError Extremes.returnlevel(fm, -1, 0.95)
 
         # confidencelevel not in [0, 1] throws
-        @test_throws AssertionError Extremes.returnlevel(bm_model, 1, -1)
+        @test_throws AssertionError Extremes.returnlevel(fm, 1, -1)
 
-        # TODO : Test with known values (J)
+        # TODO: Test with known values
 
     end
 
@@ -89,7 +81,7 @@
     @testset "Base.show(io, obj)" begin
         # print does not throw
         buffer = IOBuffer()
-        @test_logs Base.show(buffer, bm_model)
+        @test_logs Base.show(buffer, fm)
 
     end
 

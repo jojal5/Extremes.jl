@@ -37,11 +37,9 @@ end
 Compute the model loglikelihood evaluated at θ̂ if the maximum likelihood method has been used.
 
 """
-function loglike(fd::MaximumLikelihoodEVA)::Real
+function loglike(fm::MaximumLikelihoodEVA)::Real
 
-    θ̂ = fd.results
-
-    ll = loglike(fd.model, θ̂)
+    ll = loglike(fm.model, fm.θ̂)
 
     return ll
 
