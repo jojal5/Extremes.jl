@@ -1,21 +1,5 @@
 @testset "utils.jl" begin
-    @testset "getcluster(y, μ₁, μ₂)" begin
-        # TODO : Add tests with known values (J)
-    end
-
-    @testset "getcluster(df, μ₁, μ₂)" begin
-        # coltype[1] not a date throws
-        df = DataFrame(a = [1.0], b = [1.0])
-        @test_throws AssertionError Extremes.getcluster(df, 1.0)
-
-        # coltype[2] not a real throws
-        df = DataFrame(a = [Date(2020)], b = [Date(2020)])
-        @test_throws AssertionError Extremes.getcluster(df, 1.0)
-
-        # TODO : Add tests with known values (J)
-
-    end
-
+    
     @testset "slicematrix(A; dims)" begin
         m = 10
         n = 5

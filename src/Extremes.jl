@@ -8,6 +8,7 @@ using Mamba, ProgressMeter
 import CSV
 import Distributions.quantile
 import Statistics.var
+import Base.length, Base.maximum, Base.sum
 
 include("utils.jl")
 include("structures.jl")
@@ -16,12 +17,15 @@ include("data.jl")
 
 export
 
+    # Variable type
+    Variable, VariableStd, DataItem,
+
+    # Cluster type
+    Cluster,
+
     # Generic types
     EVA,
     fittedEVA,
-
-    # Explanatory variable type
-    Variable, VariableStd, DataItem,
 
     # Extreme value analysis type
     BlockMaxima,
