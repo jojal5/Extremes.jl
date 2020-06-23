@@ -16,7 +16,7 @@
 
     end
 
-    include(joinpath("validationplots", "plots_tests.jl"))
     include(joinpath("validationplots", "plots_std_tests.jl"))
+    include(joinpath("validationplots", "plots_tests.jl"))
 
 end
