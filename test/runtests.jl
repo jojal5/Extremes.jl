@@ -14,4 +14,5 @@ Random.seed!(12)
     include("reproducingColesResults.jl")
     include("structures_test.jl")
     include("utils_test.jl")
+    include("validationplots_tests.jl")
 end;

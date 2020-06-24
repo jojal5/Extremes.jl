@@ -1,7 +1,7 @@
 """
 # TODO : desc
 """
-function probplot(fm::MaximumLikelihoodEVA)::Plot
+function probplot(fm::MaximumLikelihoodEVA)::Plot # TODO : Add titles
 
     y, p̂ = ecdf(fm.model.data.value)
 
@@ -10,7 +10,7 @@ function probplot(fm::MaximumLikelihoodEVA)::Plot
     p = cdf.(dist, y)
 
     return plot(x=p, y=p̂, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"))
+        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title("Probability Plot"))
 
 end
 
@@ -30,7 +30,7 @@ function qqplot(fm::MaximumLikelihoodEVA)::Plot
     end
 
     return plot(x=q, y=y, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"))
+        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title("Quantile Plot"))
 
 end
 
@@ -56,7 +56,7 @@ function returnlevelplot(fm::MaximumLikelihoodEVA)::Plot
     l1 = layer(x=x, y=y, Geom.point)
     l2 = layer(x=x, y=q, Geom.line, Theme(default_color="red", line_style=[:dash]))
 
-    return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"))
+    return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"), Guide.title("Return Level Plot"))
 
 end
 
@@ -78,7 +78,7 @@ function histplot(fm::MaximumLikelihoodEVA)::Plot
 
     h = layer(x=x, Geom.histogram(bincount=nbin, density=true))
     d = layer(x=xp, y=pdf.(dist, xp), Geom.line, Theme(default_color="red") )
-    return plot(d,h, Coord.cartesian(xmin=xmin, xmax=xmax), Guide.xlabel("Data"), Guide.ylabel("Density"))
+    return plot(d,h, Coord.cartesian(xmin=xmin, xmax=xmax), Guide.xlabel("Data"), Guide.ylabel("Density"), Guide.title("Density Plot"))
 
 end
 
