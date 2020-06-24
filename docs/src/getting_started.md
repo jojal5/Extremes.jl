@@ -72,11 +72,15 @@ For example, the 100-year return level for the Port Pirie data and the correspon
 
 ```@repl portpirie
 r = returnlevel(fm, 100, .95)
+```
 
-# The 100-year level estimate
+where the value can be accessed with
+```@repl portpirie
 r.value
+```
 
-# The 95% confidence interval
+and where the corresponding confidence interval can be accessed with
+```@repl portpirie
 r.cint
 ```
 
@@ -165,14 +169,34 @@ Generalized Pareto parameter estimation by maximum likelihood:
 fm = gpfit(df, :Exceedance)
 ```
 
+!!! note
+
+    The function returns the estimates of the log-scale parameter $\phi = \log \sigma$.
+
+
+#### Return level estimation
+
+With the [`ThresholdExceedance`](@ref) structure, the [`returnlevel`](@ref) function requires several arguments to calculate the *T*-year return level:
+- the threshold value;
+- the number of total observation (below and above the threshold);
+- the number of observations per year;
+- the return period *T*;
+- the confidence level for computing the confidence interval.
+The function uses the Peaks-Over-Threshold model definition (Coles, 2001, Chapter 4) for computing the *T*-year return level.
+
+For the rainfall example, the 100-year return level can be estimated as follows:
 
 ```@repl rain
 r = returnlevel(fm, threshold, size(data,1), 365, 100, .95)
+```
 
-# The 100-year level estimate
+where the value can be accessed with
+```@repl rain
 r.value
+```
 
-# The 95% confidence interval
+and where the corresponding confidence interval can be accessed with
+```@repl rain
 r.cint
 ```
 
@@ -188,6 +212,22 @@ r.value[]
 To get the scalar confidence interval in the stationary case, the following command can be used:
 ```@repl rain
 r.cint[]
+```
+
+#### Probability weighted moments estimation  
+
+Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function. All the methods also apply to the `pwmEVA` object.
+
+```@repl rain
+fm = gpfitpwm(df, :Exceedance)
+```
+
+#### Bayesian estimation
+
+Bayesian estimation of the GEV parameters can also be performed by using the [`gevfitbayes`](@ref) function. All the methods also apply to the `BayesianEVA object.
+
+```@repl rain
+fm = gpfitbayes(df, :Exceedance)
 ```
 
 
