@@ -85,7 +85,7 @@ function returnlevelplot(fm::MaximumLikelihoodEVA)::Plot
     df = returnlevelplot_data(fm)
 
     l1 = layer(df, x=:Period, y=:Level, Geom.point)
-    l2 = layer(x=:Period, y=:Data, Geom.line, Theme(default_color="red", line_style=[:dash]))
+    l2 = layer(df, x=:Period, y=:Data, Geom.line, Theme(default_color="red", line_style=[:dash]))
 
     return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"), Guide.title("Return Level Plot"))
 
@@ -118,8 +118,8 @@ function histplot(fm::MaximumLikelihoodEVA)::Plot
 
     dfs = histplot_data(fm)
 
-    h = layer(dfs[:d], x = :Data, Geom.histogram(bincount=dfs[:nbin], density=true))
-    d = layer(dfs[:h], x = :DataRange, y = :Density, Geom.line, Theme(default_color="red") )
+    h = layer(dfs[:h], x = :Data, Geom.histogram(bincount=dfs[:nbin], density=true))
+    d = layer(dfs[:d], x = :DataRange, y = :Density, Geom.line, Theme(default_color="red") )
     return plot(d,h, Coord.cartesian(xmin = dfs[:xmin], xmax = dfs[:xmax]), Guide.xlabel("Data"), Guide.ylabel("Density"), Guide.title("Density Plot"))
 
 end
