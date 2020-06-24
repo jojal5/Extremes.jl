@@ -1,24 +1,24 @@
 # Tutorial
 
-This tutorial shows the functionalities of the package *Extremes.jl*. They are illustrated by reproducing the results shown by Coles (2001) in [An Introduction to Statistical Modeling of Extreme
+This tutorial shows the functionalities of *Extremes.jl*. They are illustrated by reproducing some of the results shown by Coles (2001) in [An Introduction to Statistical Modeling of Extreme
  Values](http://www.springer.com/us/book/9781852334598).
 
- Before executing this tutorial, make sure to have installed the following packages:
-- Extremes (of course)
-- DataFrames (for using the DataFrame type)
-- Distributions (for using probability distribution objects)
-- Gadfly (for plotting)
-- Mamba (for performing Bayesian paradigm)
+Before executing this tutorial, make sure to have installed the following packages:
+- *Extremes.jl* (of course)
+- *DataFrames.jl* (for using the DataFrame type)
+- *Distributions.jl* (for using probability distribution objects)
+- *Gadfly.jl* (for plotting)
 
-Import those packages:
+and import them using the following command:
  ```@repl
-using Extremes, DataFrames, Distributions, Gadfly, Mamba
+using Extremes, DataFrames, Distributions, Gadfly
 ```
 
 ## Model for stationary block maxima
-Coles(2001, Chapter 3)
 
 ### Port Pirie example
+
+This section concerns the annual maximum sea-levels recorded at Port Pirie, South Australia, from 1923 to 1987. This dataset were studied by Coles(2001) in Chapter 3.
 
 ```@setup portpirie
 using Extremes, DataFrames, Distributions, Gadfly
@@ -47,14 +47,112 @@ The data have been loaded in a *DataFrame*. The function `gevfit` can be called 
 fm = gevfit(data, :SeaLevel)
 ```
 
-In this case, the function returns a MaximumLikelihoodEVA object which contains:
-- the structure name indicating notably the estimation method (the maximum likelihood in this example);
+The function [`gevfit`](@ref) returns a MaximumLikelihoodEVA object which contains:
+- the structure name indicating in particular the estimation method (maximum likelihood in this example);
 - the statistical model (the stationary block maxima model in this example);
 - the location, log-scale and shape parameter estimates respectively in the vector $ θ̂ $.
 
+!!! note
+
+    The function returns the estimates of the log-scale parameter $\phi = \log \sigma$.
+
+#### Diagnostics plots
+
+    TODO
+
+#### Return level estimation
+
+*T*-year return level estimate can be obtained using the function [`returnlevel`](@ref) on a `fittedEVA` object. The first argument is the fitted model, the second is the return period in years and the last one is the confidence level for computing the confidence interval.
+
+For example, the 100-year return level for the Port Pirie data and the corresponding 95% confidence interval can be obtained with this commands:
+
+```@repl portpirie
+r = returnlevel(fm, 100, .95)
+
+# The 100-year level estimate
+r.value
+
+# The 95% confidence interval
+r.cint
+```
+
+!!! note
+
+    In this example of a stationary model, the function returns a unit dimension vector for the return level and a vector containing only one vector for the confidence interval. The reason is that the function always returns the same type in the stationary and non-stationary case. The function is therefore [type-stable](https://docs.julialang.org/en/v1/manual/performance-tips/index.html#Write-%22type-stable%22-functions-1) allowing better performance of code execution.  
+
+To get the scalar return level in the stationary case, the following command can be used:
+```@repl portpirie
+r.value[]
+```
+
+To get the scalar confidence interval in the stationary case, the following command can be used:
+```@repl portpirie
+r.cint[]
+```
+
+#### Probability weighted moments estimation  
+
+Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function. All the methods also apply to the `pwmEVA` object.
+
+```@repl portpirie
+fm = gevfitpwm(data[:,:SeaLevel])
+```
+
+#### Bayesian estimation
+
+Bayesian estimation of the GEV parameters can also be performed by using the [`gevfitbayes`](@ref) function. All the methods also apply to the `BayesianEVA object.
+
+```@repl portpirie
+fm = gevfitbayes(data[:,:SeaLevel])
+```
 
 ## Model for stationary threshold exceedances
-Coles(2001, Chapter 4)
+
+The data of this section come from Chapter 4 of Coles (2001) and correspond to the daily rainfall accumulations at a location in south-west England from 1914 to 1962.
+
+```@setup rain
+using Extremes, DataFrames, Distributions, Gadfly, Dates
+```
+
+#### Load the data
+
+Loading the daily rainfall at a location in South-England:
+
+```@example rain
+data = load("rain")
+x = collect(Date(1914,1,1):Day(1):Date(1961,12,30))
+data[!,:Date] = x
+select!(data, [:Date, :Rainfall])
+first(data,5)
+```
+
+Plotting the data using the Gadfly package:
+```@example rain
+plot(data, x=:Date, y=:Rainfall, Geom.point, Theme(discrete_highlight_color=c->nothing))
+```
+
+#### Threshold selection
+
+TODO
+
+#### GPD parameters estimation
+
+Let's first identify the threshold exceedances:
+```@example rain
+threshold = 30.0
+df = filter(row -> row.Rainfall > threshold, data)
+first(df, 5)
+```
+
+Get the exceedances above the threshold
+```@example rain
+df[!,:Rainfall] =  df[!,:Rainfall] .- threshold
+rename!(df, :Rainfall => :Exceedance)
+first(df, 5)
+```
+
+
+
 
 ## Model for dependent data
 Coles(2001, Chapter 5)
