@@ -1,5 +1,6 @@
 @testset "plots_std.jl" begin
-    y = collect(1:5)
+    n = 5
+    y = collect(1:n)
     pd = GeneralizedExtremeValue(1.0, 1.0, 0.1)
     std = [0, 0.9531, 1.8232, 2.6236, 3.3647]
 
@@ -13,15 +14,37 @@
 
     end
 
-    @testset "qqplot_std(fm)" begin
-        # Plot does not throw
-        @test_logs Extremes.qqplot_std(fm)
+    @testset "probplot_std_data(fm)" begin
+        df = probplot_std_data(fm)
+
+        # Returns a dataframe with n values in column Model
+        @test length(df[:, :Model]) == n
+
+        # Returns a dataframe with n values in column Empirical
+        @test length(df[:, :Empirical]) == n
 
     end
 
     @testset "probplot_std(fm)" begin
         # Plot does not throw
         @test_logs Extremes.probplot_std(fm)
+
+    end
+
+    @testset "qqplot_std_data(fm)" begin
+        df = qqplot_std_data(fm)
+
+        # Returns a dataframe with n values in column Model
+        @test length(df[:, :Model]) == n
+
+        # Returns a dataframe with n values in column Empirical
+        @test length(df[:, :Empirical]) == n
+
+    end
+
+    @testset "qqplot_std(fm)" begin
+        # Plot does not throw
+        @test_logs Extremes.qqplot_std(fm)
 
     end
 

@@ -54,6 +54,23 @@ export
     gpfitpwm,
 
     # Other functions
-    returnlevel, diagnosticplots, diagnosticplots_std
+    returnlevel,
+
+    # Disagnostic plots
+    probplot_std_data,
+    probplot_std,
+    qqplot_std_data,
+    qqplot_std,
+    diagnosticplots_std,
+
+    probplot_data,
+    probplot,
+    qqplot_data,
+    qqplot,
+    returnlevelplot_data,
+    returnlevelplot,
+    histplot_data,
+    histplot,
+    diagnosticplots
 
 end # module
