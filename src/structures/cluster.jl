@@ -83,13 +83,33 @@ end
 Threshold exceedances separated by fewer than *r* non-exceedances belong to the same cluster. The value *r* is corresponds to the runlength parameter.
 This approach is referred to as the *runs declustering scheme* (see Coles, 2001 sec. 5.3.2).
 """
-function getcluster(y::Vector{<:Real}, u::Real; runlength::Int=1)::Vector{Cluster}
+function getcluster(y::Vector{<:Real}, u::Real; runlength::Int=1)
 
     cluster = getcluster(y, u, u)
 
+    if length(cluster)>1
+        runscluster = Vector{Cluster}()
+        cluster_current = cluster[1]
+
+        for i=2:length(cluster)
+
+            s = cluster[i].position[1] - cluster_current.position[end] - 1
+
+            if s < runlength
+                cluster_current = Extremes.merge(cluster_current, cluster[i])
+            else
+                push!(runscluster, cluster_current)
+                cluster_current = cluster[i]
+            end
+        end
+        push!(runscluster, cluster_current)
+
+        return runscluster
+    else
+        return cluster
+    end
+
 end
-
-
 
 """
     length(c::Cluster)

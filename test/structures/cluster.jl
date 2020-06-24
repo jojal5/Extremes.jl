@@ -57,6 +57,38 @@
         @test cluster[3].value == ones(Int64,2)
     end
 
+
+    @testset "getcluster(y, u, runlength=r)" begin
+
+        # Test with known values
+        y = zeros(Int64,10)
+        y[1:3] .= 1
+        y[5] = 1
+        y[9:10] .= 1
+
+        cluster = getcluster(y,.5, runlength=1)
+
+        @test cluster[1].position == [1;2;3]
+        @test cluster[2].position == [5]
+        @test cluster[3].position == [9;10]
+
+        cluster = getcluster(y,.5, runlength=2)
+
+        @test cluster[1].position == [1;2;3;5]
+        @test cluster[2].position == [9;10]
+
+        cluster = getcluster(y,.5, runlength=4)
+
+        @test cluster[1].position == [1;2;3;5;9;10]
+
+        cluster = getcluster(y[1:4],.5, runlength=4)
+        @test cluster[1].position == [1;2;3]
+
+        cluster = getcluster(y[6:7],.5, runlength=4)
+        @test isempty(cluster)
+
+    end
+
     @testset "length(c::Cluster)" begin
 
         # Test with known values
