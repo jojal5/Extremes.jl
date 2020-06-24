@@ -98,4 +98,30 @@
         @test sum.(cluster) == [3; 1; 2]
     end
 
+    @testset "merge(c₁::Cluster, c₂::Cluster)" begin
+
+        # Test assertion
+        c₁ = Cluster(1,0,[10],[100])
+        c₂ = Cluster(0,0,[10],[100])
+        c₃ = Cluster(1,1,[10],[100])
+
+        @test_throws AssertionError Extremes.merge(c₁, c₂)
+        @test_throws AssertionError Extremes.merge(c₁, c₃)
+
+        # Test with known values
+        y = zeros(Int64,10)
+        y[1:3] .= 1
+        y[5] = 1
+        y[9:10] .= 1
+
+        cluster = getcluster(y,.5)
+
+        c = Extremes.merge(cluster[1], cluster[2])
+
+        @test c.u₁ ≈ cluster[1].u₁
+        @test c.u₂ ≈ cluster[1].u₁
+        @test c.position == [1;2;3;5]
+        @test c.value == [1;1;1;1]
+    end
+
 end
