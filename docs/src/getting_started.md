@@ -14,6 +14,10 @@ and import them using the following command:
 using Extremes, DataFrames, Distributions, Gadfly
 ```
 
+
+
+
+
 ## Model for stationary block maxima
 
 ### Port Pirie example
@@ -106,6 +110,11 @@ Bayesian estimation of the GEV parameters can also be performed by using the [`g
 fm = gevfitbayes(data[:,:SeaLevel])
 ```
 
+
+
+
+
+
 ## Model for stationary threshold exceedances
 
 The data of this section come from Chapter 4 of Coles (2001) and correspond to the daily rainfall accumulations at a location in south-west England from 1914 to 1962.
@@ -144,13 +153,42 @@ df = filter(row -> row.Rainfall > threshold, data)
 first(df, 5)
 ```
 
-Get the exceedances above the threshold
+Get the exceedances above the threshold:
 ```@example rain
 df[!,:Rainfall] =  df[!,:Rainfall] .- threshold
 rename!(df, :Rainfall => :Exceedance)
 first(df, 5)
 ```
 
+Generalized Pareto parameter estimation by maximum likelihood:
+```@repl rain
+fm = gpfit(df, :Exceedance)
+```
+
+
+```@repl rain
+r = returnlevel(fm, threshold, size(data,1), 365, 100, .95)
+
+# The 100-year level estimate
+r.value
+
+# The 95% confidence interval
+r.cint
+```
+
+!!! note
+
+    In this example of a stationary model, the function returns a unit dimension vector for the return level and a vector containing only one vector for the confidence interval. The reason is that the function always returns the same type in the stationary and non-stationary case. The function is therefore [type-stable](https://docs.julialang.org/en/v1/manual/performance-tips/index.html#Write-%22type-stable%22-functions-1) allowing better performance of code execution.  
+
+To get the scalar return level in the stationary case, the following command can be used:
+```@repl rain
+r.value[]
+```
+
+To get the scalar confidence interval in the stationary case, the following command can be used:
+```@repl rain
+r.cint[]
+```
 
 
 

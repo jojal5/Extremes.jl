@@ -1,7 +1,7 @@
 
 # Extreme value analysis in Julia.
 
-The *Extremes.jl* package provides several functions and methods for the analysis of extreme values in Julia. In particular, methods for block maxima and threshold exceedances models are implemented, in particular:
+The *Extremes.jl* package provides several functions and methods for the analysis of extreme values in Julia. In particular, methods for block maxima and threshold exceedances models are implemented, such as:
 * Parameter estimation by probability weighted moments, maximum likelihood and Bayesian procedure.
 * Stationary and non-stationary models.
 * Diagnostic plots for assessing model accuracy.
