@@ -49,6 +49,8 @@ end
 """
 function probplot_std_data(fm::MaximumLikelihoodEVA)::DataFrame
 
+    checknonstationarity(fm)
+
     z = standardize(fm)
 
     y, p̂ = ecdf(z)
@@ -73,6 +75,8 @@ end
 # TODO : desc
 """
 function qqplot_std_data(fm::MaximumLikelihoodEVA)::DataFrame
+
+    checknonstationarity(fm)
 
     z = standardize(fm)
 

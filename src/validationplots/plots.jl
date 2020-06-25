@@ -3,6 +3,8 @@
 """
 function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
+    checkstationarity(fm)
+
     y, p̂ = ecdf(fm.model.data.value)
 
     dist = Extremes.getdistribution(fm)[]
@@ -29,6 +31,8 @@ end
 # TODO : desc
 """
 function qqplot_data(fm::MaximumLikelihoodEVA)::DataFrame
+
+    checkstationarity(fm)
 
     y, p = ecdf(fm.model.data.value)
 
@@ -60,6 +64,8 @@ end
 # TODO : desc
 """
 function returnlevelplot_data(fm::MaximumLikelihoodEVA)::DataFrame
+
+    checkstationarity(fm)
 
     y, p = ecdf(fm.model.data.value)
 
@@ -95,6 +101,8 @@ end
 # TODO : desc
 """
 function histplot_data(fm::MaximumLikelihoodEVA)::Dict
+
+    checkstationarity(fm)
 
     dist = Extremes.getdistribution(fm)[]
 

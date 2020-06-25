@@ -5,8 +5,8 @@
     pd = GeneralizedExtremeValue(θ...)
     std = [0.9531, 1.8232, 2.6236, 3.3647, 4.0547]
 
-    fmbm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), [θ[1], log(θ[2]), θ[3]])
-    fmte = MaximumLikelihoodEVA(ThresholdExceedance(Variable("y", y)), [log(θ[2]), θ[3]])
+    fmbm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y), locationcov = [Variable("t", collect(1:n))]), [0.0, 0.0, 0.0, 0.1])
+    fmte = MaximumLikelihoodEVA(ThresholdExceedance(Variable("y", y), logscalecov = [Variable("t", collect(1:n))]), [0.0, 0.0, 0.1])
 
     @testset "standardize(y, μ, σ, ξ)" begin
         # Simple standardized values

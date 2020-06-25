@@ -14,5 +14,27 @@ function ecdf(y::Vector{<:Real})::Tuple{Vector{<:Real}, Vector{<:Real}}
     return ys, p
 end
 
+"""
+# TODO : desc
+"""
+function checkstationarity(fm::MaximumLikelihoodEVA)
+
+    if getcovariatenumber(fm.model) > 0
+        @info "The graph is optimized for stationary models and the model provided is not." # TODO : Info message
+    end
+
+end
+
+"""
+# TODO : desc
+"""
+function checknonstationarity(fm::MaximumLikelihoodEVA)
+
+    if getcovariatenumber(fm.model) == 0
+        @info "The graph is optimized for non-stationary models and the model provided is not." # TODO : Info message
+    end
+
+end
+
 include(joinpath("validationplots", "plots_std.jl"))
 include(joinpath("validationplots", "plots.jl"))
