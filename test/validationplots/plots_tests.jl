@@ -1,14 +1,12 @@
 @testset "plots.jl" begin
     n = 5000
 
-    μ = 1.0
-    σ = 1.0
-    ξ = 0.1
+    y = rand(GeneralizedExtremeValue(1.0, 1.0, 0.1), n)
+    fm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), [1.0, 0.0, 0.1])
 
-    pd = GeneralizedExtremeValue(μ, σ, ξ)
-    y = rand(pd, n)
-
-    fm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), [μ, log(σ), ξ])
+    x = rand(n)
+    yns = rand.(GeneralizedExtremeValue.(x, 1.0, 0.1))
+    fmns = MaximumLikelihoodEVA(BlockMaxima(Variable("y", yns), locationcov = [Variable("x", x)]), [0.0, 1.0, 0.0, 0.1])
 
     @testset "probplot_data(fm)" begin
         df = probplot_data(fm)
@@ -18,6 +16,9 @@
 
         # Returns a dataframe with n values in column Empirical
         @test length(df[:, :Empirical]) == n
+
+        # Info for non-stationary model but does not throw
+        @test_logs (:info, "The graph is optimized for stationary models and the model provided is not.") probplot_data(fmns)
 
     end
 
@@ -35,6 +36,9 @@
 
         # Returns a dataframe with n values in column Empirical
         @test length(df[:, :Empirical]) == n
+
+        # Info for non-stationary model but does not throw
+        @test_logs (:info, "The graph is optimized for stationary models and the model provided is not.") qqplot_data(fmns)
 
     end
 
@@ -55,6 +59,9 @@
 
         # Returns a dataframe with n values in column Level
         @test length(df[:, :Level]) == n
+
+        # Info for non-stationary model but does not throw
+        @test_logs (:info, "The graph is optimized for stationary models and the model provided is not.") returnlevelplot_data(fmns)
 
     end
 
@@ -84,6 +91,9 @@
 
         # Returns a dictionary with key xmax
         @test haskey(dfs, :xmax)
+
+        # Info for non-stationary model but does not throw
+        @test_logs (:info, "The graph is optimized for stationary models and the model provided is not.") histplot_data(fmns)
 
     end
 

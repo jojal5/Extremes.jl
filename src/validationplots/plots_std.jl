@@ -12,7 +12,7 @@ end
 function standardize(fm::MaximumLikelihoodEVA{BlockMaxima{T}} where T<:Distribution)::Vector{<:Real}
 
     y = fm.model.data.value
-    d = Extremes.getdistribution(fm)
+    d = getdistribution(fm)
 
     return standardize.(y, location.(d), scale.(d), shape.(d))
 
@@ -24,7 +24,7 @@ end
 function standardize(fm::MaximumLikelihoodEVA{ThresholdExceedance})::Vector{<:Real}
 
     y = fm.model.data.value
-    d = Extremes.getdistribution(fm)
+    d = getdistribution(fm)
 
     return standardize.(y, 0, scale.(d), shape.(d))
 

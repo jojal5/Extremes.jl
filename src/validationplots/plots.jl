@@ -7,7 +7,7 @@ function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
     y, p̂ = ecdf(fm.model.data.value)
 
-    dist = Extremes.getdistribution(fm)[]
+    dist = getdistribution(fm)[1]
 
     p = cdf.(dist, y)
 
@@ -41,7 +41,7 @@ function qqplot_data(fm::MaximumLikelihoodEVA)::DataFrame
     q = Vector{Float64}(undef, n)
 
     for i in eachindex(p)
-       q[i] = quantile(fm, p[i])[]
+       q[i] = quantile(fm, p[i])[1]
     end
 
     return DataFrame(Model = q, Empirical = y)
@@ -76,7 +76,7 @@ function returnlevelplot_data(fm::MaximumLikelihoodEVA)::DataFrame
     q = Vector{Float64}(undef, n)
 
     for i in eachindex(p)
-       q[i] = quantile(fm, p[i])[]
+       q[i] = quantile(fm, p[i])[1]
     end
 
     return DataFrame(Data = y, Period = T, Level = q)
@@ -104,7 +104,7 @@ function histplot_data(fm::MaximumLikelihoodEVA)::Dict
 
     checkstationarity(fm)
 
-    dist = Extremes.getdistribution(fm)[]
+    dist = getdistribution(fm)[1]
 
     x = fm.model.data.value
     n = length(x)

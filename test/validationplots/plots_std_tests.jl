@@ -9,6 +9,9 @@
     yte = rand.(GeneralizedPareto.(x, 0.1))
     fmte = MaximumLikelihoodEVA(ThresholdExceedance(Variable("y", yte), logscalecov = [Variable("x", x)]), [0.0, 1.0, 0.1])
 
+    ys = rand(GeneralizedExtremeValue(0.0, 1.0, 0.1), n)
+    fms = MaximumLikelihoodEVA(BlockMaxima(Variable("y", ys)), [0.0, 1.0, 0.1])
+
     @testset "standardize(y, μ, σ, ξ)" begin
         # Simple standardized values
         std̂ = Extremes.standardize(1, 0.0, 1.0, 0.1)
@@ -65,6 +68,9 @@
         # Returns a dataframe with n values in column Empirical with ThresholdExceedance
         @test length(dfte[:, :Empirical]) == n
 
+        # Info for stationary model but does not throw
+        @test_logs (:info, "The graph is optimized for non-stationary models and the model provided is not.") probplot_std_data(fms)
+
     end
 
     @testset "probplot_std(fm)" begin
@@ -91,6 +97,9 @@
 
         # Returns a dataframe with n values in column Empirical with ThresholdExceedance
         @test length(dfte[:, :Empirical]) == n
+
+        # Info for stationary model but does not throw
+        @test_logs (:info, "The graph is optimized for non-stationary models and the model provided is not.") qqplot_std_data(fms)
 
     end
 
