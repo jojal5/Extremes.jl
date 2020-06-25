@@ -22,7 +22,7 @@ using Extremes, DataFrames, Distributions, Gadfly
 
 ### Port Pirie example
 
-This section concerns the annual maximum sea-levels recorded at Port Pirie, South Australia, from 1923 to 1987. This dataset were studied by Coles(2001) in Chapter 3.
+This section concerns the annual maximum sea-levels recorded at Port Pirie, South Australia, from 1923 to 1987. This dataset were studied by Coles (2001) in Chapter 3.
 
 ```@setup portpirie
 using Extremes, DataFrames, Distributions, Gadfly
@@ -43,7 +43,7 @@ plot(data, x=:Year, y=:SeaLevel, Geom.line)
 
 #### GEV parameters estimation
 
-In this example, the Generalized Extreme Value distribution is fitted by maximum likelihood to the annual maximum sea-levels at Port-Pirie.
+In this example, the Generalized Extreme Value (GEV) distribution is fitted by maximum likelihood to the annual maximum sea-levels at Port-Pirie.
 
 The data have been loaded in a *DataFrame*. The function `gevfit` can be called directly using the dataframe as the first argument and the data column symbol as the second argument as follows:
 
@@ -51,7 +51,7 @@ The data have been loaded in a *DataFrame*. The function `gevfit` can be called 
 fm = gevfit(data, :SeaLevel)
 ```
 
-The function [`gevfit`](@ref) returns a MaximumLikelihoodEVA object which contains:
+The function [`gevfit`](@ref) returns a `MaximumLikelihoodEVA` object which contains:
 - the structure name indicating in particular the estimation method (maximum likelihood in this example);
 - the statistical model (the stationary block maxima model in this example);
 - the location, log-scale and shape parameter estimates respectively in the vector $ θ̂ $.
@@ -68,7 +68,7 @@ The function [`gevfit`](@ref) returns a MaximumLikelihoodEVA object which contai
 
 *T*-year return level estimate can be obtained using the function [`returnlevel`](@ref) on a `fittedEVA` object. The first argument is the fitted model, the second is the return period in years and the last one is the confidence level for computing the confidence interval.
 
-For example, the 100-year return level for the Port Pirie data and the corresponding 95% confidence interval can be obtained with this commands:
+For example, the 100-year return level for the Port Pirie blockmaxima model and the corresponding 95% confidence interval can be obtained with this commands:
 
 ```@repl portpirie
 r = returnlevel(fm, 100, .95)
@@ -108,15 +108,11 @@ fm = gevfitpwm(data[:,:SeaLevel])
 
 #### Bayesian estimation
 
-Bayesian estimation of the GEV parameters can also be performed by using the [`gevfitbayes`](@ref) function. All the methods also apply to the `BayesianEVA object.
+Bayesian estimation of the GEV parameters can also be performed by using the [`gevfitbayes`](@ref) function. All the methods also apply to the `BayesianEVA` object.
 
 ```@repl portpirie
 fm = gevfitbayes(data[:,:SeaLevel])
 ```
-
-
-
-
 
 
 ## Model for stationary threshold exceedances
