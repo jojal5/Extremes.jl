@@ -20,7 +20,7 @@ end
 function checkstationarity(fm::MaximumLikelihoodEVA)
 
     if getcovariatenumber(fm.model) > 0
-        @info "The graph is optimized for stationary models and the model provided is not." # TODO : Info message
+        @info "The graph is optimized for stationary models and the model provided is not."
     end
 
 end
@@ -31,7 +31,7 @@ end
 function checknonstationarity(fm::MaximumLikelihoodEVA)
 
     if getcovariatenumber(fm.model) == 0
-        @info "The graph is optimized for non-stationary models and the model provided is not." # TODO : Info message
+        @info "The graph is optimized for non-stationary models and the model provided is not."
     end
 
 end

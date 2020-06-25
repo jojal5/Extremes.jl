@@ -110,5 +110,3 @@
     end
 
 end
-
-# TODO : Test stationary and non-stationary...
