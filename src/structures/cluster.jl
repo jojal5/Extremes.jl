@@ -78,18 +78,38 @@ function getcluster(y::Vector{<:Real}, u₁::Real, u₂::Real)::Vector{Cluster}
 end
 
 """
-    getcluster(y::Vector{<:Real}, u::Real)::Vector{Cluster}
+    getcluster(y::Vector{<:Real}, u::Real; runlength::Int=1)::Vector{Cluster}
 
-Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u.
-
+Threshold exceedances separated by fewer than *r* non-exceedances belong to the same cluster. The value *r* is corresponds to the runlength parameter.
+This approach is referred to as the *runs declustering scheme* (see Coles, 2001 sec. 5.3.2).
 """
-function getcluster(y::Vector{<:Real}, u::Real)::Vector{Cluster}
+function getcluster(y::Vector{<:Real}, u::Real; runlength::Int=1)
 
-    return getcluster(y, u, u)
+    cluster = getcluster(y, u, u)
+
+    if length(cluster)>1
+        runscluster = Vector{Cluster}()
+        cluster_current = cluster[1]
+
+        for i=2:length(cluster)
+
+            s = cluster[i].position[1] - cluster_current.position[end] - 1
+
+            if s < runlength
+                cluster_current = Extremes.merge(cluster_current, cluster[i])
+            else
+                push!(runscluster, cluster_current)
+                cluster_current = cluster[i]
+            end
+        end
+        push!(runscluster, cluster_current)
+
+        return runscluster
+    else
+        return cluster
+    end
 
 end
-
-
 
 """
     length(c::Cluster)
@@ -109,7 +129,6 @@ function maximum(c::Cluster)
     return maximum(c.value)
 end
 
-
 """
     sum(c::Cluster)
 
@@ -117,6 +136,25 @@ Compute the cluster sum.
 """
 function sum(c::Cluster)
     return sum(c.value)
+end
+
+"""
+    merge(c₁::Cluster, c₂::Cluster)
+
+Merge cluster c₁ and c₂ into a single cluster.
+"""
+function merge(c₁::Cluster, c₂::Cluster)
+
+    @assert c₁.u₁ ≈ c₂.u₁ "both clusters should have the same threshold to be merged."
+    @assert c₁.u₂ ≈ c₂.u₂ "both clusters should have the same threshold to be merged."
+
+    position = vcat(c₁.position, c₂.position)
+    value = vcat(c₁.value, c₂.value)
+
+    c = Cluster(c₁.u₁, c₁.u₂, position, value)
+
+    return c
+
 end
 
 
