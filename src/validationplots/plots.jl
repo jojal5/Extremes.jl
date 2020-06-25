@@ -90,8 +90,8 @@ function returnlevelplot(fm::MaximumLikelihoodEVA)::Plot
 
     df = returnlevelplot_data(fm)
 
-    l1 = layer(df, x=:Period, y=:Level, Geom.point)
-    l2 = layer(df, x=:Period, y=:Data, Geom.line, Theme(default_color="red", line_style=[:dash]))
+    l1 = layer(df, x=:Period, y=:Level,Geom.line, Theme(default_color="red", line_style=[:dash]))
+    l2 = layer(df, x=:Period, y=:Data, Geom.point)
 
     return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"), Guide.title("Return Level Plot"))
 
