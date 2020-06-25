@@ -52,7 +52,7 @@ function probplot_std_data(fm::MaximumLikelihoodEVA{ThresholdExceedance}, thresh
 
     y, p̂ = ecdf(z)
 
-    return DataFrame(Model = cdf.(Gumbel(), y), Empirical = p̂)
+    return DataFrame(Model = cdf.(Exponential(), y), Empirical = p̂)
 
 end
 
@@ -62,7 +62,7 @@ end
 function probplot_std(df::DataFrame)::Plot
 
     return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title("Probability Plot"), Guide.title("Residual Probability Plot"))
+        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title("Residual Probability Plot"))
 
 end
 
@@ -110,7 +110,7 @@ function qqplot_std_data(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshol
 
     y, p = ecdf(z)
 
-    return DataFrame(Model = quantile.(Gumbel(), p), Empirical = y)
+    return DataFrame(Model = quantile.(Exponential(), p), Empirical = y)
 
 end
 
