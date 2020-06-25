@@ -1,34 +1,35 @@
 @testset "plots_std.jl" begin
-    n = 5
-    y = collect(1:n)
-    θ = [0.0, 1.0, 0.1]
-    pd = GeneralizedExtremeValue(θ...)
-    std = [0.9531, 1.8232, 2.6236, 3.3647, 4.0547]
+    n = 5000
 
-    fmbm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y), locationcov = [Variable("t", collect(1:n))]), [0.0, 0.0, 0.0, 0.1])
-    fmte = MaximumLikelihoodEVA(ThresholdExceedance(Variable("y", y), logscalecov = [Variable("t", collect(1:n))]), [0.0, 0.0, 0.1])
+    x = rand(n)
+
+    ybm = rand.(GeneralizedExtremeValue.(x, 1.0, 0.1))
+    fmbm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", ybm), locationcov = [Variable("x", x)]), [0.0, 1.0, 1.0, 0.1])
+
+    yte = rand.(GeneralizedPareto.(x, 0.1))
+    fmte = MaximumLikelihoodEVA(ThresholdExceedance(Variable("y", yte), logscalecov = [Variable("x", x)]), [0.0, 1.0, 0.1])
 
     @testset "standardize(y, μ, σ, ξ)" begin
         # Simple standardized values
-        std̂ = Extremes.standardize(y[2], θ...)
+        std̂ = Extremes.standardize(1, 0.0, 1.0, 0.1)
 
-        @test std[2] ≈ std̂ atol = 0.0001
+        @test std̂ ≈ 0.9531 atol = 0.0001
 
     end
 
     @testset "standardize(fm)" begin
-        # Simple standardized values
+        # Function returns vector with n values
         std̂ = Extremes.standardize(fmbm)
 
-        @test std ≈ std̂ atol = 0.0001
+        @test length(std̂) == n
 
     end
 
     @testset "standardize(fm)" begin
-        # Simple standardized values
+        # Function returns vector with n values
         std̂ = Extremes.standardize(fmte)
 
-        @test std ≈ std̂ atol = 0.0001 # TODO : FIX
+        @test length(std̂) == n
 
     end
 

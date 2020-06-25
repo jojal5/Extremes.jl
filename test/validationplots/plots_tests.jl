@@ -1,9 +1,14 @@
 @testset "plots.jl" begin
-    n = 5
-    y = collect(1:n)
-    pd = GeneralizedExtremeValue(1.0, 1.0, 0.1)
+    n = 5000
 
-    fm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), [1.0, 0.0, 0.1])
+    μ = 1.0
+    σ = 1.0
+    ξ = 0.1
+
+    pd = GeneralizedExtremeValue(μ, σ, ξ)
+    y = rand(pd, n)
+
+    fm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), [μ, log(σ), ξ])
 
     @testset "probplot_data(fm)" begin
         df = probplot_data(fm)
