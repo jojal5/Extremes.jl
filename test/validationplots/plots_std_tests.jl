@@ -1,10 +1,9 @@
 @testset "plots_std.jl" begin
     n = 5
     y = collect(1:n)
-    threshold = 1.0
-    θ = [threshold, 1.0, 0.1]
+    θ = [0.0, 1.0, 0.1]
     pd = GeneralizedExtremeValue(θ...)
-    std = [0, 0.9531, 1.8232, 2.6236, 3.3647]
+    std = [0.9531, 1.8232, 2.6236, 3.3647, 4.0547]
 
     fmbm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), [θ[1], log(θ[2]), θ[3]])
     fmte = MaximumLikelihoodEVA(ThresholdExceedance(Variable("y", y)), [log(θ[2]), θ[3]])
@@ -25,103 +24,90 @@
 
     end
 
-    @testset "standardize(fm, threshold)" begin
+    @testset "standardize(fm)" begin
         # Simple standardized values
-        std̂ = Extremes.standardize(fmte, threshold)
+        std̂ = Extremes.standardize(fmte)
 
-        @test std ≈ std̂ atol = 0.0001
+        @test std ≈ std̂ atol = 0.0001 # TODO : FIX
+
+    end
+
+    @testset "standarddist(fm)" begin
+        # BlockMaxima standard distribution is Gumbel
+        dist = Extremes.standarddist(fmbm)
+
+        @test dist == Gumbel()
+
+    end
+
+    @testset "standarddist(fm)" begin
+        # ThresholdExceedance standard distribution is Exponential
+        dist = Extremes.standarddist(fmte)
+
+        @test dist == Exponential()
 
     end
 
     @testset "probplot_std_data(fm)" begin
-        df = probplot_std_data(fmbm)
+        dfbm = probplot_std_data(fmbm)
+        dfte = probplot_std_data(fmte)
 
-        # Returns a dataframe with n values in column Model
-        @test length(df[:, :Model]) == n
+        # Returns a dataframe with n values in column Model with BlockMaxima
+        @test length(dfbm[:, :Model]) == n
 
-        # Returns a dataframe with n values in column Empirical
-        @test length(df[:, :Empirical]) == n
+        # Returns a dataframe with n values in column Empirical with BlockMaxima
+        @test length(dfbm[:, :Empirical]) == n
 
-    end
+        # Returns a dataframe with n values in column Model with ThresholdExceedance
+        @test length(dfte[:, :Model]) == n
 
-    @testset "probplot_std_data(fm, threshold)" begin
-        df = probplot_std_data(fmte, threshold)
-
-        # Returns a dataframe with n values in column Model
-        @test length(df[:, :Model]) == n
-
-        # Returns a dataframe with n values in column Empirical
-        @test length(df[:, :Empirical]) == n
-
-    end
-
-    @testset "probplot_std(df)" begin
-        # Plot does not throw
-        @test_logs Extremes.probplot_std(DataFrame(Model = collect(1:n), Empirical = collect(1:n)))
+        # Returns a dataframe with n values in column Empirical with ThresholdExceedance
+        @test length(dfte[:, :Empirical]) == n
 
     end
 
     @testset "probplot_std(fm)" begin
-        # Plot does not throw
+        # Plot does not throw with BlockMaxima
         @test_logs Extremes.probplot_std(fmbm)
 
-    end
-
-    @testset "probplot_std(fm, threshold)" begin
-        # Plot does not throw
-        @test_logs Extremes.probplot_std(fmte, threshold)
+        # Plot does not throw with ThresholdExceedance
+        @test_logs Extremes.probplot_std(fmte)
 
     end
 
     @testset "qqplot_std_data(fm)" begin
-        df = qqplot_std_data(fmbm)
+        dfbm = qqplot_std_data(fmbm)
+        dfte = qqplot_std_data(fmte)
 
-        # Returns a dataframe with n values in column Model
-        @test length(df[:, :Model]) == n
+        # Returns a dataframe with n values in column Model with BlockMaxima
+        @test length(dfbm[:, :Model]) == n
 
-        # Returns a dataframe with n values in column Empirical
-        @test length(df[:, :Empirical]) == n
+        # Returns a dataframe with n values in column Empirical with BlockMaxima
+        @test length(dfbm[:, :Empirical]) == n
 
-    end
+        # Returns a dataframe with n values in column Model with ThresholdExceedance
+        @test length(dfte[:, :Model]) == n
 
-    @testset "qqplot_std_data(fm, threshold)" begin
-        df = qqplot_std_data(fmte, threshold)
-
-        # Returns a dataframe with n values in column Model
-        @test length(df[:, :Model]) == n
-
-        # Returns a dataframe with n values in column Empirical
-        @test length(df[:, :Empirical]) == n
-
-    end
-
-    @testset "qqplot_std(df)" begin
-        # Plot does not throw
-        @test_logs Extremes.qqplot_std(DataFrame(Model = collect(1:n), Empirical = collect(1:n)))
+        # Returns a dataframe with n values in column Empirical with ThresholdExceedance
+        @test length(dfte[:, :Empirical]) == n
 
     end
 
     @testset "qqplot_std(fm)" begin
-        # Plot does not throw
+        # Plot does not throw with BlockMaxima
         @test_logs Extremes.qqplot_std(fmbm)
 
-    end
-
-    @testset "qqplot_std(fm, threshold)" begin
-        # Plot does not throw
-        @test_logs Extremes.qqplot_std(fmte, threshold)
+        # Plot does not throw with ThresholdExceedance
+        @test_logs Extremes.qqplot_std(fmte)
 
     end
 
     @testset "diagnosticplots_std(fm)" begin
-        # Plots do not throw
+        # Plots do not throw with BlockMaxima
         @test_logs Extremes.diagnosticplots_std(fmbm)
 
-    end
-
-    @testset "diagnosticplots_std(fm, threshold)" begin
-        # Plots do not throw
-        @test_logs Extremes.diagnosticplots_std(fmte, threshold)
+        # Plots do not throw with ThresholdExceedance
+        @test_logs Extremes.diagnosticplots_std(fmte)
 
     end
 
