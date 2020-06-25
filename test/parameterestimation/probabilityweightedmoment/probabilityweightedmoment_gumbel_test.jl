@@ -17,7 +17,7 @@
 
     end
 
-    @testset "gumbelfitpwm(y)" begin
+    @testset "gumbelfitpwm(df, datacol)" begin
         # stationary model building
         df = DataFrame(y = y)
         fm = Extremes.gumbelfitpwm(df, :y)
