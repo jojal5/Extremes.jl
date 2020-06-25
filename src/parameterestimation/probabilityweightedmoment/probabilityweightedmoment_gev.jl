@@ -20,6 +20,27 @@ function gevfitpwm(y::Vector{<:Real})::pwmEVA
 end
 
 """
+    gevfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+
+Estimate the Generalized Extreme value distribution parameters with the
+probability weighted moments as described in Hosking et al. (1985).
+
+*Reference:*
+Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
+    distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
+
+"""
+function gevfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+
+    model = BlockMaxima(Variable(string(datacol), df[:, datacol]))
+
+    fittedmodel = gevfitpwm(model)
+
+    return fittedmodel
+
+end
+
+"""
     gevfitpwm(model::BlockMaxima)::pwmEVA
 
 Estimate the Generalized Extreme value distribution parameters with the
