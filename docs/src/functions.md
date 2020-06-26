@@ -5,7 +5,6 @@ Modules = [Extremes]
 Private = false
 Order = [:function]
 ```
-
 # Types
 
 ```@autodocs
