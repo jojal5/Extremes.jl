@@ -58,9 +58,17 @@ The function [`gevfit`](@ref) returns a `MaximumLikelihoodEVA` object which cont
 
     The function returns the estimates of the log-scale parameter $\phi = \log \sigma$.
 
-### Diagnostics plots
+### Diagnostic plots
 
-    TODO
+Several diagnostic plots for assessing the accuracy of the GEV model fitted to the Port Pirie data are can be shown with the function [`diagnosticplots`](@ref).
+
+```@example portpirie
+set_default_plot_size(21cm ,16cm)
+diagnosticplots(fm)
+```
+
+The diagnostic plots consist in the probability plot (upper left panel), quantile plot (upper right panel), return level plot (lower left panel) and the density plot (lower right panel). These plots can be shown separately with the functions [`probplot`](@ref), [`qqplot`](@ref), [`returnlevelplot`](@ref) and [`histplot`](@ref) respectively.
+
 
 ### Return level estimation
 
@@ -101,7 +109,7 @@ r.cint[]
 Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function. All the methods also apply to the `pwmEVA` object.
 
 ```@repl portpirie
-fm = gevfitpwm(data[:,:SeaLevel])
+fm = gevfitpwm(data, :SeaLevel)
 ```
 
 ### Bayesian estimation
@@ -132,6 +140,7 @@ first(data,5)
 
 Plotting the data using the Gadfly package:
 ```@example rain
+set_default_plot_size(14cm ,8cm)
 plot(data, x=:Date, y=:Rainfall, Geom.point, Theme(discrete_highlight_color=c->nothing))
 ```
 
