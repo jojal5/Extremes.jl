@@ -17,6 +17,19 @@
 
     end
 
+    @testset "gumbelfitpwm(df, datacol)" begin
+        # stationary model building
+        df = DataFrame(y = y)
+        fm = Extremes.gumbelfitpwm(df, :y)
+
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂[1:2] .- var[1:2] <= θ
+        @test θ <= fm.θ̂[1:2] .+ var[1:2]
+
+    end
+
     @testset "gumbelfitpwm(model)" begin
         # non-stationary warn
         model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("t", collect(1:n))], dist = Gumbel)

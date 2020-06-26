@@ -20,6 +20,27 @@ function gpfitpwm(y::Vector{<:Real})::pwmEVA
 end
 
 """
+    gpfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+
+Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
+in Hosking & Wallis (1987).
+
+*Reference:*
+Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
+    Technometrics, 29(3), 339-349.
+
+"""
+function gpfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+
+    model = ThresholdExceedance(Variable(string(datacol), df[:, datacol]))
+
+    fittedmodel = gpfitpwm(model)
+
+    return fittedmodel
+
+end
+
+"""
     gpfitpwm(model::ThresholdExceedance)::pwmEVA
 
 Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described

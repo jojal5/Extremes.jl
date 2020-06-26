@@ -4,6 +4,7 @@ using Distributions, DataFrames, Dates
 using Optim, NLSolversBase, ForwardDiff
 using SpecialFunctions, LinearAlgebra, Statistics
 using Mamba, ProgressMeter
+using Gadfly
 
 import CSV
 import Distributions.quantile
@@ -14,6 +15,7 @@ include("utils.jl")
 include("structures.jl")
 include("parameterestimation.jl")
 include("data.jl")
+include("validationplots.jl")
 
 export
 
@@ -52,6 +54,23 @@ export
     gpfitpwm,
 
     # Other functions
-    returnlevel
+    returnlevel,
+
+    # Disagnostic plots
+    probplot_std_data,
+    probplot_std,
+    qqplot_std_data,
+    qqplot_std,
+    diagnosticplots_std,
+
+    probplot_data,
+    probplot,
+    qqplot_data,
+    qqplot,
+    returnlevelplot_data,
+    returnlevelplot,
+    histplot_data,
+    histplot,
+    diagnosticplots
 
 end # module
