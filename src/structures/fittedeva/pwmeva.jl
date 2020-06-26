@@ -103,17 +103,17 @@ end
 
 
 """
-    Base.show(io::IO, obj::pwmEVA)
+    showfittedEVA(io::IO, obj::pwmEVA; prefix::String = "")
 
-Override of the show function for the objects of type pwmEVA.
+Displays a pwmEVA with the prefix `prefix` before every line.
 
 """
-function Base.show(io::IO, obj::pwmEVA)
+function showfittedEVA(io::IO, obj::pwmEVA; prefix::String = "")
 
-    println(io, "pwmEVA")
-    println(io, "model :")
-    showEVA(io, obj.model, prefix = "\t")
+    println(io, prefix, "pwmEVA")
+    println(io, prefix, "model :")
+    showEVA(io, obj.model, prefix = prefix*"\t")
     println(io)
-    println(io, "θ̂  :\t", obj.θ̂)
+    println(io, prefix, "θ̂  :\t", obj.θ̂)
 
 end
