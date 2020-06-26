@@ -390,15 +390,9 @@ version = "1.36.0+1"
 
 [[Libiconv_jll]]
 deps = ["Libdl", "Pkg"]
-<<<<<<< HEAD
-git-tree-sha1 = "a06937d9aa48855f52484c9a77a2670158fa90e2"
-uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
-version = "1.16.0+4"
-=======
 git-tree-sha1 = "c9d4035d7481bcdff2babf5a55525a818ef8ed8f"
 uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
 version = "1.16.0+5"
->>>>>>> 15fe607144c835172ee1d9e0d793bcc5fc63d512
 
 [[Libmount_jll]]
 deps = ["Libdl", "Pkg"]
@@ -796,15 +790,9 @@ version = "1.4.0+1"
 
 [[Zlib_jll]]
 deps = ["Libdl", "Pkg"]
-<<<<<<< HEAD
-git-tree-sha1 = "4838361eb3ba796a57457bdc183e1a128639d0ec"
-uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.11+12"
-=======
 git-tree-sha1 = "622d8b6dc0c7e8029f17127703de9819134d1b71"
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
 version = "1.2.11+14"
->>>>>>> 15fe607144c835172ee1d9e0d793bcc5fc63d512
 
 [[libpng_jll]]
 deps = ["Libdl", "Pkg", "Zlib_jll"]

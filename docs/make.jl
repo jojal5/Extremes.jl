@@ -1,4 +1,4 @@
-using Documenter, Extremes, DataFrames
+using Documenter, Extremes, DataFrames, Cairo, Fontconfig
 
 CI = get(ENV, "CI", nothing) == "true"
 

@@ -43,49 +43,66 @@ The *Extremes.jl* package supports parameter estimation with the probability wei
 - [`gevfit`](@ref): estimation with maximum likelihood;
 - [`gevfitbayes`](@ref): estimation with the Bayesian method.
 
-These functions return a `fittedEVA` type that can be used by all the other functions presented in this tutorial.
+These functions return a `fittedEVA` type that can be used by all the other functions presented in this tutorial. The parameters estimates are contained in the field `θ̂` of this structure.
 
-In this example, the data are contained in a *DataFrame*. Theses function can be called directly with the dataframe as the first argument and the data column symbol as the second argument as follows.
-
-!!! note
+!!! note "Log-scale paremeter"
 
     These functions return the estimate of the log-scale parameter $\phi = \log \sigma$.
 
-#### GEV parameters estimation with maximum likelihood
+
+In this example, the data are contained in a *DataFrame*. These previous functions can be called with the DataFrame as the first argument and the data column symbol as the second argument.
+
+
+#### GEV parameters estimation with probability weighted moments
+
+The GEV parameter estimation with probability weighted moments is performed as follows:
 
 ```@repl portpirie
-gevfitpwm(data, :SeaLevel)
+fm = gevfitpwm(data, :SeaLevel)
 ```
 
-The [`gevfit`](@ref) function returns an object of the type `pwmEVA` subtype of `fittedEVA`.
-
-- the structure name indicating in particular the estimation method (maximum likelihood in this example);
-- the statistical model (the stationary block maxima model in this example);
-- the location, log-scale and shape parameter estimates respectively in the vector $ θ̂ $.
+The approximate covariance matrix of the parameter estimates can be obtained with the function [`parametervar`](@ref):
+```@repl portpirie
+parametervar(fm)
+```
 
 
 #### GEV parameters estimation with maximum likelihood
+
+The GEV parameter estimation with maximum likelihood is performed as follows:
 
 ```@repl portpirie
 fm = gevfit(data, :SeaLevel)
 ```
 
-The [`gevfit`](@ref) function returns a `MaximumLikelihoodEVA` object which contains:
-- the structure name indicating in particular the estimation method (maximum likelihood in this example);
-- the statistical model (the stationary block maxima model in this example);
-- the location, log-scale and shape parameter estimates respectively in the vector $ θ̂ $.
-
-#### GEV parameters estimation with maximum likelihood
-
+The approximate covariance matrix of the parameter estimates can be obtained with the function [`parametervar`](@ref):
 ```@repl portpirie
-gevfitpwm(data, :SeaLevel)
+parametervar(fm)
 ```
 
-The [`gevfit`](@ref) function returns a `MaximumLikelihoodEVA` object which contains:
-- the structure name indicating in particular the estimation method (maximum likelihood in this example);
-- the statistical model (the stationary block maxima model in this example);
-- the location, log-scale and shape parameter estimates respectively in the vector $ θ̂ $.
+#### GEV parameters estimation with the Bayesian method
 
+The GEV parameter estimation with the Bayesian method is performed as follows:
+
+```@repl portpirie
+fm = gevfitbayes(data, :SeaLevel)
+```
+
+!!! note "Prior"
+
+    Currently, only the improper uniform prior is implemented, *i.e.*
+    \\[ f_{(μ,ϕ,ξ)}(μ,ϕ,ξ) ∝ 1. \\]
+    It yields to a proper posterior as long as the sample size is larger than 3 ([Northrop and Attalides, 2016](https://www.jstor.org/stable/24721296?seq=1)).
+
+!!! note "Sampling scheme"
+
+    Currently, the No-U-Turn Sampler extension ([Hoffman and Gelman, 2014](http://jmlr.org/papers/v15/hoffman14a.html)) to Hamiltonian Monte Carlo ([Neel, 2011, Chapter 5](https://www.mcmchandbook.net/)) is implemented for simulating an autocorrelated sample from the posterior distribution.
+
+
+The approximate covariance matrix of the parameter estimates can be obtained with the function [`parametervar`](@ref):
+```@repl portpirie
+parametervar(fm)
+```
 
 
 ### Diagnostic plots
@@ -93,6 +110,8 @@ The [`gevfit`](@ref) function returns a `MaximumLikelihoodEVA` object which cont
 Several diagnostic plots for assessing the accuracy of the GEV model fitted to the Port Pirie data are can be shown with the function [`diagnosticplots`](@ref).
 
 ```@example portpirie
+fm = gevfit(data, :SeaLevel)
+
 set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm)
 ```
@@ -120,7 +139,7 @@ and where the corresponding confidence interval can be accessed with
 r.cint
 ```
 
-!!! note
+!!! note "Type-stable function"
 
     In this example of a stationary model, the function returns a unit dimension vector for the return level and a vector containing only one vector for the confidence interval. The reason is that the function always returns the same type in the stationary and non-stationary case. The function is therefore [type-stable](https://docs.julialang.org/en/v1/manual/performance-tips/index.html#Write-%22type-stable%22-functions-1) allowing better performance of code execution.  
 
@@ -134,23 +153,9 @@ To get the scalar confidence interval in the stationary case, the following comm
 r.cint[]
 ```
 
-### Probability weighted moments estimation  
 
-Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function:
 
-```@repl portpirie
-fm = gevfitpwm(data, :SeaLevel)
-```
 
-The function returns a `pwmEVA` type.
-
-### Bayesian estimation
-
-Bayesian estimation of the GEV parameters can also be performed by using the [`gevfitbayes`](@ref) function. All the methods also apply to the `BayesianEVA` object.
-
-```@repl portpirie
-fm = gevfitbayes(data[:,:SeaLevel])
-```
 
 
 ## Model for stationary threshold exceedances

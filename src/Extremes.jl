@@ -54,7 +54,7 @@ export
     gpfitpwm,
 
     # Other functions
-    returnlevel,
+    returnlevel, parametervar,
 
     # Disagnostic plots
     probplot_std_data,
