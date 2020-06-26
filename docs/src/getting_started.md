@@ -15,9 +15,6 @@ using Extremes, Dates, DataFrames, Distributions, Gadfly
 ```
 
 
-
-
-
 ## Model for stationary block maxima
 
 The stationary [`BlockMaxima`](@ref) model is illustrated using the annual maximum sea-levels recorded at Port Pirie in South Australia from 1923 to 1987, studied by Coles (2001) in Chapter 3.
@@ -41,22 +38,55 @@ plot(data, x=:Year, y=:SeaLevel, Geom.line)
 
 ### GEV parameters estimation
 
-In this example, the Generalized Extreme Value (GEV) distribution is fitted by maximum likelihood to the annual maximum sea-levels at Port-Pirie.
+The *Extremes.jl* package supports parameter estimation with the probability weighted moments, the maximum likelihood and the Bayesian method. For the GEV parameter estimation, the following functions can be used:
+- [`gevfitpwm`](@ref): estimation with probability weighted moments;
+- [`gevfit`](@ref): estimation with maximum likelihood;
+- [`gevfitbayes`](@ref): estimation with the Bayesian method.
 
-The data have been loaded in a *DataFrame*. The function [`gevfit`](@ref) can be called directly with the dataframe as the first argument and the data column symbol as the second argument as follows:
+These functions return a `fittedEVA` type that can be used by all the other functions presented in this tutorial.
+
+In this example, the data are contained in a *DataFrame*. Theses function can be called directly with the dataframe as the first argument and the data column symbol as the second argument as follows.
+
+!!! note
+
+    These functions return the estimate of the log-scale parameter $\phi = \log \sigma$.
+
+#### GEV parameters estimation with maximum likelihood
+
+```@repl portpirie
+gevfitpwm(data, :SeaLevel)
+```
+
+The [`gevfit`](@ref) function returns an object of the type `pwmEVA` subtype of `fittedEVA`.
+
+- the structure name indicating in particular the estimation method (maximum likelihood in this example);
+- the statistical model (the stationary block maxima model in this example);
+- the location, log-scale and shape parameter estimates respectively in the vector $ θ̂ $.
+
+
+#### GEV parameters estimation with maximum likelihood
 
 ```@repl portpirie
 fm = gevfit(data, :SeaLevel)
 ```
 
-The function [`gevfit`](@ref) returns a `MaximumLikelihoodEVA` object which contains:
+The [`gevfit`](@ref) function returns a `MaximumLikelihoodEVA` object which contains:
 - the structure name indicating in particular the estimation method (maximum likelihood in this example);
 - the statistical model (the stationary block maxima model in this example);
 - the location, log-scale and shape parameter estimates respectively in the vector $ θ̂ $.
 
-!!! note
+#### GEV parameters estimation with maximum likelihood
 
-    The function returns the estimates of the log-scale parameter $\phi = \log \sigma$.
+```@repl portpirie
+gevfitpwm(data, :SeaLevel)
+```
+
+The [`gevfit`](@ref) function returns a `MaximumLikelihoodEVA` object which contains:
+- the structure name indicating in particular the estimation method (maximum likelihood in this example);
+- the statistical model (the stationary block maxima model in this example);
+- the location, log-scale and shape parameter estimates respectively in the vector $ θ̂ $.
+
+
 
 ### Diagnostic plots
 
@@ -67,20 +97,20 @@ set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm)
 ```
 
-The diagnostic plots consist in the probability plot (upper left panel), quantile plot (upper right panel), return level plot (lower left panel) and the density plot (lower right panel). These plots can be shown separately with the functions [`probplot`](@ref), [`qqplot`](@ref), [`returnlevelplot`](@ref) and [`histplot`](@ref) respectively.
+The diagnostic plots consist in the probability plot (upper left panel), quantile plot (upper right panel), return level plot (lower left panel) and the density plot (lower right panel). These plots can be displayed separately using respectively the functions [`probplot`](@ref), [`qqplot`](@ref), [`returnlevelplot`](@ref) and [`histplot`](@ref).
 
 
 ### Return level estimation
 
 *T*-year return level estimate can be obtained using the function [`returnlevel`](@ref) on a `fittedEVA` object. The first argument is the fitted model, the second is the return period in years and the last one is the confidence level for computing the confidence interval.
 
-For example, the 100-year return level for the Port Pirie block maxima model and the corresponding 95% confidence interval can be obtained with this commands:
+For example, the 100-year return level for the Port Pirie block maxima model and the corresponding 95% confidence interval can be estimated with this commands:
 
 ```@repl portpirie
 r = returnlevel(fm, 100, .95)
 ```
 
-where the value can be accessed with
+where the return value can be accessed with
 ```@repl portpirie
 r.value
 ```
@@ -106,11 +136,13 @@ r.cint[]
 
 ### Probability weighted moments estimation  
 
-Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function. All the methods also apply to the `pwmEVA` object.
+Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function:
 
 ```@repl portpirie
 fm = gevfitpwm(data, :SeaLevel)
 ```
+
+The function returns a `pwmEVA` type.
 
 ### Bayesian estimation
 
