@@ -17,6 +17,19 @@
 
     end
 
+    @testset "gpfitpwm(df, datacol)" begin
+        # stationary model building
+        df = DataFrame(y = y)
+        fm = Extremes.gpfitpwm(df, :y)
+
+        varM = Extremes.parametervar(fm)
+        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+
+        @test fm.θ̂ .- var <= θ
+        @test θ <= fm.θ̂ .+ var
+
+    end
+
     @testset "gpfitpwm(model)" begin
         # non-stationary warn
         model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("t", collect(1:n))])

@@ -19,6 +19,26 @@ function gumbelfitpwm(y::Vector{<:Real})::pwmEVA
 
 end
 
+"""
+    gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+
+Estimate the Gumbel distribution with the probability weighted moments as described in Landwehr et al. (1979).
+
+*Reference:*
+Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
+    some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
+    15(5), 1055–1064.
+
+"""
+function gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+
+    model = BlockMaxima(Variable(string(datacol), df[:, datacol]), dist = Gumbel)
+
+    fittedmodel = gumbelfitpwm(model)
+
+    return fittedmodel
+
+end
 
 """
     gumbelfitpwm(model::BlockMaxima)::pwmEVA
