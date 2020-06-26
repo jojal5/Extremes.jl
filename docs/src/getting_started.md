@@ -11,7 +11,7 @@ Before executing this tutorial, make sure to have installed the following packag
 
 and import them using the following command:
  ```@repl
-using Extremes, DataFrames, Distributions, Gadfly
+using Extremes, Dates, DataFrames, Distributions, Gadfly
 ```
 
 
@@ -20,15 +20,13 @@ using Extremes, DataFrames, Distributions, Gadfly
 
 ## Model for stationary block maxima
 
-### Port Pirie example
-
-This section concerns the annual maximum sea-levels recorded at Port Pirie, South Australia, from 1923 to 1987. This dataset were studied by Coles (2001) in Chapter 3.
+The stationary [`BlockMaxima`](@ref) model is illustrated using the annual maximum sea-levels recorded at Port Pirie in South Australia from 1923 to 1987, studied by Coles (2001) in Chapter 3.
 
 ```@setup portpirie
 using Extremes, DataFrames, Distributions, Gadfly
 ```
 
-#### Load the data
+### Load the data
 
 Loading the annual maximum sea-levels at Port Pirie:
 ```@example portpirie
@@ -41,11 +39,11 @@ Plotting the data using the Gadfly package:
 plot(data, x=:Year, y=:SeaLevel, Geom.line)
 ```
 
-#### GEV parameters estimation
+### GEV parameters estimation
 
 In this example, the Generalized Extreme Value (GEV) distribution is fitted by maximum likelihood to the annual maximum sea-levels at Port-Pirie.
 
-The data have been loaded in a *DataFrame*. The function `gevfit` can be called directly using the dataframe as the first argument and the data column symbol as the second argument as follows:
+The data have been loaded in a *DataFrame*. The function [`gevfit`](@ref) can be called directly with the dataframe as the first argument and the data column symbol as the second argument as follows:
 
 ```@repl portpirie
 fm = gevfit(data, :SeaLevel)
@@ -60,15 +58,15 @@ The function [`gevfit`](@ref) returns a `MaximumLikelihoodEVA` object which cont
 
     The function returns the estimates of the log-scale parameter $\phi = \log \sigma$.
 
-#### Diagnostics plots
+### Diagnostics plots
 
     TODO
 
-#### Return level estimation
+### Return level estimation
 
 *T*-year return level estimate can be obtained using the function [`returnlevel`](@ref) on a `fittedEVA` object. The first argument is the fitted model, the second is the return period in years and the last one is the confidence level for computing the confidence interval.
 
-For example, the 100-year return level for the Port Pirie blockmaxima model and the corresponding 95% confidence interval can be obtained with this commands:
+For example, the 100-year return level for the Port Pirie block maxima model and the corresponding 95% confidence interval can be obtained with this commands:
 
 ```@repl portpirie
 r = returnlevel(fm, 100, .95)
@@ -98,7 +96,7 @@ To get the scalar confidence interval in the stationary case, the following comm
 r.cint[]
 ```
 
-#### Probability weighted moments estimation  
+### Probability weighted moments estimation  
 
 Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function. All the methods also apply to the `pwmEVA` object.
 
@@ -106,7 +104,7 @@ Probability weighted moments estimation of the GEV parameters can also be perfor
 fm = gevfitpwm(data[:,:SeaLevel])
 ```
 
-#### Bayesian estimation
+### Bayesian estimation
 
 Bayesian estimation of the GEV parameters can also be performed by using the [`gevfitbayes`](@ref) function. All the methods also apply to the `BayesianEVA` object.
 
@@ -117,21 +115,18 @@ fm = gevfitbayes(data[:,:SeaLevel])
 
 ## Model for stationary threshold exceedances
 
-The data of this section come from Chapter 4 of Coles (2001) and correspond to the daily rainfall accumulations at a location in south-west England from 1914 to 1962.
+The stationary [`ThresholdExceedance`](@ref) model is illustrated using the daily rainfall accumulations at a location in south-west England from 1914 to 1962. This dataset was studied by Coles (2001) in Chapter 4.
 
 ```@setup rain
-using Extremes, DataFrames, Distributions, Gadfly, Dates
+using Extremes, Dates, DataFrames, Distributions, Gadfly
 ```
 
-#### Load the data
+### Load the data
 
 Loading the daily rainfall at a location in South-England:
 
 ```@example rain
 data = load("rain")
-x = collect(Date(1914,1,1):Day(1):Date(1961,12,30))
-data[!,:Date] = x
-select!(data, [:Date, :Rainfall])
 first(data,5)
 ```
 
@@ -140,11 +135,11 @@ Plotting the data using the Gadfly package:
 plot(data, x=:Date, y=:Rainfall, Geom.point, Theme(discrete_highlight_color=c->nothing))
 ```
 
-#### Threshold selection
+### Threshold selection
 
 TODO
 
-#### GPD parameters estimation
+### GPD parameters estimation
 
 Let's first identify the threshold exceedances:
 ```@example rain
@@ -170,7 +165,7 @@ fm = gpfit(df, :Exceedance)
     The function returns the estimates of the log-scale parameter $\phi = \log \sigma$.
 
 
-#### Return level estimation
+### Return level estimation
 
 With the [`ThresholdExceedance`](@ref) structure, the [`returnlevel`](@ref) function requires several arguments to calculate the *T*-year return level:
 - the threshold value;
@@ -210,7 +205,7 @@ To get the scalar confidence interval in the stationary case, the following comm
 r.cint[]
 ```
 
-#### Probability weighted moments estimation  
+### Probability weighted moments estimation  
 
 Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function. All the methods also apply to the `pwmEVA` object.
 
@@ -218,7 +213,7 @@ Probability weighted moments estimation of the GEV parameters can also be perfor
 fm = gpfitpwm(df, :Exceedance)
 ```
 
-#### Bayesian estimation
+### Bayesian estimation
 
 Bayesian estimation of the GEV parameters can also be performed by using the [`gevfitbayes`](@ref) function. All the methods also apply to the `BayesianEVA object.
 
@@ -229,7 +224,134 @@ fm = gpfitbayes(df, :Exceedance)
 
 
 ## Model for dependent data
-Coles(2001, Chapter 5)
+
+
+The stationary [`ThresholdExceedance`](@ref) model is illustrated using the daily rainfall accumulations at a location in south-west England from 1914 to 1962. This dataset was studied by Coles (2001) in Chapter 4.
+
+```@setup wooster
+using Extremes, Dates, DataFrames, Distributions, Gadfly
+```
+
+### Load the data
+
+Loading the daily rainfall at a location in South-England:
+
+```@example wooster
+data = load("wooster")
+first(data,5)
+```
+
+Plotting the data using the Gadfly package:
+```@example wooster
+plot(data, x=:Date, y=:Temperature, Geom.point, Theme(discrete_highlight_color=c->nothing))
+```
+
+```@example wooster
+df = copy(data)
+df[!,:Temperature] = -data[:,:Temperature]
+filter!(row -> month(row.Date) ∈ (1,2,11,12), df)
+plot(df, x=:Date, y=:Temperature, Geom.point)
+```
+
+### Declustering the threshold exceedances
+
+```@example wooster
+threshold = -10
+cluster = getcluster(df[:,:Temperature], -10, runlength=4)
+nothing #hide
+```
+
+```@repl wooster
+typeof(cluster)
+```
+
+### GPD parameters estimation
+
+Let's first identify the threshold exceedances:
+```@example rain
+threshold = 30.0
+df = filter(row -> row.Rainfall > threshold, data)
+first(df, 5)
+```
+
+Get the exceedances above the threshold:
+```@example rain
+df[!,:Rainfall] =  df[!,:Rainfall] .- threshold
+rename!(df, :Rainfall => :Exceedance)
+first(df, 5)
+```
+
+Generalized Pareto parameter estimation by maximum likelihood:
+```@repl rain
+fm = gpfit(df, :Exceedance)
+```
+
+!!! note
+
+    The function returns the estimates of the log-scale parameter $\phi = \log \sigma$.
+
+
+### Return level estimation
+
+With the [`ThresholdExceedance`](@ref) structure, the [`returnlevel`](@ref) function requires several arguments to calculate the *T*-year return level:
+- the threshold value;
+- the number of total observation (below and above the threshold);
+- the number of observations per year;
+- the return period *T*;
+- the confidence level for computing the confidence interval.
+The function uses the Peaks-Over-Threshold model definition (Coles, 2001, Chapter 4) for computing the *T*-year return level.
+
+For the rainfall example, the 100-year return level can be estimated as follows:
+
+```@repl rain
+r = returnlevel(fm, threshold, size(data,1), 365, 100, .95)
+```
+
+where the value can be accessed with
+```@repl rain
+r.value
+```
+
+and where the corresponding confidence interval can be accessed with
+```@repl rain
+r.cint
+```
+
+!!! note
+
+    In this example of a stationary model, the function returns a unit dimension vector for the return level and a vector containing only one vector for the confidence interval. The reason is that the function always returns the same type in the stationary and non-stationary case. The function is therefore [type-stable](https://docs.julialang.org/en/v1/manual/performance-tips/index.html#Write-%22type-stable%22-functions-1) allowing better performance of code execution.  
+
+To get the scalar return level in the stationary case, the following command can be used:
+```@repl rain
+r.value[]
+```
+
+To get the scalar confidence interval in the stationary case, the following command can be used:
+```@repl rain
+r.cint[]
+```
+
+### Probability weighted moments estimation  
+
+Probability weighted moments estimation of the GEV parameters can also be performed by using the [`gevfitpwm`](@ref) function. All the methods also apply to the `pwmEVA` object.
+
+```@repl rain
+fm = gpfitpwm(df, :Exceedance)
+```
+
+### Bayesian estimation
+
+Bayesian estimation of the GEV parameters can also be performed by using the [`gevfitbayes`](@ref) function. All the methods also apply to the `BayesianEVA object.
+
+```@repl rain
+fm = gpfitbayes(df, :Exceedance)
+```
+
+
+
+
+
+
 
 ## Model for non-stationary data
 Coles(2001, Chapter 6)
