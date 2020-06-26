@@ -190,18 +190,18 @@ function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::R
 end
 
 """
-    Base.show(io::IO, obj::MaximumLikelihoodEVA)
+    showfittedEVA(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
 
-Override of the show function for the objects of type EVA.
+Displays a MaximumLikelihoodEVA with the prefix `prefix` before every line.
 
 """
-function Base.show(io::IO, obj::MaximumLikelihoodEVA)
+function showfittedEVA(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
 
-    println(io, "MaximumLikelihoodEVA")
-    println(io, "model :")
-    showEVA(io, obj.model, prefix = "\t")
+    println(io, prefix, "MaximumLikelihoodEVA")
+    println(io, prefix, "model :")
+    showEVA(io, obj.model, prefix = prefix*"\t")
     println(io)
-    println(io, "θ̂  :\t", obj.θ̂)
+    println(io, prefix, "θ̂  :\t", obj.θ̂)
 
 end
 

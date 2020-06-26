@@ -79,21 +79,37 @@ function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Vector{<:R
 end
 
 """
-    Base.show(io::IO, obj::BayesianEVA)
+    showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
 
-Override of the show function for the objects of type BayesianEVA.
-
+Displays a BayesianEVA with the prefix `prefix` before every line.
 """
-function Base.show(io::IO, obj::BayesianEVA)
+function showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
 
-    println(io, "BayesianEVA")
-    println(io, "model :")
-    showEVA(io, obj.model, prefix = "\t")
+    println(io, prefix, "BayesianEVA")
+    println(io, prefix, "model :")
+    showEVA(io, obj.model, prefix = prefix*"\t")
     println(io)
-    println(io, "sim :\t", typeof(obj.sim))
+    println(io, prefix, "sim :")
+    showChain(io, obj.sim, prefix = prefix*"\t")
 
 end
 
+"""
+    showChain(io::IO, obj::Mamba.Chains; prefix::String = "")
+
+Displays a Mamba.Chains with the prefix `prefix` before every line.
+"""
+function showChain(io::IO, chain::Mamba.Chains; prefix::String = "")
+
+    println(io, prefix, "Mamba.Chains")
+    println(io, prefix, "Iterations :\t\t", chain.range[1], ":", chain.range[end])
+    println(io, prefix, "Thinning interval :\t", step(chain.range))
+    println(io, prefix, "Chains :\t\t", length(chain.chains))
+    println(io, prefix, "Samples per chain :\t", size(chain.value, 1))
+    println(io, prefix, "Value :\t\t\t", typeof(chain.value), "[", size(chain.value, 1),
+        ",", size(chain.value, 2), ",", size(chain.value, 3),"]")
+
+end
 
 """
     transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})

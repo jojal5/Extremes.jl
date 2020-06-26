@@ -78,10 +78,10 @@
         # TODO : Test with known values (J)
     end
 
-    @testset "Base.show(io, obj)" begin
+    @testset "showfittedEVA(io, obj, prefix)" begin
         # print does not throw
         buffer = IOBuffer()
-        @test_logs Base.show(buffer, fm)
+        @test_logs Extremes.showfittedEVA(buffer, fm, prefix = "\t")
 
     end
 
