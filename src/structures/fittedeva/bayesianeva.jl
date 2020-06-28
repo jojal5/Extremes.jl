@@ -198,3 +198,20 @@ function transform(fm::BayesianEVA{ThresholdExceedance})
     return BayesianEVA(model, sim)
 
 end
+
+
+"""
+    parametervar(fm::BayesianEVA)::Array{Float64, 2}
+
+Compute the covariance parameters estimate of the fitted model `fm`.
+
+"""
+function parametervar(fm::BayesianEVA)::Array{Float64, 2}
+
+    x = fm.sim.value[:,:,1]
+
+    C = cov(x)
+
+    return C
+
+end
