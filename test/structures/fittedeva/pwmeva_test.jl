@@ -49,6 +49,7 @@ end
 
     @test_throws AssertionError cint(fm, 1.95)
     @test_throws AssertionError cint(fm, -1.95)
+    @test_throws AssertionError cint(fm, .95, -10)
 
     confint = cint(fm)
 

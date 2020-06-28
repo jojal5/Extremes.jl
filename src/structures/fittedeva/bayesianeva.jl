@@ -215,3 +215,32 @@ function parametervar(fm::BayesianEVA)::Array{Float64, 2}
     return C
 
 end
+
+
+
+"""
+    cint(fm::pwmEVA, clevel::Real=.95, nboot::Int=1000)::Array{Array{Float64,1},1}
+
+Estimate the parameter estimates highest posterior density interval.
+"""
+function cint(fm::BayesianEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
+
+    @assert 0<clevel<1 "the confidence level should be between 0 and 1."
+
+    α = 1-clevel
+
+    # Chain summary
+    s = hpd(fm.sim, alpha=.05)
+
+    # Values
+    v = s.value[:,:,1]
+
+    credint = Vector{Vector{Float64}}()
+
+    for r in eachrow(v)
+        push!(credint, r)
+    end
+
+    return credint
+
+end
