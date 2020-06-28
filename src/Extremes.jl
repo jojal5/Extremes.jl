@@ -52,11 +52,12 @@ export
     gpfit,
     gpfitbayes,
     gpfitpwm,
+    cint,
 
     # Other functions
     returnlevel,
 
-    # Disagnostic plots
+    # Diagnostic plots
     probplot_std_data,
     probplot_std,
     qqplot_std_data,

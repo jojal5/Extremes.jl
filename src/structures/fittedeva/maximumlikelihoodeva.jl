@@ -286,3 +286,27 @@ function transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
     return MaximumLikelihoodEVA(model, θ̂)
 
 end
+
+
+"""
+    cint(fm::MaximumLikelihoodEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
+
+Compute the Wald parameter confidence intervals using the approximate parameter estimates covariance matrix.
+"""
+function cint(fm::MaximumLikelihoodEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
+
+    @assert 0<clevel<1 "the confidence level should be between 0 and 1."
+
+    V = parametervar(fm)
+
+    confInt = Vector{Vector{Float64}}()
+
+    q = quantile.(Normal(0,1),[.025, .975])
+
+    for i in eachindex(fm.θ̂)
+        push!(confInt, fm.θ̂[i] .+ q*sqrt(V[i,i]))
+    end
+
+    return confInt
+    
+end
