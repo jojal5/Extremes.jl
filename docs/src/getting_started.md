@@ -201,14 +201,56 @@ rename!(df, :Rainfall => :Exceedance)
 first(df, 5)
 ```
 
-Generalized Pareto parameter estimation by maximum likelihood:
+#### GP parameters estimation with probability weighted moments
+
+The GP parameter estimation with probability weighted moments is performed as follows:
+
+```@repl rain
+fm = gpfitpwm(df, :Exceedance)
+```
+
+The approximate covariance matrix of the parameter estimates can be obtained with the function [`parametervar`](@ref):
+```@repl rain
+parametervar(fm)
+```
+
+
+#### GP parameters estimation with maximum likelihood
+
+The GP parameter estimation with maximum likelihood is performed as follows:
+
 ```@repl rain
 fm = gpfit(df, :Exceedance)
 ```
 
-!!! note
+The approximate covariance matrix of the parameter estimates can be obtained with the function [`parametervar`](@ref):
+```@repl rain
+parametervar(fm)
+```
 
-    The function returns the estimates of the log-scale parameter $\phi = \log \sigma$.
+#### GP parameters estimation with the Bayesian method
+
+The GP parameter estimation with the Bayesian method is performed as follows:
+
+```@repl rain
+fm = gpfitbayes(df, :Exceedance)
+```
+
+!!! note "Prior"
+
+    Currently, only the improper uniform prior is implemented, *i.e.*
+    \\[ f_{(ϕ,ξ)}(ϕ,ξ) ∝ 1. \\]
+    It yields to a proper posterior as long as the sample size is larger than 2 ([Northrop and Attalides, 2016](https://www.jstor.org/stable/24721296?seq=1)).
+
+!!! note "Sampling scheme"
+
+    Currently, the No-U-Turn Sampler extension ([Hoffman and Gelman, 2014](http://jmlr.org/papers/v15/hoffman14a.html)) to Hamiltonian Monte Carlo ([Neel, 2011, Chapter 5](https://www.mcmchandbook.net/)) is implemented for simulating an autocorrelated sample from the posterior distribution.
+
+
+The approximate covariance matrix of the parameter estimates can be obtained with the function [`parametervar`](@ref):
+```@repl rain
+parametervar(fm)
+```
 
 
 ### Return level estimation
@@ -223,7 +265,8 @@ The function uses the Peaks-Over-Threshold model definition (Coles, 2001, Chapte
 
 For the rainfall example, the 100-year return level can be estimated as follows:
 
-```@repl rain
+```@example rain
+fm = gpfit(df, :Exceedance)
 r = returnlevel(fm, threshold, size(data,1), 365, 100, .95)
 ```
 
