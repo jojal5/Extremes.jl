@@ -1,17 +1,76 @@
 module Extremes
 
 using Distributions, DataFrames, Dates
-using Optim, NLSolversBase
-using SpecialFunctions, LinearAlgebra
+using Optim, NLSolversBase, ForwardDiff
+using SpecialFunctions, LinearAlgebra, Statistics
+using Mamba, ProgressMeter
+using Gadfly
 
 import CSV
-import Distributions.GeneralizedExtremeValue
+import Distributions.quantile
+import Statistics.var
+import Base.length, Base.maximum, Base.sum
 
-include("functions.jl")
-include("mle_functions.jl")
-include("bayes_functions.jl")
-include("data_functions.jl")
+include("utils.jl")
+include("structures.jl")
+include("parameterestimation.jl")
+include("data.jl")
+include("validationplots.jl")
 
-export getcluster, gevfit, gpdfit, gevfitbayes, gpdfitbayes, load
+export
+
+    # Variable type
+    Variable, VariableStd, DataItem,
+
+    # Cluster type
+    Cluster,
+
+    # Generic types
+    EVA,
+    fittedEVA,
+
+    # Extreme value analysis type
+    BlockMaxima,
+    ThresholdExceedance,
+
+    # Fitted extreme value analysis model
+    pwmEVA,
+    MaximumLikelihoodEVA,
+    BayesianEVA,
+
+    # Other types
+    ReturnLevel,
+
+    # Data related functions
+    load,
+    getcluster,
+
+    # Fitting functions
+    gevfit,
+    gevfitbayes,
+    gevfitpwm,
+    gpfit,
+    gpfitbayes,
+    gpfitpwm,
+
+    # Other functions
+    returnlevel,
+
+    # Disagnostic plots
+    probplot_std_data,
+    probplot_std,
+    qqplot_std_data,
+    qqplot_std,
+    diagnosticplots_std,
+
+    probplot_data,
+    probplot,
+    qqplot_data,
+    qqplot,
+    returnlevelplot_data,
+    returnlevelplot,
+    histplot_data,
+    histplot,
+    diagnosticplots
 
 end # module
