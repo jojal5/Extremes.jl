@@ -202,6 +202,26 @@
 
     end
 
+    @testset "parametervar(model)" begin
+
+        n = 1000
+
+        μ = 0.0
+        σ = 1.0
+        ξ = 0.1
+
+        ϕ = log(σ)
+        θ = [μ; ϕ; ξ]
+
+        pd = GeneralizedExtremeValue(μ, σ, ξ)
+        y = rand(pd, n)
+
+        fm = Extremes.fitbayes(y, niter=1000, warmup = 500)
+        npar = 3 + Extremes.getcovariatenumber(fm.model)
+        @test size(Extremes.parametervar(fm)) == (npar,npar)
+
+    end
+
     include(joinpath("bayesian", "bayesian_gev_test.jl"))
     include(joinpath("bayesian", "bayesian_gp_test.jl"))
 

@@ -62,13 +62,4 @@
 
     end
 
-    @testset "parametervar(model)" begin
-
-        npar = 3 + Extremes.getcovariatenumber(fm.model)
-        @test size(Extremes.parametervar(fm)) == (npar,npar)
-
-
-    end
-
-
 end
