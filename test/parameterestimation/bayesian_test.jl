@@ -216,7 +216,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        fm = Extremes.fitbayes(y, niter=1000, warmup = 500)
+        fm = Extremes.gevfitbayes(y, niter=1000, warmup = 500)
         npar = 3 + Extremes.getcovariatenumber(fm.model)
         @test size(Extremes.parametervar(fm)) == (npar,npar)
 
