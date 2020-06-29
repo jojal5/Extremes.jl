@@ -45,10 +45,10 @@
         fm = gpfitbayes(y, logscalecov = [x])
 
         # returnPeriod < 0 throws
-        @test_throws AssertionError Extremes.returnlevel(fm, -1, 0.95)
+        @test_throws AssertionError Extremes.returnlevel(fm, length(y), 1, -1, 0.95)
 
         # confidencelevel not in [0, 1]
-        @test_throws AssertionError Extremes.returnlevel(fm, 1, -1)
+        @test_throws AssertionError Extremes.returnlevel(fm, length(y), 1, 1, -1)
 
         # Test with known values
         r = returnlevel(fm, threshold, length(y), 1, 100, .95)
