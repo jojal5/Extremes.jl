@@ -71,6 +71,7 @@ export
     returnlevelplot,
     histplot_data,
     histplot,
-    diagnosticplots
+    diagnosticplots,
+    mrl
 
 end # module

@@ -109,4 +109,26 @@
 
     end
 
+    @testset "mrl(y)" begin
+
+        σ = 1.0
+        ξ = 0.1
+        pd = GeneralizedPareto(σ, ξ)
+        y = rand(pd, 1000)
+
+        df = mrl(y, 10)
+
+        # Returns a dictionary with the correct keys
+        @test haskey(df, :Threshold)
+        @test haskey(df, :mrl)
+        @test haskey(df, :lbound)
+        @test haskey(df, :ubound)
+
+        # Theoretical values
+        m = (σ .+ ξ * df[:, :Threshold]) / (1 - ξ)
+
+        @test all(df[:, :lbound] .< m .< df[:, :ubound])
+
+    end
+
 end
