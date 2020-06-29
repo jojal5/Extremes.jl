@@ -49,8 +49,31 @@ Compute the return level of the return period `returnPeriod` from the fitted mod
 function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
-    # TODO : implement
-    error("Not implemented")
+    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+    @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+    α = (1 - confidencelevel)
+
+    # Exceedance probability
+    ζ = length(fm.model.data.value)/nobservation
+
+    # Appropriate quantile level given the probability exceedance and the number of obs per year
+    p = 1-1/(returnPeriod * nobsperblock * ζ)
+
+    Q = quantile(fm, p)
+
+    q = threshold .+ vec(mean(Q, dims=1))
+
+    qsliced = slicematrix(Q)
+
+    a = threshold .+ quantile.(qsliced, α/2)
+    b = threshold .+ quantile.(qsliced, 1-α/2)
+
+    cint = slicematrix(hcat(a,b), dims=2)
+
+    res = ReturnLevel(fm, returnPeriod, q, cint)
+
+    return res
 
 end
 
@@ -60,7 +83,7 @@ end
 Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
