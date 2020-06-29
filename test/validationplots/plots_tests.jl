@@ -121,10 +121,10 @@
         df = mrl(y, 10)
 
         # Returns a dictionary with the correct keys
-        @test haskey(df, :Threshold)
-        @test haskey(df, :mrl)
-        @test haskey(df, :lbound)
-        @test haskey(df, :ubound)
+        @test hasproperty(df, :Threshold)
+        @test hasproperty(df, :mrl)
+        @test hasproperty(df, :lbound)
+        @test hasproperty(df, :ubound)
 
         # Theoretical values
         m = (σ .+ ξ * df[:, :Threshold]) / (1 - ξ)
