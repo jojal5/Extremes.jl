@@ -46,7 +46,7 @@ end
 Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
+function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
