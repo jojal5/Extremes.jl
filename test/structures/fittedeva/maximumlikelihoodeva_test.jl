@@ -85,4 +85,28 @@
 
     end
 
+    @testset "cint(fm::MaximumLikelihoodEVA)" begin
+
+        data = load("portpirie")
+        fm = gevfit(data, :SeaLevel)
+
+        @test_throws AssertionError cint(fm, 1.95)
+        @test_throws AssertionError cint(fm, -1.95)
+
+        confint = cint(fm)
+
+        @test confint[1] ≈ [3.82; 3.93] atol = .02
+        @test confint[2] ≈ log.([0.158,0.238]) atol = .05
+        @test confint[3] ≈ [-0.242; 0.142] atol = .02
+
+        confint = cint(fm, .95)
+
+        @test confint[1] ≈ [3.82; 3.93] atol = .02
+        @test confint[2] ≈ log.([0.158,0.238]) atol = .05
+        @test confint[3] ≈ [-0.242; 0.142] atol = .02
+
+
+
+    end
+
 end
