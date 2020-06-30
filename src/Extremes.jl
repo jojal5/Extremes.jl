@@ -52,11 +52,12 @@ export
     gpfit,
     gpfitbayes,
     gpfitpwm,
+    cint,
 
     # Other functions
     returnlevel, parametervar,
 
-    # Disagnostic plots
+    # Diagnostic plots
     probplot_std_data,
     probplot_std,
     qqplot_std_data,
@@ -71,6 +72,8 @@ export
     returnlevelplot,
     histplot_data,
     histplot,
-    diagnosticplots
+    diagnosticplots,
+    mrlplot,
+    mrlplot_data
 
 end # module

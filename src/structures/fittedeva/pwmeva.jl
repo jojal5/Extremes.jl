@@ -49,6 +49,43 @@ function parametervar(fm::pwmEVA, nboot::Int=1000)::Array{Float64, 2}
 
 end
 
+
+"""
+    cint(fm::pwmEVA, clevel::Real=.95, nboot::Int=1000)::Array{Array{Float64,1},1}
+
+Estimate the parameter estimates confidence interval by bootstrap.
+"""
+function cint(fm::pwmEVA, clevel::Real=.95, nboot::Int=5000)::Array{Array{Float64,1},1}
+
+    @assert 0<clevel<1 "the confidence level should be between 0 and 1."
+    @assert nboot>0 "the number of bootstrap samples should be positive."
+
+    α = 1-clevel
+
+    y = fm.model.data.value
+    n = length(y)
+
+    θ̂ = Array{Float64}(undef, nboot, length(fm.θ̂))
+
+    fitfun = fitpwmfunction(fm)
+
+    for i=1:nboot
+        ind = rand(1:n, n)            # Generate a bootstrap sample
+        θ̂[i,:] = fitfun(y[ind]).θ̂   # Compute the parameter estimates
+    end
+
+    confint = Vector{Vector{Float64}}()
+
+    for c in eachcol(θ̂)
+        push!(confint, quantile(c,[α/2; 1-α/2]))
+    end
+
+    return confint
+
+end
+
+
+
 """
     fitpwmfunction(fm::pwmEVA{BlockMaxima{GeneralizedExtremeValue}})::Function
 

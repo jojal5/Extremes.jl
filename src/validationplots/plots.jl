@@ -144,3 +144,54 @@ function diagnosticplots(fm::MaximumLikelihoodEVA)::Gadfly.Compose.Context
 
     return gridstack([f1 f2; f3 f4])
 end
+
+
+"""
+    mrl(y::Vector{<:Real}, steps::Int = 100)::DataFrame
+
+Compute the mean residual life from vector `y` using the set of thresholds from the `minimum(y)` value to the second-to-last larger value in `steps` steps.
+"""
+function mrlplot_data(y::Vector{<:Real}, steps::Int = 100)::DataFrame
+
+    @assert steps > 0 "the number of steps should be positive"
+
+    umin = minimum(y)
+    umax = sort(y)[end-2]
+
+    threshold = range(umin, stop = umax, length = steps)
+
+    df = DataFrame(
+        Threshold = Float64[],
+        mrl = Float64[],
+        lbound = Float64[],
+        ubound = Float64[],
+    )
+
+    for u in threshold
+        z = y[y.>u] .- u
+
+        n = length(z)
+        m = mean(z)
+        s = std(z)
+
+        push!(df, [u; m; m - 1.96 * s / sqrt(n); m + 1.96 * s / sqrt(n)])
+    end
+
+    return df
+
+end
+
+"""
+    mrlplot(y::Vector{<:Real}, steps::Int = 100)::Plot
+
+Show the mean residual life from vector `y` using the set of thresholds from the `minimum(y)` value to the second-to-last larger value in `steps` steps.
+"""
+function mrlplot(y::Vector{<:Real}, steps::Int=100)::Plot
+
+    df = mrlplot_data(y, steps)
+
+    p = plot(df, x = :Threshold, y = :mrl, ymin = :lbound, ymax = :ubound,
+        Geom.line, Geom.ribbon, Guide.ylabel("Mean Residual Life"))
+
+    return p
+end
