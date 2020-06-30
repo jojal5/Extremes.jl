@@ -16,7 +16,7 @@
 
         model = Extremes.BlockMaxima(Variable("y", y))
 
-        fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
+        fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
         infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
         supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
@@ -24,78 +24,26 @@
         @test infq <= θ
         @test θ <= supq
 
-
-        # non-stationary location GEV Bayesian fit
-        n = 10000
+        # non-stationary GEV Bayesian fit
+        n = 5000
 
         x₁ = randn(n)
         x₂ = randn(n)
-
-        μ = x₁ + x₂
-        σ = 1.0
-        ξ = 0.1
-
-        ϕ = log(σ)
-        θ = [0.0; 1.0; 1.0; ϕ; ξ]
-
-        pd = GeneralizedExtremeValue.(μ, σ, ξ)
-        y = rand.(pd)
-
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁), Variable("x₂", x₂)])
-
-        fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
-
-        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
-        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
-
-        @test infq <= θ
-        @test θ <= supq
-
-        # non-stationary logscale GEV Bayesian fit
-        n = 10000
-
-        x₁ = randn(n) / 3
-        x₂ = randn(n) / 3
-
-        μ = 1.0
-        ϕ = x₁ + x₂
-        ξ = 0.1
-
-        σ = exp.(ϕ)
-        θ = [μ; 0.0; 1.0; 1.0; ξ]
-
-        pd = GeneralizedExtremeValue.(μ, σ, ξ)
-        y = rand.(pd)
-
-        model = Extremes.BlockMaxima(Variable("y", y), logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
-
-        fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
-
-        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
-        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
-
-        @test infq <= θ
-        @test θ <= supq
-
-        # non-stationary location and logscale GEV Bayesian fit
-        n = 10000
-
-        x₁ = randn(n)
-        x₂ = randn(n) / 3
+        x₃ = randn(n) / 10
 
         μ = 1.0 .+ x₁
-        ϕ = -.05 .+ x₂
-        ξ = 0.1
+        ϕ = -0.5 .+ x₂
+        ξ = x₃
 
-        σ = exp.(ϕ)
-        θ = [1.0; 1.0; -.05; 1.0; ξ]
+        ϕ = log(σ)
+        θ = [1.0; 1.0; -0.5; 1.0; 0.0; 1.0]
 
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)])
+        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
 
-        fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
+        fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
         infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
         supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
@@ -103,33 +51,8 @@
         @test infq <= θ
         @test θ <= supq
 
-        # non-stationary shape GEV Bayesian fit
-        # n = 100000
-        #
-        # x₁ = randn(n) / 10
-        #
-        # μ = 0.0
-        # ϕ = 0.0
-        # ξ = x₁
-        #
-        # σ = exp(ϕ)
-        # θ = [μ; ϕ; 0.0; 1.0]
-        #
-        # pd = GeneralizedExtremeValue.(μ, σ, ξ)
-        # y = rand.(pd)
-        #
-        # model = Extremes.BlockMaxima(y, shapecov = [Variable("x₁", x₁)])
-        #
-        # fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
-        #
-        #infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
-        #supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
-
-        #@test infq <= θ
-        #@test θ <= supq5
-
         # stationary GP bayes fit
-        n = 10000
+        n = 5000
 
         σ = 1.0
         ξ = 0.1
@@ -142,7 +65,7 @@
 
         model = Extremes.ThresholdExceedance(Variable("y", y))
 
-        fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
+        fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
         infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
         supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
@@ -150,24 +73,24 @@
         @test infq <= θ
         @test θ <= supq
 
-        # non-stationary logscale GP Bayesian fit
-        n = 10000
+        # non-stationary GP Bayesian fit
+        n = 5000
 
         x₁ = randn(n) / 3
-        x₂ = randn(n) / 3
+        x₂ = randn(n) / 10
 
-        ϕ = -.5 .+ x₁ .+ x₂
-        ξ = 0.1
+        ϕ = -.5 .+ x₁
+        ξ = x₂
 
         σ = exp.(ϕ)
-        θ = [-.5; 1.0; 1.0; ξ]
+        θ = [-.5; 1.0; 0.0; 1.0]
 
         pd = GeneralizedPareto.(σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x₁", x₁), Variable("x₂", x₂)])
+        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x₁", x₁)], shapecov = [Variable("x₂", x₂)])
 
-        fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
+        fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
         infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
         supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
@@ -175,32 +98,7 @@
         @test infq <= θ
         @test θ <= supq
 
-        # # non-stationary shape GP Bayesian fit
-        # n = 100000
-        #
-        # x₁ = randn(n) / 10
-        #
-        # μ = 0.0
-        # ϕ = 0.0
-        # ξ = x₁
-        #
-        # σ = exp(ϕ)
-        # θ = [ϕ; 0.0; 1.0]
-        #
-        # pd = GeneralizedPareto.(μ, σ, ξ)
-        # y = rand.(pd)
-        #
-        # model = Extremes.ThresholdExceedance(y, shapecov = [Variable("x₁", x₁)])
-        #
-        # fm = Extremes.fitbayes(model, niter=2000, warmup=1000)
-        #
-        #infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
-        #supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
-
-        #@test infq <= θ
-        #@test θ <= supq
-
-    end
+end
 
     include(joinpath("bayesian", "bayesian_gev_test.jl"))
     include(joinpath("bayesian", "bayesian_gp_test.jl"))
