@@ -6,7 +6,7 @@
 
     y = [0]
 
-    fm = Extremes.pwmEVA(Extremes.BlockMaxima(Variable("y", y)), [θ[1]; log(θ[2]); θ[3]])
+    fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", y)), [θ[1]; log(θ[2]); θ[3]])
 
     @testset "quantile(fm, p)" begin
         # p outside of [0, 1] throws

@@ -126,11 +126,11 @@ function showfittedEVA(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
 end
 
 """
-    transform(fm::MaximumLikelihoodEVA{BlockMaxima})::fittedEVA{BlockMaxima}
+    transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
 
 Transform the fitted model for the original covariate scales.
 """
-function transform(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}})
+function transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
 
     locationcovstd = fm.model.location.covariate
     logscalecovstd = fm.model.logscale.covariate
