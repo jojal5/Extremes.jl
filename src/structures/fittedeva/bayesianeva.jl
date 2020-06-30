@@ -64,11 +64,11 @@ function showChain(io::IO, chain::Mamba.Chains; prefix::String = "")
 end
 
 """
-    transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})
+    transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
 
 Transform the fitted model for the original covariate scales.
 """
-function transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})
+function transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
 
     locationcovstd = fm.model.location.covariate
     logscalecovstd = fm.model.logscale.covariate

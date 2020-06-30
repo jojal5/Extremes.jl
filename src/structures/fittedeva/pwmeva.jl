@@ -87,7 +87,7 @@ end
 
 
 """
-    fitpwmfunction(fm::pwmEVA{BlockMaxima{GeneralizedExtremeValue}})::Function
+    fitpwmfunction(fm::pwmEVA{BlockMaxima, GeneralizedExtremeValue})::Function
 
 Returns the corresponding fitpwm function.
 
@@ -97,7 +97,7 @@ function fitpwmfunction(fm::pwmEVA{BlockMaxima, GeneralizedExtremeValue})::Funct
 end
 
 """
-    fitpwmfunction(fm::pwmEVA{BlockMaxima{GeneralizedPareto}})::Function
+    fitpwmfunction(fm::pwmEVA{ThresholdExceedance, GeneralizedPareto})::Function
 
 Returns the corresponding fitpwm function.
 
@@ -107,7 +107,7 @@ function fitpwmfunction(fm::pwmEVA{ThresholdExceedance, GeneralizedPareto})::Fun
 end
 
 """
-    fitpwmfunction(fm::pwmEVA{BlockMaxima{Gumbel}})::Function
+    fitpwmfunction(fm::pwmEVA{BlockMaxima, Gumbel})::Function
 
 Returns the corresponding fitpwm function.
 
