@@ -151,7 +151,7 @@ end
 
 Compute the mean residual life from vector `y` using the set of thresholds from the `minimum(y)` value to the second-to-last larger value in `steps` steps.
 """
-function mrl(y::Vector{<:Real}, steps::Int = 100)::DataFrame
+function mrlplot_data(y::Vector{<:Real}, steps::Int = 100)::DataFrame
 
     @assert steps > 0 "the number of steps should be positive"
 
@@ -188,7 +188,7 @@ Show the mean residual life from vector `y` using the set of thresholds from the
 """
 function mrlplot(y::Vector{<:Real}, steps::Int=100)::Plot
 
-    df = mrl(y, steps)
+    df = mrlplot_data(y, steps)
 
     p = plot(df, x = :Threshold, y = :mrl, ymin = :lbound, ymax = :ubound,
         Geom.line, Geom.ribbon, Guide.ylabel("Mean Residual Life"))

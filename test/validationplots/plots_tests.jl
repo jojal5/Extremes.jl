@@ -116,9 +116,9 @@
         pd = GeneralizedPareto(σ, ξ)
         y = rand(pd, 1000)
 
-        @test_throws AssertionError mrl(y, -3)
+        @test_throws AssertionError mrlplot_data(y, -3)
 
-        df = mrl(y, 10)
+        df = mrlplot_data(y, 10)
 
         # Returns a dictionary with the correct keys
         @test hasproperty(df, :Threshold)

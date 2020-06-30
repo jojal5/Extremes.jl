@@ -72,7 +72,7 @@ export
     histplot_data,
     histplot,
     diagnosticplots,
-    mrl,
-    mrlplot
+    mrlplot,
+    mrlplot_data
 
 end # module
