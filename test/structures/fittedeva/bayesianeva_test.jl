@@ -31,7 +31,31 @@
     end
 
     @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
-        # TODO : Test when implemented
+
+        threshold = 10.0
+
+        x = Variable("x",collect(range(0, stop=1, length=1000)))
+        ϕ = x.value
+        σ = exp.(ϕ)
+
+        pd = GeneralizedPareto.(threshold, σ, .1)
+
+        y = rand.(pd) .- threshold
+
+        fm = gpfitbayes(y, logscalecov = [x])
+
+        # returnPeriod < 0 throws
+        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1, 0.95)
+
+        # confidencelevel not in [0, 1]
+        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, 1, -1)
+
+        # Test with known values
+        r = returnlevel(fm, threshold, length(y), 1, 100, .95)
+        q = quantile.(pd, 1-1/100)
+
+        @test r.cint[1][1] < q[1] < r.cint[1][2]  # Beginning of interval
+        @test r.cint[end][1] < q[end] < r.cint[end][2]  # End of interval
 
     end
 
@@ -45,6 +69,30 @@
         # print does not throw
         buffer = IOBuffer()
         @test_logs Extremes.showChain(buffer, fm.sim)
+    end
+
+    @testset "cint(fm::BayesianEVA)" begin
+
+        μ, ϕ, ξ = 100, log(5), .1
+        y = rand(GeneralizedExtremeValue(μ,exp(ϕ), ξ), 1000)
+
+        fm = gevfitbayes(y)
+
+        @test_throws AssertionError cint(fm, 1.95)
+        @test_throws AssertionError cint(fm, -1.95)
+
+        confint = cint(fm)
+
+        @test confint[1][1] < μ < confint[1][2]
+        @test confint[2][1] < ϕ < confint[2][2]
+        @test confint[3][1] < ξ < confint[3][2]
+
+        confint = cint(fm, .99)
+
+        @test confint[1][1] < μ < confint[1][2]
+        @test confint[2][1] < ϕ < confint[2][2]
+        @test confint[3][1] < ξ < confint[3][2]
+
     end
 
 end

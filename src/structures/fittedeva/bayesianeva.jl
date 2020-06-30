@@ -31,54 +31,6 @@ function quantile(fm::BayesianEVA,p::Real)::Array{<:Real}
 end
 
 """
-    returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
-
-Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
-
-"""
-function returnlevel(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
-
-      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
-      @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
-
-      α = (1 - confidencelevel)
-
-      # quantile level
-      p = 1-1/returnPeriod
-
-      Q = quantile(fm, p)
-
-      q = vec(mean(Q, dims=1))
-
-      qsliced = slicematrix(Q)
-
-      a = quantile.(qsliced, α/2)
-      b = quantile.(qsliced, 1-α/2)
-
-      cint = slicematrix(hcat(a,b), dims=2)
-
-      res = ReturnLevel(fm, returnPeriod, q, cint)
-
-      return res
-
-end
-
-"""
-    returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
-        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
-
-Compute the return level of the return period `returnPeriod` from the fitted model `fm`.
-
-"""
-function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
-    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
-
-    # TODO : implement
-    error("Not implemented")
-
-end
-
-"""
     showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
 
 Displays a BayesianEVA with the prefix `prefix` before every line.
@@ -196,5 +148,51 @@ function transform(fm::BayesianEVA{ThresholdExceedance})
 
     # Contruction of the fittedEVA structure
     return BayesianEVA(model, sim)
+
+end
+
+
+"""
+    parametervar(fm::BayesianEVA)::Array{Float64, 2}
+
+Compute the covariance parameters estimate of the fitted model `fm`.
+
+"""
+function parametervar(fm::BayesianEVA)::Array{Float64, 2}
+
+    x = fm.sim.value[:,:,1]
+
+    C = cov(x)
+
+    return C
+
+end
+
+
+
+"""
+    cint(fm::pwmEVA, clevel::Real=.95, nboot::Int=1000)::Array{Array{Float64,1},1}
+
+Estimate the parameter estimates highest posterior density interval.
+"""
+function cint(fm::BayesianEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
+
+    @assert 0<clevel<1 "the confidence level should be between 0 and 1."
+
+    α = 1-clevel
+
+    # Chain summary
+    s = hpd(fm.sim, alpha=.05)
+
+    # Values
+    v = s.value[:,:,1]
+
+    credint = Vector{Vector{Float64}}()
+
+    for r in eachrow(v)
+        push!(credint, r)
+    end
+
+    return credint
 
 end

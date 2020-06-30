@@ -109,4 +109,35 @@
 
     end
 
+    @testset "mrl(y)" begin
+
+        σ = 1.0
+        ξ = 0.1
+        pd = GeneralizedPareto(σ, ξ)
+        y = rand(pd, 1000)
+
+        @test_throws AssertionError mrlplot_data(y, -3)
+
+        df = mrlplot_data(y, 10)
+
+        # Returns a dictionary with the correct keys
+        @test hasproperty(df, :Threshold)
+        @test hasproperty(df, :mrl)
+        @test hasproperty(df, :lbound)
+        @test hasproperty(df, :ubound)
+
+        # Theoretical values
+        m = (σ .+ ξ * df[:, :Threshold]) / (1 - ξ)
+
+        @test df[1, :lbound] < m[1] < df[1, :ubound]
+        @test df[5, :lbound] < m[5] < df[5, :ubound]
+
+    end
+
+    @testset "mrlplot(y)" begin
+        # Plots do not throw
+        @test_logs mrlplot([.5; .8; .9])
+
+    end
+
 end
