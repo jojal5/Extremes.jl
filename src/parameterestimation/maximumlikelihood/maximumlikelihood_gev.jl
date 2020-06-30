@@ -125,7 +125,7 @@ end
 
 
 """
-    gevfit(model::BlockMaxima)
+    gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
 Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood of the BlockMaxima model `model`.
 
