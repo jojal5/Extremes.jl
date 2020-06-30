@@ -31,7 +31,31 @@
     end
 
     @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
-        # TODO : Test when implemented
+
+        threshold = 10.0
+
+        x = Variable("x",collect(range(0, stop=1, length=1000)))
+        ϕ = x.value
+        σ = exp.(ϕ)
+
+        pd = GeneralizedPareto.(threshold, σ, .1)
+
+        y = rand.(pd) .- threshold
+
+        fm = gpfitbayes(y, logscalecov = [x])
+
+        # returnPeriod < 0 throws
+        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1, 0.95)
+
+        # confidencelevel not in [0, 1]
+        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, 1, -1)
+
+        # Test with known values
+        r = returnlevel(fm, threshold, length(y), 1, 100, .95)
+        q = quantile.(pd, 1-1/100)
+
+        @test r.cint[1][1] < q[1] < r.cint[1][2]  # Beginning of interval
+        @test r.cint[end][1] < q[end] < r.cint[end][2]  # End of interval
 
     end
 
