@@ -177,7 +177,7 @@ end
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::pwmEVA{BlockMaxima{GeneralizedExtremeValue}}, returnPeriod::Real, confidencelevel::Real=.95)
+function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real, confidencelevel::Real=.95)
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -222,7 +222,7 @@ Compute the return level corresponding to the return period `returnPeriod` from 
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function returnlevel(fm::pwmEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."

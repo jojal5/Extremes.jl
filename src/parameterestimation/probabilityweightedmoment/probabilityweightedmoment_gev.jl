@@ -76,7 +76,7 @@ function gevfitpwm(model::BlockMaxima{GeneralizedExtremeValue})::pwmEVA
 
     θ̂ = [μ̂; ϕ̂; ξ̂]
 
-    fm = pwmEVA(model, θ̂)
+    fm = pwmEVA{BlockMaxima, GeneralizedExtremeValue}(model, θ̂)
 
     return fm
 

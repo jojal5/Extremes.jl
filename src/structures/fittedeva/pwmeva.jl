@@ -1,4 +1,4 @@
-struct pwmEVA{T<:EVA} <: fittedEVA
+struct pwmEVA{T<:EVA, U<:Distribution} <: fittedEVA
     "Extreme value model definition"
     model::T
     "Maximum likelihood estimate"
@@ -92,7 +92,7 @@ end
 Returns the corresponding fitpwm function.
 
 """
-function fitpwmfunction(fm::pwmEVA{BlockMaxima{GeneralizedExtremeValue}})::Function
+function fitpwmfunction(fm::pwmEVA{BlockMaxima, GeneralizedExtremeValue})::Function
     return gevfitpwm
 end
 
@@ -102,7 +102,7 @@ end
 Returns the corresponding fitpwm function.
 
 """
-function fitpwmfunction(fm::pwmEVA{ThresholdExceedance})::Function
+function fitpwmfunction(fm::pwmEVA{ThresholdExceedance, GeneralizedPareto})::Function
     return gpfitpwm
 end
 
@@ -112,7 +112,7 @@ end
 Returns the corresponding fitpwm function.
 
 """
-function fitpwmfunction(fm::pwmEVA{BlockMaxima{Gumbel}})::Function
+function fitpwmfunction(fm::pwmEVA{BlockMaxima, Gumbel})::Function
     return gumbelfitpwm
 end
 
