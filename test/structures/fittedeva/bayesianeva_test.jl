@@ -8,6 +8,9 @@
 
     fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y)), Mamba.Chains([100.0 log(5.0) .1]))
 
+    @testset "getdistribution(fittedmodel)" begin
+        @test Extremes.getdistribution(fm)[] == pd
+    end
 
     @testset "quantile(fm, p)" begin
         # p not in [0, 1] throws

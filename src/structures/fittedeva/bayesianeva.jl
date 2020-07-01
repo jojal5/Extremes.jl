@@ -6,6 +6,25 @@ struct BayesianEVA{T<:EVA} <: fittedEVA
 end
 
 """
+    getdistribution(fittedmodel::bayesianEVA)::Vector{<:Distribution}
+
+Return the distributions for each MCMC iteration.
+"""
+function getdistribution(fm::BayesianEVA)::Array{GeneralizedExtremeValue{Float64},2}
+
+    v = fm.sim.value[:,:,1]
+
+    V = Extremes.slicematrix(v, dims=2)
+
+    D = Extremes.getdistribution.(fm.model, V)
+
+    d = Extremes.unslicematrix(D, dims=2)
+
+    return d
+
+end
+
+"""
     quantile(fm::BayesianEVA,p::Real)::Real
 
 Compute the quantile of level `p` from the fitted Bayesian model `fm`. If the
