@@ -138,6 +138,96 @@ function quantilevar(fm::pwmEVA, level::Real, nboot::Int=1000)::Vector{<:Real}
 
 end
 
+"""
+    returnlevel(fm::pwmEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+"""
+function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real, confidencelevel::Real=.95)
+
+      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+      @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+      # quantile level
+      p = 1-1/returnPeriod
+
+      q = quantile(fm, p)
+
+      # Compute the credible interval
+
+      nboot = 5000
+      α = (1 - confidencelevel)
+
+      y = fm.model.data.value
+      n = length(y)
+
+      qboot = Array{Float64}(undef, nboot)
+
+      fitfun = Extremes.fitpwmfunction(fm)
+
+      for i=1:nboot
+          ind = rand(1:n, n)            # Generate a bootstrap sample
+          θ̂ = fitfun(y[ind]).θ̂          # Compute the parameter estimates
+          qboot[i] = quantile(fm.model, θ̂, p)[]
+      end
+
+      confint = quantile(qboot,[α/2, 1-α/2])
+
+      res = ReturnLevel(fm, returnPeriod, q, [confint])
+
+      return res
+
+end
+
+"""
+    returnlevel(fm::pwmEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
+        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+The threshold should be a scalar. A varying threshold is not yet implemented.
+
+"""
+function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
+    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+    @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+    # Exceedance probability
+    ζ = length(fm.model.data.value)/nobservation
+
+    # Appropriate quantile level given the probability exceedance and the number of obs per year
+    p = 1-1/(returnPeriod * nobsperblock * ζ)
+
+    q = threshold .+ quantile(fm, p)
+
+    # Compute the credible interval
+
+    nboot = 5000
+    α = (1 - confidencelevel)
+
+    y = fm.model.data.value
+    n = length(y)
+
+    qboot = Array{Float64}(undef, nboot)
+
+    fitfun = Extremes.fitpwmfunction(fm)
+
+    for i=1:nboot
+        ind = rand(1:n, n)            # Generate a bootstrap sample
+        θ̂ = fitfun(y[ind]).θ̂          # Compute the parameter estimates
+        qboot[i] = quantile(fm.model, θ̂, p)[]
+    end
+
+    confint = threshold .+ quantile(qboot,[α/2, 1-α/2])
+
+    res = ReturnLevel(fm, returnPeriod, q, [confint])
+
+    return res
+
+end
 
 """
     showfittedEVA(io::IO, obj::pwmEVA; prefix::String = "")

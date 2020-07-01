@@ -31,6 +31,83 @@ function quantile(fm::BayesianEVA,p::Real)::Array{<:Real}
 end
 
 """
+    returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+"""
+function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+      @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+      # quantile level
+      p = 1-1/returnPeriod
+
+      Q = quantile(fm, p)
+
+      q = vec(mean(Q, dims=1))
+
+      # Compute the credible interval
+
+      α = (1 - confidencelevel)
+
+      qsliced = slicematrix(Q)
+
+      a = quantile.(qsliced, α/2)
+      b = quantile.(qsliced, 1-α/2)
+
+      cint = slicematrix(hcat(a,b), dims=2)
+
+      res = ReturnLevel(fm, returnPeriod, q, cint)
+
+      return res
+
+end
+
+"""
+    returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+        Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+        The threshold should be a scalar. A varying threshold is not yet implemented.
+
+"""
+function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+    @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+    # Exceedance probability
+    ζ = length(fm.model.data.value)/nobservation
+
+    # Appropriate quantile level given the probability exceedance and the number of obs per year
+    p = 1-1/(returnPeriod * nobsperblock * ζ)
+
+    Q = quantile(fm, p)
+
+    q = threshold .+ vec(mean(Q, dims=1))
+
+    # Compute the credible interval
+
+    α = (1 - confidencelevel)
+
+    qsliced = slicematrix(Q)
+
+    a = threshold .+ quantile.(qsliced, α/2)
+    b = threshold .+ quantile.(qsliced, 1-α/2)
+
+    cint = slicematrix(hcat(a,b), dims=2)
+
+    res = ReturnLevel(fm, returnPeriod, q, cint)
+
+    return res
+
+end
+
+"""
     showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
 
 Displays a BayesianEVA with the prefix `prefix` before every line.
