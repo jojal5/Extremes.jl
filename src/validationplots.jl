@@ -17,9 +17,9 @@ end
 """
 # TODO : desc
 """
-function checkstationarity(fm::MaximumLikelihoodEVA)
+function checkstationarity(m::EVA)
 
-    if getcovariatenumber(fm.model) > 0
+    if getcovariatenumber(m) > 0
         @info "The graph is optimized for stationary models and the model provided is not."
     end
 
@@ -28,9 +28,9 @@ end
 """
 # TODO : desc
 """
-function checknonstationarity(fm::MaximumLikelihoodEVA)
+function checknonstationarity(m::EVA)
 
-    if getcovariatenumber(fm.model) == 0
+    if getcovariatenumber(m) == 0
         @info "The graph is optimized for non-stationary models and the model provided is not."
     end
 

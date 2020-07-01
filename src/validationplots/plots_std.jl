@@ -49,7 +49,7 @@ end
 """
 function probplot_std_data(fm::MaximumLikelihoodEVA)::DataFrame
 
-    checknonstationarity(fm)
+    checknonstationarity(fm.model)
 
     z = standardize(fm)
 
@@ -76,7 +76,7 @@ end
 """
 function qqplot_std_data(fm::MaximumLikelihoodEVA)::DataFrame
 
-    checknonstationarity(fm)
+    checknonstationarity(fm.model)
 
     z = standardize(fm)
 
