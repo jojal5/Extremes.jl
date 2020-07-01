@@ -215,3 +215,22 @@ function cint(fm::BayesianEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
     return credint
 
 end
+
+"""
+    findposteriormode(fm::BayesianEVA)::Vector{<:Real}
+
+Find the maximum a posteriori probability (MAP) estimate.
+"""
+function findposteriormode(fm::BayesianEVA)::Vector{<:Real}
+
+    θ = Extremes.slicematrix(fm.sim.value[:,:,1], dims=2)
+
+    ll = Extremes.loglike.(fm.model,θ)
+
+    ind = argmax(ll)
+
+    θ̂ = θ[ind]
+
+    return θ̂
+
+end

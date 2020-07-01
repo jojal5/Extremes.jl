@@ -98,4 +98,20 @@
 
     end
 
+    @testset "findposteriormode(fm::BayesianEVA)" begin
+
+        x = Variable("x", randn(10))
+        μ = 10 .+ x.value
+        σ = 1.0
+        ξ = .1
+        pd = GeneralizedExtremeValue.(μ, σ, ξ)
+        y = rand.(pd)
+        fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y), locationcov=[x]),
+            Mamba.Chains([10.0 1.0 0.0 .1; -10.0 1.0 0.0 .1; 20.0 1.0 0.0 .1]))
+
+        θ̂ = Extremes.findposteriormode(fm)
+        @test θ̂ ≈ [10.0; 1.0; 0.0; .1]
+
+    end
+
 end
