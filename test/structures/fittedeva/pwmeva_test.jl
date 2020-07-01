@@ -8,6 +8,10 @@
 
     fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", y)), [θ[1]; log(θ[2]); θ[3]])
 
+    @testset "getdistribution(fittedmodel)" begin
+        @test Extremes.getdistribution(fm)[] == pd
+    end
+
     @testset "quantile(fm, p)" begin
         # p outside of [0, 1] throws
         @test_throws AssertionError Extremes.quantile(fm, -1)
