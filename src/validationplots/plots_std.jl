@@ -9,7 +9,7 @@ end
 """
 # TODO : desc
 """
-function standardize(fm::MaximumLikelihoodEVA{BlockMaxima{T}} where T<:Distribution)::Vector{<:Real}
+function standardize(fm::MaximumLikelihoodEVA{BlockMaxima})::Vector{<:Real}
 
     y = fm.model.data.value
     d = getdistribution(fm)
@@ -33,7 +33,7 @@ end
 """
 # TODO : desc
 """
-function standarddist(fm::MaximumLikelihoodEVA{BlockMaxima{T}} where T<:Distribution)::Distribution
+function standarddist(fm::MaximumLikelihoodEVA{BlockMaxima})::Distribution
     return Gumbel()
 end
 

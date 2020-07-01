@@ -54,7 +54,7 @@ Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the gener
     distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
 
 """
-function gevfitpwm(model::BlockMaxima{GeneralizedExtremeValue})::pwmEVA
+function gevfitpwm(model::BlockMaxima)::pwmEVA
 
     model = validatestationarity(model)
 
@@ -76,7 +76,7 @@ function gevfitpwm(model::BlockMaxima{GeneralizedExtremeValue})::pwmEVA
 
     θ̂ = [μ̂; ϕ̂; ξ̂]
 
-    fm = pwmEVA(model, θ̂)
+    fm = pwmEVA{BlockMaxima, GeneralizedExtremeValue}(model, θ̂)
 
     return fm
 

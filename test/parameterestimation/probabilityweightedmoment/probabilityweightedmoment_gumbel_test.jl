@@ -32,14 +32,14 @@
 
     @testset "gumbelfitpwm(model)" begin
         # non-stationary warn
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("t", collect(1:n))], dist = Gumbel)
+        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("t", collect(1:n))])
 
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned.") Extremes.gumbelfitpwm(model)
 
         # stationary Gumbel fit by pwm
-        model = Extremes.BlockMaxima(Variable("y", y), dist = Gumbel)
+        model = Extremes.BlockMaxima(Variable("y", y))
 
         fm = Extremes.gumbelfitpwm(model)
 

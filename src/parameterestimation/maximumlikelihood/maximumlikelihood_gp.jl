@@ -114,7 +114,7 @@ function gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
 end
 
 """
-    gpfit(model::ThresholdExceedance)::MaximumLikelihoodEVA
+    gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
 Fit the Generalized Pareto (GP) distribution by maximum likelihood to the ThresholdExceedance model.
 

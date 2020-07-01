@@ -10,7 +10,7 @@
         @test_logs Base.show(buffer, fm)
 
         # Print PwmEVA does not throw
-        fm = Extremes.pwmEVA(Extremes.BlockMaxima(Variable("y", [0])), [1.0; 0.0; 0.1])
+        fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", [0])), [1.0; 0.0; 0.1])
         @test_logs Base.show(buffer, fm)
 
     end
