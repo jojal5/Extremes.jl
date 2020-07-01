@@ -108,6 +108,23 @@ function quantilevar(fm::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 end
 
 """
+    returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::Vector{<:Real}
+
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+"""
+function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::Vector{<:Real}
+
+      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+
+      # quantile level
+      p = 1-1/returnPeriod
+
+      return quantile(fm, p)
+
+end
+
+"""
     returnlevel_cint(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
 Compute the confidence intervel for the return level corresponding to the return period
@@ -140,6 +157,30 @@ function returnlevel_cint(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::R
       res = ReturnLevel(fm, returnPeriod, q, cint)
 
       return res
+
+end
+
+"""
+    returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+        nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+The threshold should be a scalar. A varying threshold is not yet implemented.
+
+"""
+function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+    nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+
+    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+
+    # Exceedance probability
+    ζ = length(fm.model.data.value)/nobservation
+
+    # Appropriate quantile level given the probability exceedance and the number of obs per year
+    p = 1-1/(returnPeriod * nobsperblock * ζ)
+
+    return threshold .+ quantile(fm, p)
 
 end
 

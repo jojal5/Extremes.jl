@@ -49,6 +49,14 @@
 
     end
 
+    @testset "returnlevel(fm, returnPeriod)" begin
+        # returnPeriod < 0 throws
+        @test_throws AssertionError Extremes.returnlevel(fm, -1)
+
+        # TODO: Test with known values
+
+    end
+
     @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin
         # returnPeriod < 0 throws
         @test_throws AssertionError Extremes.returnlevel_cint(fm, -1, 0.95)
@@ -58,6 +66,21 @@
 
         # TODO: Test with known values
 
+    end
+
+    @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod)" begin
+        n = 1000
+        θ = [0.0, 1.0, 0.1]
+
+        pd = GeneralizedExtremeValue(θ...)
+        y = rand(pd, n)
+
+        te_model = Extremes.MaximumLikelihoodEVA(Extremes.ThresholdExceedance(Variable("y", y)), θ)
+
+        # returnPeriod < 0 throws
+        @test_throws AssertionError Extremes.returnlevel(te_model, 0, n, 1, -1)
+
+        # TODO : Test with known values (J)
     end
 
     @testset "returnlevel_cint(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin

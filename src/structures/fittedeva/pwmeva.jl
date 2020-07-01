@@ -138,14 +138,32 @@ function quantilevar(fm::pwmEVA, level::Real, nboot::Int=1000)::Vector{<:Real}
 
 end
 
+
 """
-    returnlevel_cint(fm::pwmEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+    returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::Vector{<:Real}
 
 Compute the confidence intervel for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
 
 """
-function returnlevel_cint(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real, confidencelevel::Real=.95)
+function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::Vector{<:Real}
+
+      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+
+      # quantile level
+      p = 1-1/returnPeriod
+
+      return quantile(fm, p)
+
+end
+
+"""
+    returnlevel_cint(fm::pwmEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+"""
+function returnlevel_cint(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -178,6 +196,30 @@ function returnlevel_cint(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, retu
       res = ReturnLevel(fm, returnPeriod, q, [confint])
 
       return res
+
+end
+
+"""
+    returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
+        nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+The threshold should be a scalar. A varying threshold is not yet implemented.
+
+"""
+function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
+    nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+
+    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+
+    # Exceedance probability
+    ζ = length(fm.model.data.value)/nobservation
+
+    # Appropriate quantile level given the probability exceedance and the number of obs per year
+    p = 1-1/(returnPeriod * nobsperblock * ζ)
+
+    return threshold .+ quantile(fm, p)
 
 end
 

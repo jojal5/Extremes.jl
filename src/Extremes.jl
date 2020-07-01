@@ -55,6 +55,7 @@ export
     cint,
 
     # Other functions
+    returnlevel,
     returnlevel_cint,
 
     # Diagnostic plots

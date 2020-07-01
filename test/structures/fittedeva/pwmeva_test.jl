@@ -30,6 +30,22 @@
 
     end
 
+    @testset "returnlevel(fm, returnPeriod)" begin
+        pd = GeneralizedExtremeValue(10,1,.1)
+        y = rand(pd,1000)
+
+        fm = gevfitpwm(y)
+
+        # returnPeriod < 0 throws
+        @test_throws AssertionError returnlevel(fm, -1)
+
+        r = returnlevel(fm, 100)
+        q = quantile(pd, 1-1/100)
+
+        # Test with known values
+        @test r[] ≈ q rtol = .05
+    end
+
     @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin
         pd = GeneralizedExtremeValue(10,1,.1)
         y = rand(pd,1000)
@@ -48,6 +64,24 @@
         # Test with known values
         @test r.value[] ≈ q rtol = .05
         @test r.cint[][1] < q < r.cint[][2]
+    end
+
+    @testset "returnlevel(fm, returnPeriod)" begin
+        threshold = 10.0
+        pd = GeneralizedPareto(threshold, 1,.1)
+        y = rand(pd,1000) .- threshold
+
+        fm = gpfitpwm(y)
+
+        # returnPeriod < 0 throws
+        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1)
+
+        # Test with known values
+        r = returnlevel(fm, threshold, length(y), 1, 100)
+        q = quantile(pd, 1-1/100)
+
+        # Test with known values
+        @test r[] ≈ q rtol = .05
     end
 
     @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin

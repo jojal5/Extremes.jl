@@ -18,6 +18,15 @@
 
     end
 
+    @testset "returnlevel(fm, returnPeriod)" begin
+        # returnPeriod < 0 throws
+        @test_throws AssertionError Extremes.returnlevel(fm, -1)
+
+        # Test with known values
+        @test returnlevel(fm, 100)[] ≈ quantile(pd, 1-1/100)
+
+    end
+
     @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin
         # returnPeriod < 0 throws
         @test_throws AssertionError Extremes.returnlevel_cint(fm, -1, 0.95)
@@ -30,20 +39,27 @@
 
     end
 
+    threshold = 10.0
+
+    x = Variable("x",collect(range(0, stop=1, length=1000)))
+    ϕ = x.value
+    σ = exp.(ϕ)
+
+    pd = GeneralizedPareto.(threshold, σ, .1)
+
+    y = rand.(pd) .- threshold
+
+    fm = gpfitbayes(y, logscalecov = [x])
+
+    @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod)" begin
+        # returnPeriod < 0 throws
+        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1)
+
+        # TODO : Test with known values
+
+    end
+
     @testset "returnlevel_cint(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
-
-        threshold = 10.0
-
-        x = Variable("x",collect(range(0, stop=1, length=1000)))
-        ϕ = x.value
-        σ = exp.(ϕ)
-
-        pd = GeneralizedPareto.(threshold, σ, .1)
-
-        y = rand.(pd) .- threshold
-
-        fm = gpfitbayes(y, logscalecov = [x])
-
         # returnPeriod < 0 throws
         @test_throws AssertionError returnlevel_cint(fm, threshold, length(y), 1, -1, 0.95)
 
