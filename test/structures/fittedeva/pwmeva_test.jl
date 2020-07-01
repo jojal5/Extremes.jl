@@ -30,19 +30,19 @@
 
     end
 
-    @testset "returnlevel(fm, returnPeriod, confidencelevel)" begin
+    @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin
         pd = GeneralizedExtremeValue(10,1,.1)
         y = rand(pd,1000)
 
         fm = gevfitpwm(y)
 
         # returnPeriod < 0 throws
-        @test_throws AssertionError returnlevel(fm, -1, 0.95)
+        @test_throws AssertionError returnlevel_cint(fm, -1, 0.95)
 
         # confidencelevel not in [0, 1]
-        @test_throws AssertionError returnlevel(fm, 1, -1)
+        @test_throws AssertionError returnlevel_cint(fm, 1, -1)
 
-        r = returnlevel(fm, 100, .95)
+        r = returnlevel_cint(fm, 100, .95)
         q = quantile(pd, 1-1/100)
 
         # Test with known values
@@ -50,7 +50,7 @@
         @test r.cint[][1] < q < r.cint[][2]
     end
 
-    @testset "returnlevel(fm, returnPeriod, confidencelevel)" begin
+    @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin
         threshold = 10.0
         pd = GeneralizedPareto(threshold, 1,.1)
         y = rand(pd,1000) .- threshold
@@ -58,13 +58,13 @@
         fm = gpfitpwm(y)
 
         # returnPeriod < 0 throws
-        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1, 0.95)
+        @test_throws AssertionError returnlevel_cint(fm, threshold, length(y), 1, -1, 0.95)
 
         # confidencelevel not in [0, 1]
-        @test_throws AssertionError returnlevel(fm, threshold,length(y), 1, 100, 1.95)
+        @test_throws AssertionError returnlevel_cint(fm, threshold,length(y), 1, 100, 1.95)
 
         # Test with known values
-        r = returnlevel(fm, threshold, length(y), 1, 100, .95)
+        r = returnlevel_cint(fm, threshold, length(y), 1, 100, .95)
         q = quantile(pd, 1-1/100)
 
         # Test with known values

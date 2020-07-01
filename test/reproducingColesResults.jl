@@ -20,9 +20,9 @@
         ]
 
         # 10-year return level
-        R₁₀ = returnlevel(fm, 10, 0.95)
+        R₁₀ = returnlevel_cint(fm, 10, 0.95)
         # 100-year return level
-        R₁₀₀ = returnlevel(fm, 100, 0.95)
+        R₁₀₀ = returnlevel_cint(fm, 100, 0.95)
 
         # Parameter estimates in Coles
         θ = [3.87; log(0.198); -0.050]
@@ -128,7 +128,7 @@
         @test Extremes.loglike(fm.model, fm.θ̂) ≈ -485.1 rtol = 0.1
         @test V̂ ≈ V rtol = 0.1
 
-        r = returnlevel(fm, threshold, size(df,1), 365, 100)
+        r = returnlevel_cint(fm, threshold, size(df,1), 365, 100)
 
         @test r.value[] ≈ 106.3 rtol = .1
 

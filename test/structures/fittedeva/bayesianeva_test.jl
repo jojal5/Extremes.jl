@@ -18,19 +18,19 @@
 
     end
 
-    @testset "returnlevel(fm, returnPeriod, confidencelevel)" begin
+    @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin
         # returnPeriod < 0 throws
-        @test_throws AssertionError Extremes.returnlevel(fm, -1, 0.95)
+        @test_throws AssertionError Extremes.returnlevel_cint(fm, -1, 0.95)
 
         # confidencelevel not in [0, 1]
-        @test_throws AssertionError Extremes.returnlevel(fm, 1, -1)
+        @test_throws AssertionError Extremes.returnlevel_cint(fm, 1, -1)
 
         # Test with known values
-        @test returnlevel(fm, 100, .95).value[] ≈ quantile(pd, 1-1/100)
+        @test returnlevel_cint(fm, 100, .95).value[] ≈ quantile(pd, 1-1/100)
 
     end
 
-    @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
+    @testset "returnlevel_cint(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
 
         threshold = 10.0
 
@@ -45,13 +45,13 @@
         fm = gpfitbayes(y, logscalecov = [x])
 
         # returnPeriod < 0 throws
-        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1, 0.95)
+        @test_throws AssertionError returnlevel_cint(fm, threshold, length(y), 1, -1, 0.95)
 
         # confidencelevel not in [0, 1]
-        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, 1, -1)
+        @test_throws AssertionError returnlevel_cint(fm, threshold, length(y), 1, 1, -1)
 
         # Test with known values
-        r = returnlevel(fm, threshold, length(y), 1, 100, .95)
+        r = returnlevel_cint(fm, threshold, length(y), 1, 100, .95)
         q = quantile.(pd, 1-1/100)
 
         @test r.cint[1][1] < q[1] < r.cint[1][2]  # Beginning of interval

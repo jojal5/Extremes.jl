@@ -49,18 +49,18 @@
 
     end
 
-    @testset "returnlevel(fm, returnPeriod, confidencelevel)" begin
+    @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin
         # returnPeriod < 0 throws
-        @test_throws AssertionError Extremes.returnlevel(fm, -1, 0.95)
+        @test_throws AssertionError Extremes.returnlevel_cint(fm, -1, 0.95)
 
         # confidencelevel not in [0, 1] throws
-        @test_throws AssertionError Extremes.returnlevel(fm, 1, -1)
+        @test_throws AssertionError Extremes.returnlevel_cint(fm, 1, -1)
 
         # TODO: Test with known values
 
     end
 
-    @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
+    @testset "returnlevel_cint(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
         n = 1000
         θ = [0.0, 1.0, 0.1]
 
@@ -70,10 +70,10 @@
         te_model = Extremes.MaximumLikelihoodEVA(Extremes.ThresholdExceedance(Variable("y", y)), θ)
 
         # returnPeriod < 0 throws
-        @test_throws AssertionError Extremes.returnlevel(te_model, 0, n, 1, -1, 0.95)
+        @test_throws AssertionError Extremes.returnlevel_cint(te_model, 0, n, 1, -1, 0.95)
 
         # confidencelevel not in [0, 1] throws
-        @test_throws AssertionError Extremes.returnlevel(te_model, 0, n, 1, 1, -1)
+        @test_throws AssertionError Extremes.returnlevel_cint(te_model, 0, n, 1, 1, -1)
 
         # TODO : Test with known values (J)
     end
