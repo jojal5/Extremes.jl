@@ -36,5 +36,6 @@ function checknonstationarity(m::EVA)
 
 end
 
-include(joinpath("validationplots", "plots_std.jl"))
 include(joinpath("validationplots", "plots.jl"))
+include(joinpath("validationplots", "plots_data.jl"))
+include(joinpath("validationplots", "plots_std_data.jl"))
