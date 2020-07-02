@@ -95,23 +95,27 @@ function qqplot(fm::fittedEVA)::Plot
 
 end
 
-
 """
 # TODO : desc
 """
-function qqplot_data(fm::pwmEVA)::DataFrame
+function qqplot_data(fm::BayesianEVA)::DataFrame
 
     checkstationarity(fm.model)
 
     y, p = ecdf(fm.model.data.value)
 
-    n = length(y)
+    dist = getdistribution(fm)
 
-    q = Vector{Float64}(undef, n)
+    q_sim = Array{Float64}(undef, length(dist), length(y))
 
-    for i in eachindex(p)
-       q[i] = quantile(fm, p[i])[1]
+    i = 1
+
+    for d in eachslice(dist, dims=1)
+        q_sim[i,:] = quantile.(d, p)
+        i +=1
     end
+
+    q = vec(mean(q_sim, dims=1))
 
     return DataFrame(Model = q, Empirical = y)
 
@@ -141,24 +145,19 @@ end
 """
 # TODO : desc
 """
-function qqplot_data(fm::BayesianEVA)::DataFrame
+function qqplot_data(fm::pwmEVA)::DataFrame
 
     checkstationarity(fm.model)
 
     y, p = ecdf(fm.model.data.value)
 
-    dist = getdistribution(fm)
+    n = length(y)
 
-    q_sim = Array{Float64}(undef, length(dist), length(y))
+    q = Vector{Float64}(undef, n)
 
-    i = 1
-
-    for d in eachslice(dist, dims=1)
-        q_sim[i,:] = quantile.(d, p)
-        i +=1
+    for i in eachindex(p)
+       q[i] = quantile(fm, p[i])[1]
     end
-
-    q = vec(mean(q_sim, dims=1))
 
     return DataFrame(Model = q, Empirical = y)
 
@@ -179,54 +178,6 @@ function returnlevelplot(fm::fittedEVA)::Plot
         l2 = layer(df, x=:Period, y=:Data, Geom.point)
         return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"), Guide.title("Return Level Plot"))
     end
-end
-
-"""
-# TODO : desc
-"""
-function returnlevelplot_data(fm::pwmEVA)::DataFrame
-
-    checkstationarity(fm.model)
-
-    y, p = ecdf(fm.model.data.value)
-
-    T = 1 ./ (1 .- p)
-
-    n = length(y)
-
-    q = Vector{Float64}(undef, n)
-
-    for i in eachindex(p)
-       q[i] = quantile(fm, p[i])[1]
-    end
-
-    return DataFrame(Data = y, Period = T, Level = q)
-
-end
-
-"""
-# TODO : desc
-"""
-function returnlevelplot_data(fm::MaximumLikelihoodEVA)::DataFrame
-
-    df = qqplot_data(fm)
-
-    checkstationarity(fm.model)
-
-    y, p = ecdf(fm.model.data.value)
-
-    T = 1 ./ (1 .- p)
-
-    n = length(y)
-
-    q = Vector{Float64}(undef, n)
-
-    for i in eachindex(p)
-       q[i] = quantile(fm, p[i])[1]
-    end
-
-    return DataFrame(Data = y, Period = T, Level = q)
-
 end
 
 """
@@ -260,6 +211,56 @@ end
 """
 # TODO : desc
 """
+function returnlevelplot_data(fm::MaximumLikelihoodEVA)::DataFrame
+
+    df = qqplot_data(fm)
+
+    checkstationarity(fm.model)
+
+    y, p = ecdf(fm.model.data.value)
+
+    T = 1 ./ (1 .- p)
+
+    n = length(y)
+
+    q = Vector{Float64}(undef, n)
+
+    for i in eachindex(p)
+       q[i] = quantile(fm, p[i])[1]
+    end
+
+    return DataFrame(Data = y, Period = T, Level = q)
+
+end
+
+
+"""
+# TODO : desc
+"""
+function returnlevelplot_data(fm::pwmEVA)::DataFrame
+
+    checkstationarity(fm.model)
+
+    y, p = ecdf(fm.model.data.value)
+
+    T = 1 ./ (1 .- p)
+
+    n = length(y)
+
+    q = Vector{Float64}(undef, n)
+
+    for i in eachindex(p)
+       q[i] = quantile(fm, p[i])[1]
+    end
+
+    return DataFrame(Data = y, Period = T, Level = q)
+
+end
+
+
+"""
+# TODO : desc
+"""
 function histplot(fm::fittedEVA)::Plot
 
     if getcovariatenumber(fm.model) > 0
@@ -277,50 +278,6 @@ function histplot(fm::fittedEVA)::Plot
 
 end
 
-"""
-# TODO : desc
-"""
-function histplot_data(fm::pwmEVA)::Dict
-
-    checkstationarity(fm.model)
-
-    dist = getdistribution(fm)[1]
-
-    x = fm.model.data.value
-    n = length(x)
-    nbin = Int64(ceil(sqrt(n)))
-
-    xmin = quantile(dist, 1/1000)
-    xmax = quantile(dist, 1 - 1/1000)
-    xp = range(xmin, xmax, length=1000)
-
-    return Dict(:h => DataFrame(Data = x), :d => DataFrame(DataRange = xp, Density = pdf.(dist, xp)),
-        :nbin => nbin, :xmin => xmin, :xmax => xmax)
-
-end
-
-
-"""
-# TODO : desc
-"""
-function histplot_data(fm::MaximumLikelihoodEVA)::Dict
-
-    checkstationarity(fm.model)
-
-    dist = getdistribution(fm)[1]
-
-    x = fm.model.data.value
-    n = length(x)
-    nbin = Int64(ceil(sqrt(n)))
-
-    xmin = quantile(dist, 1/1000)
-    xmax = quantile(dist, 1 - 1/1000)
-    xp = range(xmin, xmax, length=1000)
-
-    return Dict(:h => DataFrame(Data = x), :d => DataFrame(DataRange = xp, Density = pdf.(dist, xp)),
-        :nbin => nbin, :xmin => xmin, :xmax => xmax)
-
-end
 
 """
 # TODO : desc
@@ -350,6 +307,52 @@ function histplot_data(fm::BayesianEVA)::Dict
     h = vec(mean(h_sim, dims=1))
 
     return Dict(:h => DataFrame(Data = x), :d => DataFrame(DataRange = xp, Density = h),
+        :nbin => nbin, :xmin => xmin, :xmax => xmax)
+
+end
+
+"""
+# TODO : desc
+"""
+function histplot_data(fm::MaximumLikelihoodEVA)::Dict
+
+    checkstationarity(fm.model)
+
+    dist = getdistribution(fm)[1]
+
+    x = fm.model.data.value
+    n = length(x)
+    nbin = Int64(ceil(sqrt(n)))
+
+    xmin = quantile(dist, 1/1000)
+    xmax = quantile(dist, 1 - 1/1000)
+    xp = range(xmin, xmax, length=1000)
+
+    return Dict(:h => DataFrame(Data = x), :d => DataFrame(DataRange = xp, Density = pdf.(dist, xp)),
+        :nbin => nbin, :xmin => xmin, :xmax => xmax)
+
+end
+
+
+
+"""
+# TODO : desc
+"""
+function histplot_data(fm::pwmEVA)::Dict
+
+    checkstationarity(fm.model)
+
+    dist = getdistribution(fm)[1]
+
+    x = fm.model.data.value
+    n = length(x)
+    nbin = Int64(ceil(sqrt(n)))
+
+    xmin = quantile(dist, 1/1000)
+    xmax = quantile(dist, 1 - 1/1000)
+    xp = range(xmin, xmax, length=1000)
+
+    return Dict(:h => DataFrame(Data = x), :d => DataFrame(DataRange = xp, Density = pdf.(dist, xp)),
         :nbin => nbin, :xmin => xmin, :xmax => xmax)
 
 end
