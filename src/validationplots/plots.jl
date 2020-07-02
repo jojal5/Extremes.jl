@@ -3,7 +3,7 @@
 """
 function probplot(fm::fittedEVA)::Plot
 
-    if Extremes.getcovariatenumber(fm.model) > 0
+    if getcovariatenumber(fm.model) > 0
         df = probplot_std_data(fm)
         plotTitle = "Residual Probability Plot"
     else
@@ -67,7 +67,7 @@ end
 """
 function qqplot(fm::fittedEVA)::Plot
 
-    if Extremes.getcovariatenumber(fm.model) > 0
+    if getcovariatenumber(fm.model) > 0
         df = qqplot_std_data(fm)
         plotTitle = "Residual Quantile Plot"
     else
@@ -155,7 +155,7 @@ end
 """
 function returnlevelplot(fm::fittedEVA)::Plot
 
-    if Extremes.getcovariatenumber(fm.model) > 0
+    if getcovariatenumber(fm.model) > 0
         @warn "this graphic is not optimized for non-stationary model; plot ignored."
         return plot()
     else
@@ -247,7 +247,7 @@ end
 """
 function histplot(fm::fittedEVA)::Plot
 
-    if Extremes.getcovariatenumber(fm.model) > 0
+    if getcovariatenumber(fm.model) > 0
         df = histplot_std_data(fm)
         plotTitle = "Residual Density Plot"
     else
@@ -349,7 +349,7 @@ function diagnosticplots(fm::fittedEVA)::Gadfly.Compose.Context
     f2 = qqplot(fm)
     f3 = histplot(fm)
 
-    if Extremes.getcovariatenumber(fm.model) > 0
+    if getcovariatenumber(fm.model) > 0
         f4 = plot()
     else
         f4 = histplot(fm)

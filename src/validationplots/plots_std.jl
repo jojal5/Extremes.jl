@@ -23,8 +23,8 @@ end
 """
 function standardize(fm::BayesianEVA)::Vector{<:Real}
 
-    θ̂ = Extremes.findposteriormode(fm)
-    dist = Extremes.getdistribution(fm.model, θ̂)
+    θ̂ = findposteriormode(fm)
+    dist = getdistribution(fm.model, θ̂)
 
     μ = location.(dist)
     σ = scale.(dist)
@@ -32,7 +32,7 @@ function standardize(fm::BayesianEVA)::Vector{<:Real}
 
     y = fm.model.data.value
 
-    z = Extremes.standardize.(y, μ, σ, ξ)
+    z = standardize.(y, μ, σ, ξ)
 
     return z
 end
@@ -57,11 +57,11 @@ end
 """
 function probplot_std_data(fm::fittedEVA)::DataFrame
 
-    z = Extremes.standardize(fm)
+    z = standardize(fm)
 
-    y, p̂ = Extremes.ecdf(z)
+    y, p̂ = ecdf(z)
 
-    return DataFrame(Model = cdf.(Extremes.standarddist(fm.model), y), Empirical = p̂)
+    return DataFrame(Model = cdf.(standarddist(fm.model), y), Empirical = p̂)
 
 end
 
@@ -70,11 +70,11 @@ end
 """
 function qqplot_std_data(fm::fittedEVA)::DataFrame
 
-    z = Extremes.standardize(fm)
+    z = standardize(fm)
 
-    y, p = Extremes.ecdf(z)
+    y, p = ecdf(z)
 
-    return DataFrame(Model = quantile.(Extremes.standarddist(fm.model), p), Empirical = y)
+    return DataFrame(Model = quantile.(standarddist(fm.model), p), Empirical = y)
 
 end
 
@@ -84,9 +84,9 @@ end
 """
 function histplot_std_data(fm::fittedEVA)::Dict
 
-    dist = Extremes.standarddist(fm.model)
+    dist = standarddist(fm.model)
 
-    z = Extremes.standardize(fm)
+    z = standardize(fm)
     n = length(z)
     nbin = Int64(ceil(sqrt(n)))
 
