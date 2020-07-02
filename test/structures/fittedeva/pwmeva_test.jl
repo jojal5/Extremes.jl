@@ -43,7 +43,7 @@
         q = quantile(pd, 1-1/100)
 
         # Test with known values
-        @test r[] ≈ q rtol = .05
+        @test r.value[] ≈ q rtol = .05
     end
 
     @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin
@@ -80,7 +80,7 @@
         q = quantile(pd, 1-1/100)
 
         # Test with known values
-        @test r[] ≈ q rtol = .05
+        @test r.value[] ≈ q rtol = .05
     end
 
     @testset "returnlevel_cint(fm, returnPeriod, confidencelevel)" begin

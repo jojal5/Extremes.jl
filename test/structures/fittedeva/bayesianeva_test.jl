@@ -23,7 +23,7 @@
         @test_throws AssertionError Extremes.returnlevel(fm, -1)
 
         # Test with known values
-        @test returnlevel(fm, 100)[] ≈ quantile(pd, 1-1/100)
+        @test returnlevel(fm, 100).value[] ≈ quantile(pd, 1-1/100)
 
     end
 

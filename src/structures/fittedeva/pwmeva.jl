@@ -140,20 +140,20 @@ end
 
 
 """
-    returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::Vector{<:Real}
+    returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::ReturnLevel
 
 Compute the confidence intervel for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
 
 """
-function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::Vector{<:Real}
+function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
       # quantile level
       p = 1-1/returnPeriod
 
-      return quantile(fm, p)
+      return ReturnLevel(fm, returnPeriod, quantile(fm, p))
 
 end
 
@@ -195,7 +195,7 @@ end
 
 """
     returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
-        nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+        nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
@@ -203,7 +203,7 @@ The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
 function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
-    nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+    nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -213,7 +213,7 @@ function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, t
     # Appropriate quantile level given the probability exceedance and the number of obs per year
     p = 1-1/(returnPeriod * nobsperblock * ζ)
 
-    return threshold .+ quantile(fm, p)
+    return ReturnLevel(fm, returnPeriod, threshold .+ quantile(fm, p))
 
 end
 

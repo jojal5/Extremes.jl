@@ -39,9 +39,9 @@
         @test θ̂ ≈ θ rtol = 0.1
         @test c .* V̂ ≈ V rtol = 0.1
         @test Extremes.loglike(fm.model, θ̂) ≈ 4.34 rtol = 0.1
-        @test R₁₀[] ≈ 4.30 rtol = 0.1
+        @test R₁₀.value[] ≈ 4.30 rtol = 0.1
         @test R₁₀_cint[] ≈ [4.19; 4.45] rtol = 0.1
-        @test R₁₀₀[] ≈ 4.69 rtol = 0.1
+        @test R₁₀₀.value[] ≈ 4.69 rtol = 0.1
         @test R₁₀₀_cint[] ≈ [4.5; 5.27] rtol = 0.1
 
     end
@@ -132,7 +132,7 @@
 
         r = returnlevel(fm, threshold, size(df,1), 365, 100)
 
-        @test r[] ≈ 106.3 rtol = .1
+        @test r.value[] ≈ 106.3 rtol = .1
 
     end
 

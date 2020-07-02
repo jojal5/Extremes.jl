@@ -108,19 +108,19 @@ function quantilevar(fm::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 end
 
 """
-    returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::Vector{<:Real}
+    returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::Vector{<:Real}
+function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
       # quantile level
       p = 1-1/returnPeriod
 
-      return quantile(fm, p)
+      return ReturnLevel(fm, returnPeriod, quantile(fm, p))
 
 end
 
@@ -158,7 +158,7 @@ end
 
 """
     returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
-        nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+        nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
@@ -166,7 +166,7 @@ The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
 function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
-    nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+    nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -176,7 +176,7 @@ function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::R
     # Appropriate quantile level given the probability exceedance and the number of obs per year
     p = 1-1/(returnPeriod * nobsperblock * ζ)
 
-    return threshold .+ quantile(fm, p)
+    return ReturnLevel(fm, returnPeriod, threshold .+ quantile(fm, p))
 
 end
 
@@ -204,7 +204,7 @@ function returnlevel_cint(fm::MaximumLikelihoodEVA{ThresholdExceedance}, thresho
     p = 1-1/(returnPeriod * nobsperblock * ζ)
 
     q = threshold .+ quantile(fm, p)
-    
+
     # Compute the credible interval
 
     α = (1 - confidencelevel)

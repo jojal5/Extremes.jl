@@ -51,7 +51,8 @@ export
     gpfitpwm,
     cint,
 
-    # Other functions
+    # Return level
+    ReturnLevel,
     returnlevel,
     returnlevel_cint,
 

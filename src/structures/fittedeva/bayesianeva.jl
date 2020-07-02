@@ -31,12 +31,12 @@ function quantile(fm::BayesianEVA,p::Real)::Array{<:Real}
 end
 
 """
-    returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::Vector{<:Real}
+    returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::Vector{<:Real} # TODO : Test... :'('
+function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -45,7 +45,7 @@ function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::Vector{<
 
       Q = quantile(fm, p)
 
-      return vec(mean(Q, dims=1))
+      return ReturnLevel(fm, returnPeriod, vec(mean(Q, dims=1)))
 
 end
 
@@ -81,7 +81,7 @@ end
 
 """
     returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
-        nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+        nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
@@ -89,7 +89,7 @@ The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
 function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
-    nobsperblock::Int, returnPeriod::Real)::Vector{<:Real}
+    nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -101,7 +101,7 @@ function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobs
 
     Q = quantile(fm, p)
 
-    return threshold .+ vec(mean(Q, dims=1))
+    return ReturnLevel(fm, returnPeriod, threshold .+ vec(mean(Q, dims=1)))
 
 end
 
