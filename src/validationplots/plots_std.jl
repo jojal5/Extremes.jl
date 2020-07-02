@@ -55,64 +55,46 @@ end
 """
 # TODO : desc
 """
-function probplot_std_data(fm::MaximumLikelihoodEVA)::DataFrame
+function probplot_std_data(fm::fittedEVA)::DataFrame
 
-    checknonstationarity(fm.model)
+    z = Extremes.standardize(fm)
 
-    z = standardize(fm)
+    y, p̂ = Extremes.ecdf(z)
 
-    y, p̂ = ecdf(z)
-
-    return DataFrame(Model = cdf.(standarddist(fm.model), y), Empirical = p̂)
+    return DataFrame(Model = cdf.(Extremes.standarddist(fm.model), y), Empirical = p̂)
 
 end
 
 """
 # TODO : desc
 """
-function probplot_std(fm::MaximumLikelihoodEVA)::Plot
+function qqplot_std_data(fm::fittedEVA)::DataFrame
 
-    df = probplot_std_data(fm)
+    z = Extremes.standardize(fm)
 
-    return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title("Residual Probability Plot"))
+    y, p = Extremes.ecdf(z)
+
+    return DataFrame(Model = quantile.(Extremes.standarddist(fm.model), p), Empirical = y)
 
 end
+
 
 """
 # TODO : desc
 """
-function qqplot_std_data(fm::MaximumLikelihoodEVA)::DataFrame
+function histplot_std_data(fm::fittedEVA)::Dict
 
-    checknonstationarity(fm.model)
+    dist = Extremes.standarddist(fm.model)
 
-    z = standardize(fm)
+    z = Extremes.standardize(fm)
+    n = length(z)
+    nbin = Int64(ceil(sqrt(n)))
 
-    y, p = ecdf(z)
+    zmin = quantile(dist, 1/1000)
+    zmax = quantile(dist, 1 - 1/1000)
+    zp = range(zmin, zmax, length=1000)
 
-    return DataFrame(Model = quantile.(standarddist(fm.model), p), Empirical = y)
-
-end
-
-"""
-# TODO : desc
-"""
-function qqplot_std(fm::MaximumLikelihoodEVA)::Plot
-
-    df = qqplot_std_data(fm)
-
-    return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title("Residual Quantile Plot"))
-
-end
-
-"""
-# TODO : Desc
-"""
-function diagnosticplots_std(fm::MaximumLikelihoodEVA)::Gadfly.Compose.Context
-    probplot = probplot_std(fm)
-    qqplot = qqplot_std(fm)
-
-    return hstack(probplot, qqplot)
+    return Dict(:h => DataFrame(Data = z), :d => DataFrame(DataRange = zp, Density = pdf.(dist, zp)),
+        :nbin => nbin, :xmin => zmin, :xmax => zmax)
 
 end

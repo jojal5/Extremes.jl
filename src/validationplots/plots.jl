@@ -3,29 +3,19 @@
 """
 function probplot(fm::fittedEVA)::Plot
 
-    df = probplot_data(fm)
+    if Extremes.getcovariatenumber(fm.model) > 0
+        df = probplot_std_data(fm)
+        plotTitle = "Residual Probability Plot"
+    else
+        df = probplot_data(fm)
+        plotTitle = "Probability Plot"
+    end
 
     return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title("Probability Plot"))
+        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title(plotTitle))
 
 end
 
-"""
-# TODO : desc
-"""
-function probplot_data(fm::pwmEVA)::DataFrame
-
-    checkstationarity(fm.model)
-
-    y, p̂ = ecdf(fm.model.data.value)
-
-    dist = getdistribution(fm.model, fm.θ̂)[]
-
-    p = cdf.(dist, y)
-
-    return DataFrame(Model = p, Empirical = p̂)
-
-end
 
 """
 # TODO : desc
@@ -77,10 +67,16 @@ end
 """
 function qqplot(fm::fittedEVA)::Plot
 
-    df = qqplot_data(fm)
+    if Extremes.getcovariatenumber(fm.model) > 0
+        df = qqplot_std_data(fm)
+        plotTitle = "Residual Quantile Plot"
+    else
+        df = qqplot_data(fm)
+        plotTitle = "Quantile Plot"
+    end
 
     return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title("Quantile Plot"))
+        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title(plotTitle))
 
 end
 
@@ -154,19 +150,20 @@ function qqplot_data(fm::BayesianEVA)::DataFrame
 end
 
 
-
 """
 # TODO : desc
 """
 function returnlevelplot(fm::fittedEVA)::Plot
 
-    df = returnlevelplot_data(fm)
-
-    l1 = layer(df, x=:Period, y=:Level,Geom.line, Theme(default_color="red", line_style=[:dash]))
-    l2 = layer(df, x=:Period, y=:Data, Geom.point)
-
-    return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"), Guide.title("Return Level Plot"))
-
+    if Extremes.getcovariatenumber(fm.model) > 0
+        @warn "this graphic is not optimized for non-stationary model; plot ignored."
+        return plot()
+    else
+        df = returnlevelplot_data(fm)
+        l1 = layer(df, x=:Period, y=:Level,Geom.line, Theme(default_color="red", line_style=[:dash]))
+        l2 = layer(df, x=:Period, y=:Data, Geom.point)
+        return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"), Guide.title("Return Level Plot"))
+    end
 end
 
 """
@@ -250,11 +247,18 @@ end
 """
 function histplot(fm::fittedEVA)::Plot
 
-    dfs = histplot_data(fm)
-    h = layer(dfs[:h], x = :Data, Geom.histogram(bincount=dfs[:nbin], density=true))
-    d = layer(dfs[:d], x = :DataRange, y = :Density, Geom.line, Theme(default_color="red") )
+    if Extremes.getcovariatenumber(fm.model) > 0
+        df = histplot_std_data(fm)
+        plotTitle = "Residual Density Plot"
+    else
+        df = histplot_data(fm)
+        plotTitle = "Density Plot"
+    end
 
-    return plot(d,h, Coord.cartesian(xmin = dfs[:xmin], xmax = dfs[:xmax]), Guide.xlabel("Data"), Guide.ylabel("Density"), Guide.title("Density Plot"))
+    h = layer(df[:h], x = :Data, Geom.histogram(bincount=df[:nbin], density=true))
+    d = layer(df[:d], x = :DataRange, y = :Density, Geom.line, Theme(default_color="red") )
+
+    return plot(d,h, Coord.cartesian(xmin = df[:xmin], xmax = df[:xmax]), Guide.xlabel("Data"), Guide.ylabel("Density"), Guide.title(plotTitle))
 
 end
 
@@ -335,6 +339,7 @@ function histplot_data(fm::BayesianEVA)::Dict
 
 end
 
+
 """
 # TODO : desc
 """
@@ -342,12 +347,16 @@ function diagnosticplots(fm::fittedEVA)::Gadfly.Compose.Context
 
     f1 = probplot(fm)
     f2 = qqplot(fm)
-    f3 = returnlevelplot(fm)
-    f4 = histplot(fm)
+    f3 = histplot(fm)
+
+    if Extremes.getcovariatenumber(fm.model) > 0
+        f4 = plot()
+    else
+        f4 = histplot(fm)
+    end
 
     return gridstack([f1 f2; f3 f4])
 end
-
 
 
 """
