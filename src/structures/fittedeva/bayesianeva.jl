@@ -50,21 +50,21 @@ function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLe
 end
 
 """
-    returnlevel_cint(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
+    cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}};, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
 Compute the confidence interval for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
 
 """
-function returnlevel_cint(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
-      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+      @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
       # quantile level
-      p = 1-1/returnPeriod
+      p = 1-1/rl.returnperiod
 
-      Q = quantile(fm, p)
+      Q = quantile(rl.fittedmodel, p)
 
       # Compute the credible interval
 
@@ -106,8 +106,8 @@ function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobs
 end
 
 """
-    returnlevel_cint(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
-        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
+    cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, threshold::Real, nobservation::Int,
+        nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
 Compute the confidence interval for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with the confidence level `confidencelevel`.
@@ -115,19 +115,19 @@ Compute the confidence interval for the return level corresponding to the return
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function returnlevel_cint(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
-    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, threshold::Real, nobservation::Int,
+    nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
-    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+    @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
     # Exceedance probability
-    ζ = length(fm.model.data.value)/nobservation
+    ζ = length(rl.fittedmodel.model.data.value)/nobservation
 
     # Appropriate quantile level given the probability exceedance and the number of obs per year
-    p = 1-1/(returnPeriod * nobsperblock * ζ)
+    p = 1-1/(rl.returnperiod * nobsperblock * ζ)
 
-    Q = quantile(fm, p)
+    Q = quantile(rl.fittedmodel, p)
 
     # Compute the credible interval
 

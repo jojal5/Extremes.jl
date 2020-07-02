@@ -54,7 +54,6 @@ export
     # Return level
     ReturnLevel,
     returnlevel,
-    returnlevel_cint,
 
     # Diagnostic plots
     probplot_std_data,

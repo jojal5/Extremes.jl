@@ -21,10 +21,10 @@
 
         # 10-year return level
         R₁₀ = returnlevel(fm, 10)
-        R₁₀_cint = returnlevel_cint(fm, 10, 0.95)
+        R₁₀_cint = cint(R₁₀, 0.95)
         # 100-year return level
         R₁₀₀ = returnlevel(fm, 100)
-        R₁₀₀_cint = returnlevel_cint(fm, 100, 0.95)
+        R₁₀₀_cint = cint(R₁₀₀, 0.95)
 
         # Parameter estimates in Coles
         θ = [3.87; log(0.198); -0.050]

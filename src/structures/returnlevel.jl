@@ -1,5 +1,5 @@
-struct ReturnLevel
-      fittedmodel::fittedEVA
+struct ReturnLevel{T<:fittedEVA}
+      fittedmodel::T
       returnperiod::Real
       value::Vector{<:Real}
 end
