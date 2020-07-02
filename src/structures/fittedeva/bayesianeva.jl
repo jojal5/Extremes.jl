@@ -10,7 +10,7 @@ end
 
 Return the distributions for each MCMC iteration.
 """
-function getdistribution(fm::BayesianEVA)::Array{GeneralizedExtremeValue{Float64},2}
+function getdistribution(fm::BayesianEVA)::Array{<:ContinuousUnivariateDistribution,2}
 
     v = fm.sim.value[:,:,1]
 

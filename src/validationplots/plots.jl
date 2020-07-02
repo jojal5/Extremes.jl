@@ -251,9 +251,9 @@ end
 function histplot(fm::fittedEVA)::Plot
 
     dfs = histplot_data(fm)
-
     h = layer(dfs[:h], x = :Data, Geom.histogram(bincount=dfs[:nbin], density=true))
     d = layer(dfs[:d], x = :DataRange, y = :Density, Geom.line, Theme(default_color="red") )
+
     return plot(d,h, Coord.cartesian(xmin = dfs[:xmin], xmax = dfs[:xmax]), Guide.xlabel("Data"), Guide.ylabel("Density"), Guide.title("Density Plot"))
 
 end

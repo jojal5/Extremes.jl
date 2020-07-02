@@ -9,7 +9,7 @@ end
 """
 # TODO : desc
 """
-function standardize(fm::MaximumLikelihoodEVA{BlockMaxima})::Vector{<:Real}
+function standardize(fm::MaximumLikelihoodEVA)::Vector{<:Real}
 
     y = fm.model.data.value
     d = getdistribution(fm)
@@ -21,14 +21,22 @@ end
 """
 # TODO : desc
 """
-function standardize(fm::MaximumLikelihoodEVA{ThresholdExceedance})::Vector{<:Real}
+function standardize(fm::BayesianEVA)::Vector{<:Real}
+
+    θ̂ = Extremes.findposteriormode(fm)
+    dist = Extremes.getdistribution(fm.model, θ̂)
+
+    μ = location.(dist)
+    σ = scale.(dist)
+    ξ = shape.(dist)
 
     y = fm.model.data.value
-    d = getdistribution(fm)
 
-    return standardize.(y, 0, scale.(d), shape.(d))
+    z = Extremes.standardize.(y, μ, σ, ξ)
 
+    return z
 end
+
 
 """
 # TODO : desc

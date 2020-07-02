@@ -109,7 +109,7 @@
 
     end
 
-    @testset "mrl(y)" begin
+    @testset "mrlplot_data(y)" begin
 
         σ = 1.0
         ξ = 0.1
