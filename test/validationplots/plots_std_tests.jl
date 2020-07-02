@@ -38,7 +38,7 @@
 
     @testset "standarddist(fm)" begin
         # BlockMaxima standard distribution is Gumbel
-        dist = Extremes.standarddist(fmbm)
+        dist = Extremes.standarddist(fmbm.model)
 
         @test dist == Gumbel()
 
@@ -46,7 +46,7 @@
 
     @testset "standarddist(fm)" begin
         # ThresholdExceedance standard distribution is Exponential
-        dist = Extremes.standarddist(fmte)
+        dist = Extremes.standarddist(fmte.model)
 
         @test dist == Exponential()
 

@@ -33,14 +33,14 @@ end
 """
 # TODO : desc
 """
-function standarddist(fm::MaximumLikelihoodEVA{BlockMaxima})::Distribution
+function standarddist(::BlockMaxima)::Distribution
     return Gumbel()
 end
 
 """
 # TODO : desc
 """
-function standarddist(fm::MaximumLikelihoodEVA{ThresholdExceedance})::Distribution
+function standarddist(::ThresholdExceedance)::Distribution
     return Exponential()
 end
 
@@ -55,7 +55,7 @@ function probplot_std_data(fm::MaximumLikelihoodEVA)::DataFrame
 
     y, p̂ = ecdf(z)
 
-    return DataFrame(Model = cdf.(standarddist(fm), y), Empirical = p̂)
+    return DataFrame(Model = cdf.(standarddist(fm.model), y), Empirical = p̂)
 
 end
 
@@ -82,7 +82,7 @@ function qqplot_std_data(fm::MaximumLikelihoodEVA)::DataFrame
 
     y, p = ecdf(z)
 
-    return DataFrame(Model = quantile.(standarddist(fm), p), Empirical = y)
+    return DataFrame(Model = quantile.(standarddist(fm.model), p), Empirical = y)
 
 end
 
