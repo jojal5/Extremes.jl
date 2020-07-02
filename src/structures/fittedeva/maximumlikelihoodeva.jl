@@ -125,13 +125,13 @@ function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real):
 end
 
 """
-    returnlevel_cint(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+    returnlevel_cint(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
 Compute the confidence intervel for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
 
 """
-function returnlevel_cint(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+function returnlevel_cint(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -152,11 +152,7 @@ function returnlevel_cint(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::R
       a = quantile.(qdist,α/2)
       b = quantile.(qdist,1-α/2)
 
-      cint = slicematrix(hcat(a,b), dims=2)
-
-      res = ReturnLevel(fm, returnPeriod, q, cint)
-
-      return res
+      return slicematrix(hcat(a,b), dims=2)
 
 end
 
@@ -187,7 +183,7 @@ end
 
 """
     returnlevel_cint(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
-        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
 Compute the confidence intervel for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
@@ -196,7 +192,7 @@ The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
 function returnlevel_cint(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
-    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -208,7 +204,7 @@ function returnlevel_cint(fm::MaximumLikelihoodEVA{ThresholdExceedance}, thresho
     p = 1-1/(returnPeriod * nobsperblock * ζ)
 
     q = threshold .+ quantile(fm, p)
-
+    
     # Compute the credible interval
 
     α = (1 - confidencelevel)
@@ -220,7 +216,7 @@ function returnlevel_cint(fm::MaximumLikelihoodEVA{ThresholdExceedance}, thresho
     # This component seems to be forgoten by Coles (2001) in Section 4.4.1
 
     # Computing the variance corresponding to the other parameters
-    v₂ = Extremes.quantilevar(fm, p)
+    v₂ = quantilevar(fm, p)
 
     v = v₁ .+ v₂
 
@@ -229,11 +225,7 @@ function returnlevel_cint(fm::MaximumLikelihoodEVA{ThresholdExceedance}, thresho
     a = quantile.(qdist,α/2)
     b = quantile.(qdist,1-α/2)
 
-    cint = Extremes.slicematrix(hcat(a,b), dims=2)
-
-    res = ReturnLevel(fm, returnPeriod, q, cint)
-
-    return res
+    return slicematrix(hcat(a,b), dims=2)
 
 end
 

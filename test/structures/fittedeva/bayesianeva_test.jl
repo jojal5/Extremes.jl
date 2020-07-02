@@ -34,8 +34,7 @@
         # confidencelevel not in [0, 1]
         @test_throws AssertionError Extremes.returnlevel_cint(fm, 1, -1)
 
-        # Test with known values
-        @test returnlevel_cint(fm, 100, .95).value[] ≈ quantile(pd, 1-1/100)
+        # TODO: Test with known values
 
     end
 
@@ -70,8 +69,8 @@
         r = returnlevel_cint(fm, threshold, length(y), 1, 100, .95)
         q = quantile.(pd, 1-1/100)
 
-        @test r.cint[1][1] < q[1] < r.cint[1][2]  # Beginning of interval
-        @test r.cint[end][1] < q[end] < r.cint[end][2]  # End of interval
+        @test r[1][1] < q[1] < r[1][2]  # Beginning of interval
+        @test r[end][1] < q[end] < r[end][2]  # End of interval
 
     end
 
