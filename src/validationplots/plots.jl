@@ -49,6 +49,8 @@ end
 """
 function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
+    checkstationarity(fm.model)
+
     y, p̂ = ecdf(fm.model.data.value)
 
     dist = getdistribution(fm.model, fm.θ̂)[]
@@ -63,6 +65,8 @@ end
 # TODO : desc
 """
 function probplot_data(fm::pwmEVA)::DataFrame
+
+    checkstationarity(fm.model)
 
     y, p̂ = ecdf(fm.model.data.value)
 
@@ -213,9 +217,9 @@ end
 """
 function returnlevelplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
-    df = qqplot_data(fm)
-
     checkstationarity(fm.model)
+
+    df = qqplot_data(fm)
 
     y, p = ecdf(fm.model.data.value)
 
@@ -370,7 +374,7 @@ function diagnosticplots(fm::fittedEVA)::Gadfly.Compose.Context
     if getcovariatenumber(fm.model) > 0
         f4 = plot()
     else
-        f4 = histplot(fm)
+        f4 = returnlevelplot(fm)
     end
 
     return gridstack([f1 f2; f3 f4])
