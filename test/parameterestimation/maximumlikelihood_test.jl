@@ -60,11 +60,10 @@
 
         fm = Extremes.fit(model)
 
-        varM = Extremes.parametervar(fm)
-        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+        cinterval = cint(fm)
 
-        @test fm.θ̂ .- var <= θ
-        @test θ <= fm.θ̂ .+ var
+        @test [x[1] for x in cinterval] <= θ
+        @test θ <= [x[2] for x in cinterval]
 
         # non-stationary GEV fit by ML
         n = 5000
@@ -87,11 +86,10 @@
 
         fm = Extremes.fit(model)
 
-        varM = Extremes.parametervar(fm)
-        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+        cinterval = cint(fm)
 
-        @test fm.θ̂ .- var <= θ
-        @test θ <= fm.θ̂ .+ var
+        @test [x[1] for x in cinterval] <= θ
+        @test θ <= [x[2] for x in cinterval]
 
         # stationary GP fit by ML
         n = 5000
@@ -109,11 +107,10 @@
 
         fm = Extremes.fit(model)
 
-        varM = Extremes.parametervar(fm)
-        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+        cinterval = cint(fm)
 
-        @test fm.θ̂ .- var <= θ
-        @test θ <= fm.θ̂ .+ var
+        @test [x[1] for x in cinterval] <= θ
+        @test θ <= [x[2] for x in cinterval]
 
         # non-stationary GP fit by ML
         n = 5000
@@ -134,11 +131,10 @@
 
         fm = Extremes.fit(model)
 
-        varM = Extremes.parametervar(fm)
-        var = sqrt.([varM[i,i] for i in 1:length(θ)]) .* quantile(Normal(), 0.975)
+        cinterval = cint(fm)
 
-        @test fm.θ̂ .- var <= θ
-        @test θ <= fm.θ̂ .+ var
+        @test [x[1] for x in cinterval] <= θ
+        @test θ <= [x[2] for x in cinterval]
 
     end
 

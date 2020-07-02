@@ -18,11 +18,10 @@
 
         fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
-        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
-        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
+        cinterval = cint(fm)
 
-        @test infq <= θ
-        @test θ <= supq
+        @test [x[1] for x in cinterval] <= θ
+        @test θ <= [x[2] for x in cinterval]
 
         # non-stationary GEV Bayesian fit
         n = 5000
@@ -45,11 +44,10 @@
 
         fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
-        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
-        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
+        cinterval = cint(fm)
 
-        @test infq <= θ
-        @test θ <= supq
+        @test [x[1] for x in cinterval] <= θ
+        @test θ <= [x[2] for x in cinterval]
 
         # stationary GP bayes fit
         n = 5000
@@ -67,11 +65,10 @@
 
         fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
-        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
-        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
+        cinterval = cint(fm)
 
-        @test infq <= θ
-        @test θ <= supq
+        @test [x[1] for x in cinterval] <= θ
+        @test θ <= [x[2] for x in cinterval]
 
         # non-stationary GP Bayesian fit
         n = 5000
@@ -92,11 +89,10 @@
 
         fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
-        infq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.025)
-        supq = quantile!.([fm.sim.value[:,:,1][:,i] for i in 1:length(θ)], 0.975)
+        cinterval = cint(fm)
 
-        @test infq <= θ
-        @test θ <= supq
+        @test [x[1] for x in cinterval] <= θ
+        @test θ <= [x[2] for x in cinterval]
 
 end
 
