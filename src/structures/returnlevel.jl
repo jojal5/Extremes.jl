@@ -14,6 +14,5 @@ function Base.show(io::IO, obj::ReturnLevel)
     println(io, "ReturnLevel")
     println(io, "returnperiod :\t", obj.returnperiod)
     println(io, "value :\t\t", typeof(obj.value), "[", length(obj.value), "]")
-    println(io, "cint :\t\t", typeof(obj.cint), "[", length(obj.cint), "]")
 
 end
