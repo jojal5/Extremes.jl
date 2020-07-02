@@ -8,6 +8,9 @@
 
     fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y)), Mamba.Chains([100.0 log(5.0) .1]))
 
+    @testset "getdistribution(fittedmodel)" begin
+        @test Extremes.getdistribution(fm)[] == pd
+    end
 
     @testset "quantile(fm, p)" begin
         # p not in [0, 1] throws
@@ -92,6 +95,22 @@
         @test confint[1][1] < μ < confint[1][2]
         @test confint[2][1] < ϕ < confint[2][2]
         @test confint[3][1] < ξ < confint[3][2]
+
+    end
+
+    @testset "findposteriormode(fm::BayesianEVA)" begin
+
+        x = Variable("x", randn(10))
+        μ = 10 .+ x.value
+        σ = 1.0
+        ξ = .1
+        pd = GeneralizedExtremeValue.(μ, σ, ξ)
+        y = rand.(pd)
+        fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y), locationcov=[x]),
+            Mamba.Chains([10.0 1.0 0.0 .1; -10.0 1.0 0.0 .1; 20.0 1.0 0.0 .1]))
+
+        θ̂ = Extremes.findposteriormode(fm)
+        @test θ̂ ≈ [10.0; 1.0; 0.0; .1]
 
     end
 

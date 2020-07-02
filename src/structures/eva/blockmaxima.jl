@@ -83,7 +83,7 @@ end
 Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
 
 """
-function getdistribution(model::BlockMaxima, θ::Vector{<:Real})::Vector{<:Distribution}
+function getdistribution(model::BlockMaxima, θ::AbstractVector{<:Real})::Vector{<:Distribution}
 
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 

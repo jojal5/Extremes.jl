@@ -6,6 +6,25 @@ struct BayesianEVA{T<:EVA} <: fittedEVA
 end
 
 """
+    getdistribution(fittedmodel::bayesianEVA)::Vector{<:Distribution}
+
+Return the distributions for each MCMC iteration.
+"""
+function getdistribution(fm::BayesianEVA)::Array{<:ContinuousUnivariateDistribution,2}
+
+    v = fm.sim.value[:,:,1]
+
+    V = Extremes.slicematrix(v, dims=2)
+
+    D = Extremes.getdistribution.(fm.model, V)
+
+    d = Extremes.unslicematrix(D, dims=2)
+
+    return d
+
+end
+
+"""
     quantile(fm::BayesianEVA,p::Real)::Real
 
 Compute the quantile of level `p` from the fitted Bayesian model `fm`. If the
@@ -194,5 +213,24 @@ function cint(fm::BayesianEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
     end
 
     return credint
+
+end
+
+"""
+    findposteriormode(fm::BayesianEVA)::Vector{<:Real}
+
+Find the maximum a posteriori probability (MAP) estimate.
+"""
+function findposteriormode(fm::BayesianEVA)::Vector{<:Real}
+
+    θ = Extremes.slicematrix(fm.sim.value[:,:,1], dims=2)
+
+    ll = Extremes.loglike.(fm.model,θ)
+
+    ind = argmax(ll)
+
+    θ̂ = θ[ind]
+
+    return θ̂
 
 end
