@@ -107,7 +107,127 @@ function quantilevar(fm::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 
 end
 
+"""
+    returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
 
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+"""
+function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
+
+      @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+
+      # quantile level
+      p = 1-1/returnPeriod
+
+      return ReturnLevel(fm, returnPeriod, quantile(fm, p))
+
+end
+
+"""
+    cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
+
+Compute the confidence intervel for the return level corresponding to the return period
+`returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
+
+"""
+function cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
+
+      @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
+      @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+      # quantile level
+      p = 1-1/rl.returnperiod
+
+      q = quantile(rl.fittedmodel, p)
+
+      # Compute the credible interval
+
+      α = (1 - confidencelevel)
+
+      v = quantilevar(rl.fittedmodel,p)
+
+      qdist = Normal.(q,sqrt.(v))
+
+      a = quantile.(qdist,α/2)
+      b = quantile.(qdist,1-α/2)
+
+      return slicematrix(hcat(a,b), dims=2)
+
+end
+
+"""
+    returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+        nobsperblock::Int, returnPeriod::Real)::ReturnLevel
+
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+The threshold should be a scalar. A varying threshold is not yet implemented.
+
+"""
+function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+    nobsperblock::Int, returnPeriod::Real)::ReturnLevel
+
+    @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
+
+    # Exceedance probability
+    ζ = length(fm.model.data.value)/nobservation
+
+    # Appropriate quantile level given the probability exceedance and the number of obs per year
+    p = 1-1/(returnPeriod * nobsperblock * ζ)
+
+    return ReturnLevel(fm, returnPeriod, threshold .+ quantile(fm, p))
+
+end
+
+
+"""
+    cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, threshold::Real, nobservation::Int,
+        nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
+
+Compute the confidence intervel for the return level corresponding to the return period
+`returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
+
+The threshold should be a scalar. A varying threshold is not yet implemented.
+
+"""
+function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, threshold::Real, nobservation::Int,
+    nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
+
+    @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
+    @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
+
+    # Exceedance probability
+    ζ = length(rl.fittedmodel.model.data.value)/nobservation
+
+    # Appropriate quantile level given the probability exceedance and the number of obs per year
+    p = 1-1/(rl.returnperiod * nobsperblock * ζ)
+
+    q = threshold .+ quantile(rl.fittedmodel, p)
+
+    # Compute the credible interval
+
+    α = (1 - confidencelevel)
+
+    # Computing the variance corresponding to ζ
+    f(θ::Vector{<:Real}) = Extremes.quantile(rl.fittedmodel.model,fm.θ̂,1-1/(rl.returnperiod * nobsperblock * θ[]))[]
+    v₁ = (ForwardDiff.gradient(f, [ζ])[])^2*ζ*(1-ζ)/nobservation
+
+    # This component seems to be forgoten by Coles (2001) in Section 4.4.1
+
+    # Computing the variance corresponding to the other parameters
+    v₂ = quantilevar(rl.fittedmodel, p)
+
+    v = v₁ .+ v₂
+
+    qdist = Normal.(q,sqrt.(v))
+
+    a = quantile.(qdist,α/2)
+    b = quantile.(qdist,1-α/2)
+
+    return slicematrix(hcat(a,b), dims=2)
+
+end
 
 """
     showfittedEVA(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
