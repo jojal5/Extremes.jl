@@ -38,9 +38,6 @@ export
     MaximumLikelihoodEVA,
     BayesianEVA,
 
-    # Other types
-    ReturnLevel,
-
     # Data related functions
     load,
     getcluster,
@@ -54,8 +51,9 @@ export
     gpfitpwm,
     cint,
 
-    # Other functions
-    returnlevel, parametervar,
+    # Return level
+    ReturnLevel,
+    returnlevel,
 
     # Diagnostic plots
     probplot_std_data,

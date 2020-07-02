@@ -15,15 +15,6 @@
 
     end
 
-    @testset "Base.show(io, obj)" begin
-        # Print ReturnLevel does not throw
-        fmb = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", [100.0])), Mamba.Chains([100.0 log(5.0) .1]))
-        rl = ReturnLevel(fmb, 10, [1.0], [[0.9, 1.1]])
-        buffer = IOBuffer()
-        @test_logs Base.show(buffer, rl)
-
-    end
-
     include(joinpath("fittedeva", "bayesianeva_test.jl"))
     include(joinpath("fittedeva", "maximumlikelihoodeva_test.jl"))
     include(joinpath("fittedeva", "pwmeva_test.jl"))

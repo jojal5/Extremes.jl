@@ -14,6 +14,7 @@ function Base.show(io::IO, obj::fittedEVA)
 
 end
 
+include("returnlevel.jl")
 include(joinpath("fittedeva", "bayesianeva.jl"))
 include(joinpath("fittedeva", "maximumlikelihoodeva.jl"))
 include(joinpath("fittedeva", "pwmeva.jl"))
