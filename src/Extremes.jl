@@ -38,9 +38,6 @@ export
     MaximumLikelihoodEVA,
     BayesianEVA,
 
-    # Other types
-    ReturnLevel,
-
     # Data related functions
     load,
     getcluster,
