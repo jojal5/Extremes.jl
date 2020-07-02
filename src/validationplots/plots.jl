@@ -17,22 +17,6 @@ function probplot(fm::fittedEVA)::Plot
 end
 
 
-"""
-# TODO : desc
-"""
-function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
-
-    checkstationarity(fm.model)
-
-    y, p̂ = ecdf(fm.model.data.value)
-
-    dist = getdistribution(fm.model, fm.θ̂)[]
-
-    p = cdf.(dist, y)
-
-    return DataFrame(Model = p, Empirical = p̂)
-
-end
 
 """
 # TODO : desc
@@ -59,6 +43,37 @@ function probplot_data(fm::BayesianEVA)::DataFrame
     return DataFrame(Model = p, Empirical = p̂)
 
 end
+
+"""
+# TODO : desc
+"""
+function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
+
+    y, p̂ = ecdf(fm.model.data.value)
+
+    dist = getdistribution(fm.model, fm.θ̂)[]
+
+    p = cdf.(dist, y)
+
+    return DataFrame(Model = p, Empirical = p̂)
+
+end
+
+"""
+# TODO : desc
+"""
+function probplot_data(fm::pwmEVA)::DataFrame
+
+    y, p̂ = ecdf(fm.model.data.value)
+
+    dist = getdistribution(fm.model, fm.θ̂)[]
+
+    p = cdf.(dist, y)
+
+    return DataFrame(Model = p, Empirical = p̂)
+
+end
+
 
 
 
