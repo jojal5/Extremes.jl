@@ -68,18 +68,6 @@
         # Returns a dataframe with n values in column Empirical with ThresholdExceedance
         @test length(dfte[:, :Empirical]) == n
 
-        # Info for stationary model but does not throw
-        @test_logs (:info, "The graph is optimized for non-stationary models and the model provided is not.") probplot_std_data(fms)
-
-    end
-
-    @testset "probplot_std(fm)" begin
-        # Plot does not throw with BlockMaxima
-        @test_logs Extremes.probplot_std(fmbm)
-
-        # Plot does not throw with ThresholdExceedance
-        @test_logs Extremes.probplot_std(fmte)
-
     end
 
     @testset "qqplot_std_data(fm)" begin
@@ -97,27 +85,6 @@
 
         # Returns a dataframe with n values in column Empirical with ThresholdExceedance
         @test length(dfte[:, :Empirical]) == n
-
-        # Info for stationary model but does not throw
-        @test_logs (:info, "The graph is optimized for non-stationary models and the model provided is not.") qqplot_std_data(fms)
-
-    end
-
-    @testset "qqplot_std(fm)" begin
-        # Plot does not throw with BlockMaxima
-        @test_logs Extremes.qqplot_std(fmbm)
-
-        # Plot does not throw with ThresholdExceedance
-        @test_logs Extremes.qqplot_std(fmte)
-
-    end
-
-    @testset "diagnosticplots_std(fm)" begin
-        # Plots do not throw with BlockMaxima
-        @test_logs Extremes.diagnosticplots_std(fmbm)
-
-        # Plots do not throw with ThresholdExceedance
-        @test_logs Extremes.diagnosticplots_std(fmte)
 
     end
 
