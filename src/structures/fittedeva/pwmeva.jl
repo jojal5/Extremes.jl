@@ -5,6 +5,22 @@ struct pwmEVA{T<:EVA, U<:Distribution} <: fittedEVA
     θ̂::Vector{Float64}
 end
 
+"""
+    getdistribution(fittedmodel::pwmEVA)::Vector{<:Distribution}
+
+Return the fitted distribution for the model fitted with the probability weigthed moments.
+
+"""
+function getdistribution(fittedmodel::pwmEVA)::Vector{<:Distribution}
+
+    model = fittedmodel.model
+    θ̂ = fittedmodel.θ̂
+
+    res = getdistribution(model, θ̂)
+
+    return res
+
+end
 
 """
     quantile(fm::pwmEVA, p::Real)::Vector{<:Real}

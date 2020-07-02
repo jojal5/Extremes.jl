@@ -17,9 +17,6 @@
         # Returns a dataframe with n values in column Empirical
         @test length(df[:, :Empirical]) == n
 
-        # Info for non-stationary model but does not throw
-        @test_logs (:info, "The graph is optimized for stationary models and the model provided is not.") probplot_data(fmns)
-
     end
 
     @testset "probplot(fm)" begin
@@ -59,9 +56,6 @@
 
         # Returns a dataframe with n values in column Level
         @test length(df[:, :Level]) == n
-
-        # Info for non-stationary model but does not throw
-        @test_logs (:info, "The graph is optimized for stationary models and the model provided is not.") returnlevelplot_data(fmns)
 
     end
 
@@ -109,7 +103,7 @@
 
     end
 
-    @testset "mrl(y)" begin
+    @testset "mrlplot_data(y)" begin
 
         σ = 1.0
         ξ = 0.1

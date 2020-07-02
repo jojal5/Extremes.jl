@@ -8,6 +8,10 @@
 
     fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", y)), [θ[1]; log(θ[2]); θ[3]])
 
+    @testset "getdistribution(fittedmodel)" begin
+        @test Extremes.getdistribution(fm)[] == pd
+    end
+
     @testset "quantile(fm, p)" begin
         # p outside of [0, 1] throws
         @test_throws AssertionError Extremes.quantile(fm, -1)
@@ -80,36 +84,35 @@
 
     end
 
-end
+    @testset "cint(fm::pwmEVA)" begin
 
+        μ, ϕ, ξ = 100, log(5), .1
+        y = rand(GeneralizedExtremeValue(μ,exp(ϕ), ξ), 1000)
 
-@testset "cint(fm::pwmEVA)" begin
+        fm = gevfitpwm(y)
 
-    μ, ϕ, ξ = 100, log(5), .1
-    y = rand(GeneralizedExtremeValue(μ,exp(ϕ), ξ), 1000)
+        @test_throws AssertionError cint(fm, 1.95)
+        @test_throws AssertionError cint(fm, -1.95)
+        @test_throws AssertionError cint(fm, .95, -10)
 
-    fm = gevfitpwm(y)
+        confint = cint(fm)
 
-    @test_throws AssertionError cint(fm, 1.95)
-    @test_throws AssertionError cint(fm, -1.95)
-    @test_throws AssertionError cint(fm, .95, -10)
+        @test confint[1][1] < μ < confint[1][2]
+        @test confint[2][1] < ϕ < confint[2][2]
+        @test confint[3][1] < ξ < confint[3][2]
 
-    confint = cint(fm)
+        confint = cint(fm, .99)
 
-    @test confint[1][1] < μ < confint[1][2]
-    @test confint[2][1] < ϕ < confint[2][2]
-    @test confint[3][1] < ξ < confint[3][2]
+        @test confint[1][1] < μ < confint[1][2]
+        @test confint[2][1] < ϕ < confint[2][2]
+        @test confint[3][1] < ξ < confint[3][2]
 
-    confint = cint(fm, .99)
+        confint = cint(fm, .99, 1000)
 
-    @test confint[1][1] < μ < confint[1][2]
-    @test confint[2][1] < ϕ < confint[2][2]
-    @test confint[3][1] < ξ < confint[3][2]
+        @test confint[1][1] < μ < confint[1][2]
+        @test confint[2][1] < ϕ < confint[2][2]
+        @test confint[3][1] < ξ < confint[3][2]
 
-    confint = cint(fm, .99, 1000)
-
-    @test confint[1][1] < μ < confint[1][2]
-    @test confint[2][1] < ϕ < confint[2][2]
-    @test confint[3][1] < ξ < confint[3][2]
+    end
 
 end

@@ -16,31 +16,31 @@
 
     end
 
-    @testset "checkstationarity(fm)" begin
+    @testset "checkstationarity(m)" begin
         y = Variable("y", collect(1:10))
 
         sfm = MaximumLikelihoodEVA(BlockMaxima(y), [1.0, 1.0 ,0.0])
         nsfm = MaximumLikelihoodEVA(BlockMaxima(y, logscalecov = [y]), [1.0, 1.0, 1.0 ,0.0])
 
         # Model stationary and shouldbestationary no info
-        @test_logs Extremes.checkstationarity(sfm)
+        @test_logs Extremes.checkstationarity(sfm.model)
 
         # Model non-stationary and shouldbestationary info
-        @test_logs (:info, "The graph is optimized for stationary models and the model provided is not.") Extremes.checkstationarity(nsfm)
+        @test_logs (:info, "The graph is optimized for stationary models and the model provided is not.") Extremes.checkstationarity(nsfm.model)
 
     end
 
-    @testset "checknonstationarity(fm)" begin
+    @testset "checknonstationarity(m)" begin
         y = Variable("y", collect(1:10))
 
         sfm = MaximumLikelihoodEVA(BlockMaxima(y), [1.0, 1.0 ,0.0])
         nsfm = MaximumLikelihoodEVA(BlockMaxima(y, logscalecov = [y]), [1.0, 1.0, 1.0 ,0.0])
 
         # Model stationary and !shouldbestationary info
-        @test_logs (:info, "The graph is optimized for non-stationary models and the model provided is not.") Extremes.checknonstationarity(sfm)
+        @test_logs (:info, "The graph is optimized for non-stationary models and the model provided is not.") Extremes.checknonstationarity(sfm.model)
 
         # Model non-stationary and !shouldbestationary no info
-        @test_logs Extremes.checknonstationarity(nsfm)
+        @test_logs Extremes.checknonstationarity(nsfm.model)
 
     end
 
