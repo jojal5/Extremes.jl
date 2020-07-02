@@ -62,8 +62,7 @@
         q = quantile(pd, 1-1/100)
 
         # Test with known values
-        @test r.value[] ≈ q rtol = .05
-        @test r.cint[][1] < q < r.cint[][2]
+        @test r[][1] < q < r[][2]
     end
 
     @testset "returnlevel(fm, returnPeriod)" begin
@@ -102,8 +101,7 @@
         q = quantile(pd, 1-1/100)
 
         # Test with known values
-        @test r.value[] ≈ q rtol = .05
-        @test r.cint[][1] < q < r.cint[][2]
+        @test r[][1] < q < r[][2]
     end
 
 

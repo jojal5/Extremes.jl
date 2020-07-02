@@ -158,20 +158,18 @@ function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPer
 end
 
 """
-    returnlevel_cint(fm::pwmEVA{BlockMaxima}, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+    returnlevel_cint(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel_cint(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+function returnlevel_cint(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
       # quantile level
       p = 1-1/returnPeriod
-
-      q = quantile(fm, p)
 
       # Compute the credible interval
 
@@ -191,11 +189,7 @@ function returnlevel_cint(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, retu
           qboot[i] = quantile(fm.model, θ̂, p)[]
       end
 
-      confint = quantile(qboot,[α/2, 1-α/2])
-
-      res = ReturnLevel(fm, returnPeriod, q, [confint])
-
-      return res
+      return [quantile(qboot,[α/2, 1-α/2])]
 
 end
 
@@ -224,8 +218,8 @@ function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, t
 end
 
 """
-    returnlevel_cint(fm::pwmEVA{ThresholdExceedance}, threshold::Vector{<:Real}, nobservation::Int,
-        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+    returnlevel_cint(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
+        nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
 Compute the confidence intervel for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
@@ -234,7 +228,7 @@ The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
 function returnlevel_cint(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
-    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::ReturnLevel
+    nobsperblock::Int, returnPeriod::Real, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -244,8 +238,6 @@ function returnlevel_cint(fm::pwmEVA{ThresholdExceedance, T} where T<:Distributi
 
     # Appropriate quantile level given the probability exceedance and the number of obs per year
     p = 1-1/(returnPeriod * nobsperblock * ζ)
-
-    q = threshold .+ quantile(fm, p)
 
     # Compute the credible interval
 
@@ -265,11 +257,7 @@ function returnlevel_cint(fm::pwmEVA{ThresholdExceedance, T} where T<:Distributi
         qboot[i] = quantile(fm.model, θ̂, p)[]
     end
 
-    confint = threshold .+ quantile(qboot,[α/2, 1-α/2])
-
-    res = ReturnLevel(fm, returnPeriod, q, [confint])
-
-    return res
+    return [threshold .+ quantile(qboot,[α/2, 1-α/2])]
 
 end
 
