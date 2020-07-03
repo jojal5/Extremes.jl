@@ -11,7 +11,8 @@ makedocs(sitename = "Extremes.jl",
        "index.md",
        "Tutorial" =>["Getting Started" => "tutorial/index.md",
             "Block maxima model" => "tutorial/BlockMaxima.md",
-            "Threshold Exceedance" => "tutorial/ThresholdExceedance.md"],
+            "Threshold Exceedance" => "tutorial/ThresholdExceedance.md",
+            "Declustering" => "tutorial/Declustering.md"],
        "contributing.md",
        "functions.md"
        ]
