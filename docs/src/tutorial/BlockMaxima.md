@@ -8,18 +8,15 @@ using Extremes, DataFrames, Distributions, Gadfly
 ```
 
 The *Extremes.jl* package supports maximum likelihood inference, Bayesian inference and inference based on the probability weigthed moments. For the GEV parameter estimation, the following functions can be used:
-- [`gevfitpwm`](@ref): estimation with probability weighted moments;
-- [`gevfit`](@ref): estimation with maximum likelihood;
-- [`gevfitbayes`](@ref): estimation with the Bayesian method.
+- [`gevfitpwm`](@ref): estimation with the probability weighted moments;
+- [`gevfit`](@ref): maximum likelihood estimation;
+- [`gevfitbayes`](@ref): Bayesian estimation.
 
-These functions return a `fittedEVA` type that can be used by all the other functions presented in this tutorial.
 
 !!! note "Log-scale paremeter"
 
     These functions return the estimate of the log-scale parameter $\phi = \log \sigma$.
 
-
-In this example, the data are contained in a *DataFrame*. The fit functions can be called using the DataFrame as the first argument and the data column symbol as the second argument.
 
 ## Load the data
 
@@ -38,7 +35,7 @@ plot(data, x=:Year, y=:SeaLevel, Geom.line)
 ## Maximum likelihood inference
 
 
-### GEV parameters estimation
+### GEV parameter estimation
 
 The GEV parameter estimation with maximum likelihood is performed with the [`gevfit`](@ref) function:
 
@@ -56,7 +53,7 @@ The approximate covariance matrix of the parameter estimates can be obtained wit
 parametervar(fm)
 ```
 
-Confidence intervals on the parameter estimates can be obtained with the [`cint`](@ref) function:
+Confidence intervals for the parameters are obtained with the [`cint`](@ref) function:
 ```@repl portpirie
 cint(fm)
 ```
@@ -112,9 +109,11 @@ c[]
 
 ## Bayesian Inference
 
-### GEV parameters estimation
+Most functions described in the previous sections also work in the Bayesian context.
 
-The GEV parameter estimation with the Bayesian method is performed with the [`gevfitbayes`](@ref) function:
+### GEV parameter estimation
+
+The Bayesian GEV parameter estimation is performed with the [`gevfitbayes`](@ref) function:
 
 ```@repl portpirie
 fm = gevfitbayes(data, :SeaLevel)
@@ -130,70 +129,21 @@ fm = gevfitbayes(data, :SeaLevel)
 
     Currently, the No-U-Turn Sampler extension ([Hoffman and Gelman, 2014](http://jmlr.org/papers/v15/hoffman14a.html)) to Hamiltonian Monte Carlo ([Neel, 2011, Chapter 5](https://www.mcmchandbook.net/)) is implemented for simulating an autocorrelated sample from the posterior distribution.
 
+The generated sample from the posterior distribution is contained in the field `sim` of the fitted structure. It is an object of type *Chains* from the [*Mamba.jl*](https://mambajl.readthedocs.io/en/latest/index.html) package.
 
-The approximate covariance matrix of the parameter estimates can be obtained with the  [`parametervar`](@ref) function:
-```@repl portpirie
-parametervar(fm)
-```
-
-Confidence intervals on the parameter estimates can be obtained with the [`cint`](@ref) function:
+Credible intervals for the parameters are obtained with the [`cint`](@ref) function:
 ```@repl portpirie
 cint(fm)
 ```
 
-### Diagnostic plots
-
-Several diagnostic plots for assessing the accuracy of the GEV model fitted to the Port Pirie data are can be shown with the [`diagnosticplots`](@ref)function:
-
-```@example portpirie
-set_default_plot_size(21cm ,16cm)
-diagnosticplots(fm)
-```
-
-The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
-
-
-### Return level estimation
-
-*T*-year return level estimate can be obtained using the function [`returnlevel`](@ref) on a `fittedEVA` object. The first argument is the fitted model, the second is the return period in years and the last one is the confidence level for computing the confidence interval.
-
-For example, the 100-year return level for the Port Pirie block maxima model and the corresponding 95% confidence interval can be estimated with this commands:
-
-```@repl portpirie
-r = returnlevel(fm, 100)
-```
-
-where the return value can be accessed with
-```@repl portpirie
-r.value
-```
-
-and where the corresponding confidence interval can be computed with the [`cint`](@ref) function:
-```@repl portpirie
-c = cint(r)
-```
-
-!!! note "Type-stable function"
-
-    In this example of a stationary model, the function returns a unit dimension vector for the return level and a vector containing only one vector for the confidence interval. The reason is that the function always returns the same type in the stationary and non-stationary case. The function is therefore [type-stable](https://docs.julialang.org/en/v1/manual/performance-tips/index.html#Write-%22type-stable%22-functions-1) allowing better performance of code execution.  
-
-To get the scalar return level in the stationary case, the following command can be used:
-```@repl portpirie
-r.value[]
-```
-
-To get the scalar confidence interval in the stationary case, the following command can be used:
-```@repl portpirie
-c[]
-```
-
-
 
 ## Inference based on the probability weighted moments
 
-### GEV parameters estimation
+Most functions described in the previous sections also work for the model fitted with the probability weighted moments.
 
-The parameter estimation with the probability weighted moments method is performed with the [`gevfitpwm`](@ref) function:
+### GEV parameter estimation
+
+The parameter estimation based on the probability weighted moments is performed with the [`gevfitpwm`](@ref) function:
 
 ```@repl portpirie
 fm = gevfitpwm(data, :SeaLevel)
@@ -207,50 +157,4 @@ parametervar(fm)
 Confidence intervals on the parameter estimates using a bootstrap procedure can be obtained with the [`cint`](@ref) function:
 ```@repl portpirie
 cint(fm)
-```
-
-### Diagnostic plots
-
-Several diagnostic plots for assessing the accuracy of the GEV model fitted to the Port Pirie data are can be shown with the [`diagnosticplots`](@ref)function:
-
-```@example portpirie
-set_default_plot_size(21cm ,16cm)
-diagnosticplots(fm)
-```
-
-The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
-
-
-### Return level estimation
-
-*T*-year return level estimate can be obtained using the function [`returnlevel`](@ref) on a `fittedEVA` object. The first argument is the fitted model, the second is the return period in years and the last one is the confidence level for computing the confidence interval.
-
-For example, the 100-year return level for the Port Pirie block maxima model and the corresponding 95% confidence interval can be estimated with this commands:
-
-```@repl portpirie
-r = returnlevel(fm, 100)
-```
-
-where the return value can be accessed with
-```@repl portpirie
-r.value
-```
-
-and where the corresponding confidence interval can be computed with the [`cint`](@ref) function:
-```@repl portpirie
-c = cint(r)
-```
-
-!!! note "Type-stable function"
-
-    In this example of a stationary model, the function returns a unit dimension vector for the return level and a vector containing only one vector for the confidence interval. The reason is that the function always returns the same type in the stationary and non-stationary case. The function is therefore [type-stable](https://docs.julialang.org/en/v1/manual/performance-tips/index.html#Write-%22type-stable%22-functions-1) allowing better performance of code execution.  
-
-To get the scalar return level in the stationary case, the following command can be used:
-```@repl portpirie
-r.value[]
-```
-
-To get the scalar confidence interval in the stationary case, the following command can be used:
-```@repl portpirie
-c[]
 ```
