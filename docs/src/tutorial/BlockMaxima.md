@@ -1,7 +1,7 @@
 
 # Block Maxima Model
 
-The stationary [`BlockMaxima`](@ref) model is illustrated using the annual maximum sea-levels recorded at Port Pirie in South Australia from 1923 to 1987, studied by Coles (2001) in Chapter 3.
+The stationary [`BlockMaxima`](@ref) model is illustrated using the annual maximum sea-levels recorded at Port Pirie in South Australia from 1923 to 1987, studied by Coles (2001) in Chapter 3. The annual maxima are assumed **independent and identically distributed**.
 
 ```@setup portpirie
 using Extremes, DataFrames, Distributions, Gadfly
@@ -12,7 +12,7 @@ The *Extremes.jl* package supports maximum likelihood inference, Bayesian infere
 - [`gevfit`](@ref): estimation with maximum likelihood;
 - [`gevfitbayes`](@ref): estimation with the Bayesian method.
 
-These functions return a `fittedEVA` type that can be used by all the other functions presented in this tutorial. The parameters estimates are contained in the field `θ̂` of this structure.
+These functions return a `fittedEVA` type that can be used by all the other functions presented in this tutorial.
 
 !!! note "Log-scale paremeter"
 
@@ -29,7 +29,7 @@ data = load("portpirie")
 first(data,5)
 ```
 
-The loaded data are contained in a Dataframe. The annual maxima can be shown as a function of the year using the Gadfly package:
+The annual maxima can be shown as a function of the year using the Gadfly package:
 ```@example portpirie
 set_default_plot_size(12cm, 8cm)
 plot(data, x=:Year, y=:SeaLevel, Geom.line)
@@ -46,6 +46,9 @@ The GEV parameter estimation with maximum likelihood is performed with the [`gev
 fm = gevfit(data, :SeaLevel)
 ```
 
+!!! note
+    In this example, the [`gevfit`](@ref) function is called using the data *DataFrame* structure as the first argument. The function can also be called using the vector of maxima as the first argument, *e.g.* `gevfit(data[:,:SeaLevel])`.
+
 The vector of the parameter estimates ``\hat\mathbf{\theta} = (μ̂,\, ϕ̂,\, ξ̂)^\top`` is contained in the field `θ̂` of the structure `fm:<fittedEVA`.
 
 The approximate covariance matrix of the parameter estimates can be obtained with the  [`parametervar`](@ref) function:
@@ -58,6 +61,11 @@ Confidence intervals on the parameter estimates can be obtained with the [`cint`
 cint(fm)
 ```
 
+For instance, the shape parameter 95% confidence interval is as follows:
+```@repl portpirie
+cint(fm)[3]
+```
+
 ### Diagnostic plots
 
 Several diagnostic plots for assessing the accuracy of the GEV model fitted to the Port Pirie data are can be shown with the [`diagnosticplots`](@ref) function:
@@ -67,27 +75,24 @@ set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm)
 ```
 
-The diagnostic plots consist in the probability plot (upper left panel), quantile plot (upper right panel), return level plot (lower left panel) and the density plot (lower right panel). These plots can be displayed separately using respectively the functions [`probplot`](@ref), [`qqplot`](@ref), [`returnlevelplot`](@ref) and [`histplot`](@ref).
+The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
 
 
 ### Return level estimation
 
-*T*-year return level estimate can be obtained using the function [`returnlevel`](@ref) on a `fittedEVA` object. The first argument is the fitted model, the second is the return period in years and the last one is the confidence level for computing the confidence interval.
-
-For example, the 100-year return level for the Port Pirie block maxima model and the corresponding 95% confidence interval can be estimated with this commands:
-
+*T*-year return level estimate can be obtained using the [`returnlevel`](@ref) function. For example, the 100-year return level for the Port Pirie block maxima model is computed as follows:
 ```@repl portpirie
-r = returnlevel(fm, 100, .95)
+r = returnlevel(fm, 100)
 ```
 
-where the return value can be accessed with
+The return level can be accessed as follows:
 ```@repl portpirie
 r.value
 ```
 
-and where the corresponding confidence interval can be accessed with
+The corresponding confidence interval can be computed with the [`cint`](@ref) function:
 ```@repl portpirie
-r.cint
+c = cint(r)
 ```
 
 !!! note "Type-stable function"
@@ -101,7 +106,7 @@ r.value[]
 
 To get the scalar confidence interval in the stationary case, the following command can be used:
 ```@repl portpirie
-r.cint[]
+c[]
 ```
 
 
@@ -145,7 +150,7 @@ set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm)
 ```
 
-The diagnostic plots consist in the probability plot (upper left panel), quantile plot (upper right panel), return level plot (lower left panel) and the density plot (lower right panel). These plots can be displayed separately using respectively the functions [`probplot`](@ref), [`qqplot`](@ref), [`returnlevelplot`](@ref) and [`histplot`](@ref).
+The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
 
 
 ### Return level estimation
@@ -155,7 +160,7 @@ The diagnostic plots consist in the probability plot (upper left panel), quantil
 For example, the 100-year return level for the Port Pirie block maxima model and the corresponding 95% confidence interval can be estimated with this commands:
 
 ```@repl portpirie
-r = returnlevel(fm, 100, .95)
+r = returnlevel(fm, 100)
 ```
 
 where the return value can be accessed with
@@ -163,9 +168,9 @@ where the return value can be accessed with
 r.value
 ```
 
-and where the corresponding confidence interval can be accessed with
+and where the corresponding confidence interval can be computed with the [`cint`](@ref) function:
 ```@repl portpirie
-r.cint
+c = cint(r)
 ```
 
 !!! note "Type-stable function"
@@ -179,7 +184,7 @@ r.value[]
 
 To get the scalar confidence interval in the stationary case, the following command can be used:
 ```@repl portpirie
-r.cint[]
+c[]
 ```
 
 
@@ -213,7 +218,7 @@ set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm)
 ```
 
-The diagnostic plots consist in the probability plot (upper left panel), quantile plot (upper right panel), return level plot (lower left panel) and the density plot (lower right panel). These plots can be displayed separately using respectively the functions [`probplot`](@ref), [`qqplot`](@ref), [`returnlevelplot`](@ref) and [`histplot`](@ref).
+The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
 
 
 ### Return level estimation
@@ -223,7 +228,7 @@ The diagnostic plots consist in the probability plot (upper left panel), quantil
 For example, the 100-year return level for the Port Pirie block maxima model and the corresponding 95% confidence interval can be estimated with this commands:
 
 ```@repl portpirie
-r = returnlevel(fm, 100, .95)
+r = returnlevel(fm, 100)
 ```
 
 where the return value can be accessed with
@@ -231,9 +236,9 @@ where the return value can be accessed with
 r.value
 ```
 
-and where the corresponding confidence interval can be accessed with
+and where the corresponding confidence interval can be computed with the [`cint`](@ref) function:
 ```@repl portpirie
-r.cint
+c = cint(r)
 ```
 
 !!! note "Type-stable function"
@@ -247,5 +252,5 @@ r.value[]
 
 To get the scalar confidence interval in the stationary case, the following command can be used:
 ```@repl portpirie
-r.cint[]
+c[]
 ```
