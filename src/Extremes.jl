@@ -51,14 +51,12 @@ export
     gpfitpwm,
     cint,
 
-<<<<<<< HEAD
-    # Other functions
-    returnlevel, parametervar,
-=======
+    # Parameter function
+    parametervar,
+
     # Return level
     ReturnLevel,
     returnlevel,
->>>>>>> 8fd5599587e6858225434d1d75a747abde495625
 
     # Diagnostic plots
     probplot_std_data,
