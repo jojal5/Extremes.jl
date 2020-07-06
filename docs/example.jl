@@ -1,4 +1,4 @@
-using Extremes, DataFrames, Distributions, Gadfly, Dates
+using Extremes, DataFrames, Distributions, Gadfly, Dates. Mamba
 
 data = load("wooster")
 
@@ -57,3 +57,17 @@ cluster = getcluster(df[:,:Variation], threshold, runlength=4)
 z = maximum.(cluster) .- threshold
 
 fm = gpfit(z)
+
+
+data = load("fremantle")
+
+fm = gevfitbayes(data, :SeaLevel, locationcovid = [:Year, :SOI])
+
+p = plot(fm.sim[:,1,1])
+
+p[2]
+
+
+p = plot(fm.sim)
+
+hstack([p[1], p[2]])

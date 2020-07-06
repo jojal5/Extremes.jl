@@ -1,4 +1,4 @@
-using Documenter, Extremes, DataFrames, Cairo, Fontconfig
+using Documenter, Extremes, Cairo, Fontconfig
 
 CI = get(ENV, "CI", nothing) == "true"
 
@@ -13,7 +13,8 @@ makedocs(sitename = "Extremes.jl",
             "Block maxima" => "tutorial/BlockMaxima.md",
             "Threshold exceedance" => "tutorial/ThresholdExceedance.md",
             "Declustering" => "tutorial/Declustering.md",
-            "Non-stationary block maxima" => "tutorial/blockmaxima_ns.md",],
+            "Non-stationary block maxima" => "tutorial/blockmaxima_ns.md",
+            "Non-stationary threshold exceedance" => "tutorial/thresholdexceedance_ns.md"],
        "contributing.md",
        "functions.md"
        ]

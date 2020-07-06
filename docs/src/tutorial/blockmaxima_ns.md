@@ -1,10 +1,10 @@
 
 # Non-Stationary Block Maxima Model
 
-In the non-stationary block maxima model, the GEV parameters are allowed to be a function of covariates:
-- ``μ = X₁ × β₁``
-- ``ϕ = X₂ × β₂``
-- ``ξ = X₃ × β₃``
+In the non-stationary block maxima model, the GEV parameters are allowed to be functions of multiple covariates:
+
+\\[ μ = X₁ × β₁ \\\ ϕ = X₂ × β₂ \\\  ξ = X₃ × β₃ \\]
+
 where ``(X₁,β₁)``, ``(X₂,β₂)`` and ``(X₃,β₃)`` are respectively the design matrix and the corresponding coefficient parameter vector of ``μ``, ``ϕ`` and ``ξ``.
 
 !!! note "Intercept"
@@ -135,49 +135,14 @@ Most functions described in the previous sections also work in the Bayesian cont
 
 The Bayesian GEV parameter estimation is performed with the [`gevfitbayes`](@ref) function:
 
-```@repl portpirie
-fm = gevfitbayes(data, :SeaLevel)
+```@repl fremantle
+fm = gevfitbayes(data, :SeaLevel, locationcovid = [:Year, :SOI])
 ```
 
 !!! note "Prior"
 
     Currently, only the improper uniform prior is implemented, *i.e.*
-    \\[ f_{(μ,ϕ,ξ)}(μ,ϕ,ξ) ∝ 1. \\]
-    It yields to a proper posterior as long as the sample size is larger than 3 ([Northrop and Attalides, 2016](https://www.jstor.org/stable/24721296?seq=1)).
-
-!!! note "Sampling scheme"
-
-    Currently, the No-U-Turn Sampler extension ([Hoffman and Gelman, 2014](http://jmlr.org/papers/v15/hoffman14a.html)) to Hamiltonian Monte Carlo ([Neel, 2011, Chapter 5](https://www.mcmchandbook.net/)) is implemented for simulating an autocorrelated sample from the posterior distribution.
-
-The generated sample from the posterior distribution is contained in the field `sim` of the fitted structure. It is an object of type *Chains* from the [*Mamba.jl*](https://mambajl.readthedocs.io/en/latest/index.html) package.
-
-Credible intervals for the parameters are obtained with the [`cint`](@ref) function:
-```@repl portpirie
-cint(fm)
-```
-
-
-## Inference based on the probability weighted moments
-
-Most functions described in the previous sections also work for the model fitted with the probability weighted moments.
-
-### GEV parameter estimation
-
-The parameter estimation based on the probability weighted moments is performed with the [`gevfitpwm`](@ref) function:
-
-```@repl portpirie
-fm = gevfitpwm(data, :SeaLevel)
-```
-
-The approximate covariance matrix of the parameter estimates using a bootstrap procedure can be obtained with the [`parametervar`](@ref) function:
-```@repl portpirie
-parametervar(fm)
-```
-
-Confidence intervals on the parameter estimates using a bootstrap procedure can be obtained with the [`cint`](@ref) function:
-```@repl portpirie
-cint(fm)
-```
+    \\[ f_{(β₁,β₂,β₃)}(β₁,β₂,β₃) ∝ 1. \\]
 
 
 [^1]: Katz, R. W., M. B. Parlange, and P. Naveau (2002), Statistics of extremes in hydrology, Adv. Water Resour., 25, 1287–1304.
