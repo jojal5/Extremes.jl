@@ -9,10 +9,11 @@ makedocs(sitename = "Extremes.jl",
     ),
     pages = [
        "index.md",
-       "Tutorial" =>["Getting Started" => "tutorial/index.md",
-            "Block maxima model" => "tutorial/BlockMaxima.md",
-            "Threshold Exceedance" => "tutorial/ThresholdExceedance.md",
-            "Declustering" => "tutorial/Declustering.md"],
+       "Tutorial" =>["Getting started" => "tutorial/index.md",
+            "Block maxima" => "tutorial/BlockMaxima.md",
+            "Threshold exceedance" => "tutorial/ThresholdExceedance.md",
+            "Declustering" => "tutorial/Declustering.md",
+            "Non-stationary block maxima" => "tutorial/blockmaxima_ns.md",],
        "contributing.md",
        "functions.md"
        ]

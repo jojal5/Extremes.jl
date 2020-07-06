@@ -1,5 +1,5 @@
 
-# Extreme value analysis in Julia.
+# Extreme value analysis in Julia
 
 *Extremes.jl* provides exhaustive high-performance functions for the analysis of extreme values in Julia. In particular, methods for block maxima and threshold exceedances models are implemented, such as:
 * Parameter estimation by probability weighted moments, maximum likelihood and Bayesian procedure.
