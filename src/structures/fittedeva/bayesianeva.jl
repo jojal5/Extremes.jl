@@ -1,4 +1,4 @@
-struct BayesianEVA{T<:EVA} <: fittedEVA
+struct BayesianEVA{T} <: fittedEVA{T}
     "Extreme value model definition"
     model::T
     "MCMC outputs"

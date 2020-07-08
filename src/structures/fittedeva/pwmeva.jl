@@ -1,4 +1,4 @@
-struct pwmEVA{T<:EVA, U<:Distribution} <: fittedEVA
+struct pwmEVA{T, U<:Distribution} <: fittedEVA{T}
     "Extreme value model definition"
     model::T
     "Maximum likelihood estimate"

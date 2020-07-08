@@ -1,4 +1,4 @@
-struct MaximumLikelihoodEVA{T<:EVA} <: fittedEVA
+struct MaximumLikelihoodEVA{T} <: fittedEVA{T}
     "Extreme value model definition"
     model::T
     "Maximum likelihood estimate"
