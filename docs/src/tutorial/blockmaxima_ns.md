@@ -120,7 +120,7 @@ nothing # hide
 ```
 
 ```@example fremantle
-set_default_plot_size(12cm, 8cm)
+set_default_plot_size(12cm, 9cm)
 plot(df, x=:Year, y=:r, ymin=:rmin, ymax=rmax, Geom.line, Geom.ribbon,
     Coord.cartesian(xmin=1895, xmax=1990), Guide.xticks(ticks=1895:10:1990),
     Guide.ylabel("100-year Effective Return Level"))
