@@ -1,23 +1,10 @@
-# Extremes for Julia documentation
 
-## High level API
+# Extreme value analysis in Julia
 
-```@docs
-getcluster(y::Array{<:Real,1}, u₁::Real , u₂::Real=0.0)
-getcluster(df::DataFrame, u₁::Real, u₂::Real=0.0)
-gevfitbayes(y::Array{<:Real}; warmup::Int=0, niter::Int=1000, thin::Int=1, stepSize::Array{<:Real,1}=[.1,.1,.05])
-gevfit(y::Array{T,1} where T<:Real)
-gevfit(y::Array{Float64,1}, location_covariate::Array{Float64,1}; initialvalues::Array{Float64,1}=Float64[])
-gpdfit(y::Array{T} where T<:Real; threshold::Real=0.0)
-gpdfitbayes(data::Array{Float64,1}; threshold::Real=0, niter::Int = 10000, warmup::Int = 5000,  thin::Int = 1, stepSize::Array{<:Real,1}=[.1,.1])
-```
+*Extremes.jl* provides exhaustive high-performance functions for the analysis of extreme values in Julia. In particular, methods for block maxima and threshold exceedances models are implemented, such as:
+* Parameter estimation by probability weighted moments, maximum likelihood and Bayesian procedure.
+* Stationary and non-stationary models.
+* Diagnostic plots for assessing model accuracy.
+* Return level estimation.
 
-## Low level API
-
-```@docs
-Extremes.gumbelfitpwmom(x::Array{T,1} where T<:Real)
-Extremes.gevfitlmom(x::Array{T,1} where T<:Real)
-Extremes.getinitialvalues(y::Array{T,1} where T<:Real)
-Extremes.gevhessian(y::Array{N,1} where N<:Real,μ::Real,σ::Real,ξ::Real)
-Extremes.gpdfitmom(y::Array{T} where T<:Real; threshold::Real=0.0)
-```
+The package is largely based on the books of Coles (2001), [An Introduction to Statistical Modeling of Extreme Values](http://www.springer.com/us/book/9781852334598), and of Beirlant *et al.* (2004) [Statistics of Extremes: Theory and Applications](https://www.wiley.com/en-us/Statistics+of+Extremes%3A+Theory+and+Applications-p-9780471976479). The *Tutorial* section illustrates the package functionalities by reproducing many results obtained by Coles (2001).
