@@ -1,7 +1,20 @@
+abstract type ReturnLevelModel{T<:fittedEVA} end
+
 struct ReturnLevel{T<:fittedEVA}
-      fittedmodel::T
+      model::ReturnLevelModel{T}
       returnperiod::Real
       value::Vector{<:Real}
+end
+
+struct BlockMaximaModel{T<:fittedEVA{BlockMaxima}} <: ReturnLevelModel{T}
+  fm::T
+end
+
+struct PeakOverThreshold{T<:fittedEVA{ThresholdExceedance}} <: ReturnLevelModel{T}
+  fm::T
+  threshold::Real
+  nobservation::Int
+  nobsperblock::Int
 end
 
 """

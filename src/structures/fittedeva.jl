@@ -1,4 +1,4 @@
-abstract type fittedEVA end
+abstract type fittedEVA{T<:EVA} end
 
 Base.Broadcast.broadcastable(obj::fittedEVA) = Ref(obj)
 
