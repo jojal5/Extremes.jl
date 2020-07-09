@@ -235,8 +235,7 @@ function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, t
 end
 
 """
-cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribution, threshold::Real, nobservation::Int,
-    nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
+    cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
 Compute the confidence intervel for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.

@@ -183,8 +183,7 @@ end
 
 
 """
-    cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, threshold::Real, nobservation::Int,
-        nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
+    cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
 Compute the confidence intervel for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
