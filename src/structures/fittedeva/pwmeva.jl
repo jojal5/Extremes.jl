@@ -179,7 +179,7 @@ end
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function cint(rl::ReturnLevel{BlockMaximaModel{pwmEVA{BlockMaxima, T}}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -244,7 +244,7 @@ Compute the confidence intervel for the return level corresponding to the return
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function cint(rl::ReturnLevel{PeakOverThreshold{pwmEVA{ThresholdExceedance, T}}} where T<:Distribution, threshold::Real, nobservation::Int,
+function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribution, threshold::Real, nobservation::Int,
     nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
