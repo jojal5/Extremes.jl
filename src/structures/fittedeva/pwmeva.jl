@@ -169,7 +169,7 @@ function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPer
       # quantile level
       p = 1-1/returnPeriod
 
-      return ReturnLevel(fm, returnPeriod, quantile(fm, p))
+      return ReturnLevel(BlockMaximaModel(fm), returnPeriod, quantile(fm, p))
 
 end
 
@@ -179,7 +179,7 @@ end
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{BlockMaximaModel{pwmEVA{BlockMaxima, T}}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -192,17 +192,17 @@ function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, con
       nboot = 5000
       α = (1 - confidencelevel)
 
-      y = rl.fittedmodel.model.data.value
+      y = rl.model.fm.model.data.value
       n = length(y)
 
       qboot = Array{Float64}(undef, nboot)
 
-      fitfun = Extremes.fitpwmfunction(rl.fittedmodel)
+      fitfun = Extremes.fitpwmfunction(rl.model.fm)
 
       for i=1:nboot
           ind = rand(1:n, n)            # Generate a bootstrap sample
           θ̂ = fitfun(y[ind]).θ̂          # Compute the parameter estimates
-          qboot[i] = quantile(rl.fittedmodel.model, θ̂, p)[]
+          qboot[i] = quantile(rl.model.fm.model, θ̂, p)[]
       end
 
       return [quantile(qboot,[α/2, 1-α/2])]
@@ -229,7 +229,8 @@ function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, t
     # Appropriate quantile level given the probability exceedance and the number of obs per year
     p = 1-1/(returnPeriod * nobsperblock * ζ)
 
-    return ReturnLevel(fm, returnPeriod, threshold .+ quantile(fm, p))
+    return ReturnLevel(PeakOverThreshold(fm, threshold, nobservation, nobsperblock),
+        returnPeriod, threshold .+ quantile(fm, p))
 
 end
 
@@ -243,14 +244,14 @@ Compute the confidence intervel for the return level corresponding to the return
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribution, threshold::Real, nobservation::Int,
+function cint(rl::ReturnLevel{PeakOverThreshold{pwmEVA{ThresholdExceedance, T}}} where T<:Distribution, threshold::Real, nobservation::Int,
     nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
     # Exceedance probability
-    ζ = length(rl.fittedmodel.model.data.value)/nobservation
+    ζ = length(rl.model.fm.model.data.value)/nobservation
 
     # Appropriate quantile level given the probability exceedance and the number of obs per year
     p = 1-1/(rl.returnperiod * nobsperblock * ζ)
@@ -260,17 +261,17 @@ function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribut
     nboot = 5000
     α = (1 - confidencelevel)
 
-    y = rl.fittedmodel.model.data.value
+    y = rl.model.fm.model.data.value
     n = length(y)
 
     qboot = Array{Float64}(undef, nboot)
 
-    fitfun = Extremes.fitpwmfunction(rl.fittedmodel)
+    fitfun = Extremes.fitpwmfunction(rl.model.fm)
 
     for i=1:nboot
         ind = rand(1:n, n)            # Generate a bootstrap sample
         θ̂ = fitfun(y[ind]).θ̂          # Compute the parameter estimates
-        qboot[i] = quantile(rl.fittedmodel.model, θ̂, p)[]
+        qboot[i] = quantile(rl.model.fm.model, θ̂, p)[]
     end
 
     return [threshold .+ quantile(qboot,[α/2, 1-α/2])]

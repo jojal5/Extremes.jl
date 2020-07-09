@@ -59,10 +59,10 @@
 
     @testset "cint(fm, returnPeriod, confidencelevel)" begin
         # returnPeriod < 0 throws
-        @test_throws AssertionError Extremes.cint(ReturnLevel(fm, -1, [1.0]), 0.95)
+        @test_throws AssertionError Extremes.cint(ReturnLevel(Extremes.BlockMaximaModel(fm), -1, [1.0]), 0.95)
 
         # confidencelevel not in [0, 1] throws
-        @test_throws AssertionError Extremes.cint(ReturnLevel(fm, 1, [1.0]), -1)
+        @test_throws AssertionError Extremes.cint(ReturnLevel(Extremes.BlockMaximaModel(fm), 1, [1.0]), -1)
 
         # TODO: Test with known values
 
@@ -93,10 +93,10 @@
         te_model = Extremes.MaximumLikelihoodEVA(Extremes.ThresholdExceedance(Variable("y", y)), θ)
 
         # returnPeriod < 0 throws
-        @test_throws AssertionError Extremes.cint(ReturnLevel(te_model, -1, [1.0]), 0, n, 1, 0.95)
+        @test_throws AssertionError Extremes.cint(ReturnLevel(Extremes.PeakOverThreshold(te_model, 0, n, 1), -1, [1.0]), 0, n, 1, 0.95)
 
         # confidencelevel not in [0, 1] throws
-        @test_throws AssertionError Extremes.cint(ReturnLevel(te_model, 1, [1.0]), 0, n, 1, -1)
+        @test_throws AssertionError Extremes.cint(ReturnLevel(Extremes.PeakOverThreshold(te_model, 0, n, 1), 1, [1.0]), 0, n, 1, -1)
 
         # TODO : Test with known values (J)
     end
