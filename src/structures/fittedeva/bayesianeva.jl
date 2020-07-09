@@ -135,17 +135,16 @@ Compute the confidence interval for the return level corresponding to the return
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, threshold::Real, nobservation::Int,
-    nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
     # Exceedance probability
-    ζ = length(rl.model.fm.model.data.value)/nobservation
+    ζ = length(rl.model.fm.model.data.value)/rl.model.nobservation
 
     # Appropriate quantile level given the probability exceedance and the number of obs per year
-    p = 1-1/(rl.returnperiod * nobsperblock * ζ)
+    p = 1-1/(rl.returnperiod * rl.model.nobsperblock * ζ)
 
     Q = quantile(rl.model.fm, p)
 
@@ -155,8 +154,8 @@ function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, threshold::Real
 
     qsliced = slicematrix(Q)
 
-    a = threshold .+ quantile.(qsliced, α/2)
-    b = threshold .+ quantile.(qsliced, 1-α/2)
+    a = rl.model.threshold .+ quantile.(qsliced, α/2)
+    b = rl.model.threshold .+ quantile.(qsliced, 1-α/2)
 
     return slicematrix(hcat(a,b), dims=2)
 

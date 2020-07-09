@@ -192,27 +192,26 @@ Compute the confidence intervel for the return level corresponding to the return
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, threshold::Real, nobservation::Int,
-    nobsperblock::Int, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
     # Exceedance probability
-    ζ = length(rl.model.fm.model.data.value)/nobservation
+    ζ = length(rl.model.fm.model.data.value)/rl.model.nobservation
 
     # Appropriate quantile level given the probability exceedance and the number of obs per year
-    p = 1-1/(rl.returnperiod * nobsperblock * ζ)
+    p = 1-1/(rl.returnperiod * rl.model.nobsperblock * ζ)
 
-    q = threshold .+ quantile(rl.model.fm, p)
+    q = rl.model.threshold .+ quantile(rl.model.fm, p)
 
     # Compute the credible interval
 
     α = (1 - confidencelevel)
 
     # Computing the variance corresponding to ζ
-    f(θ::Vector{<:Real}) = Extremes.quantile(rl.model.fm.model,fm.θ̂,1-1/(rl.returnperiod * nobsperblock * θ[]))[]
-    v₁ = (ForwardDiff.gradient(f, [ζ])[])^2*ζ*(1-ζ)/nobservation
+    f(θ::Vector{<:Real}) = Extremes.quantile(rl.model.fm.model,fm.θ̂,1-1/(rl.returnperiod * rl.model.nobsperblock * θ[]))[]
+    v₁ = (ForwardDiff.gradient(f, [ζ])[])^2*ζ*(1-ζ)/rl.model.nobservation
 
     # This component seems to be forgoten by Coles (2001) in Section 4.4.1
 

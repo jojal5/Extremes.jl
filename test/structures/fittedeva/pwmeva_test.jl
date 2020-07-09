@@ -95,13 +95,13 @@
         fm = gpfitpwm(y)
 
         # returnPeriod < 0 throws
-        @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), -1, [1.0]), threshold, length(y), 1, 0.95)
+        @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), -1, [1.0]), 0.95)
 
         # confidencelevel not in [0, 1]
-        @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), 1, [1.0]), threshold,length(y), 1, 1.95)
+        @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), 1, [1.0]), 1.95)
 
         # Test with known values
-        r = cint(returnlevel(fm, threshold, length(y), 1, 100), threshold, length(y), 1, .95)
+        r = cint(returnlevel(fm, threshold, length(y), 1, 100), .95)
         q = quantile(pd, 1-1/100)
 
         # Test with known values
