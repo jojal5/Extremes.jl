@@ -12,7 +12,8 @@ function probplot(fm::fittedEVA)::Plot
     end
 
     return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title(plotTitle))
+        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title(plotTitle),
+        Theme(discrete_highlight_color=c->nothing))
 
 end
 
@@ -31,7 +32,8 @@ function qqplot(fm::fittedEVA)::Plot
     end
 
     return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
-        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title(plotTitle))
+        Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title(plotTitle),
+        Theme(discrete_highlight_color=c->nothing))
 
 end
 
@@ -48,7 +50,8 @@ function returnlevelplot(fm::fittedEVA)::Plot
         df = returnlevelplot_data(fm)
         l1 = layer(df, x=:Period, y=:Level,Geom.line, Theme(default_color="red", line_style=[:dash]))
         l2 = layer(df, x=:Period, y=:Data, Geom.point)
-        return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"), Guide.title("Return Level Plot"))
+        return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"),
+            Guide.title("Return Level Plot"), Theme(discrete_highlight_color=c->nothing))
     end
 end
 
