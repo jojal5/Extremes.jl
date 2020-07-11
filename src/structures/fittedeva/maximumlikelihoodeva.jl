@@ -209,7 +209,7 @@ function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confid
     α = (1 - confidencelevel)
 
     # Computing the variance corresponding to ζ
-    f(θ::Vector{<:Real}) = Extremes.quantile(rl.model.fm.model,fm.θ̂,1-1/(rl.returnperiod * rl.model.nobsperblock * θ[]))[]
+    f(θ::Vector{<:Real}) = Extremes.quantile(rl.model.fm.model,rl.model.fm.θ̂,1-1/(rl.returnperiod * rl.model.nobsperblock * θ[]))[]
     v₁ = (ForwardDiff.gradient(f, [ζ])[])^2*ζ*(1-ζ)/rl.model.nobservation
 
     # This component seems to be forgoten by Coles (2001) in Section 4.4.1
