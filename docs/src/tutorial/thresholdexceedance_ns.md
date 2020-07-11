@@ -101,16 +101,15 @@ The effective return levels along with their confidence intervals can be plotted
 ```@example rainfall
 rmin = [c[i][1] for i in eachindex(c)]
 rmax = [c[i][2] for i in eachindex(c)]
-df_plot = DataFrame(Year = data[:,:Year], r = r.value, rmin = rmin, rmax = rmax)
+df_plot = DataFrame(Year = year.(df[:,:Date]), r = r.value, rmin = rmin, rmax = rmax)
 nothing # hide
 ```
 
 ```@example rainfall
 set_default_plot_size(12cm, 8cm)
 plot(df_plot, x=:Year, y=:r, ymin=:rmin, ymax=rmax, Geom.line, Geom.ribbon,
-    Coord.cartesian(xmin=1895, xmax=1990), Guide.xticks(ticks=1895:10:1990),
+    Coord.cartesian(xmin=1910, xmax=1965), Guide.xticks(ticks=1910:5:1965),
     Guide.ylabel("100-year Effective Return Level"))
-
 ```
 
 ## Bayesian Inference
