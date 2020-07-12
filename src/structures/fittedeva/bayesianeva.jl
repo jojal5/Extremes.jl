@@ -134,24 +134,13 @@ function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
-    # Exceedance probability
-    ζ = length(rl.model.fm.model.data.value)/rl.model.nobservation
+    α = 1 - confidencelevel
 
-    # Appropriate quantile level given the probability exceedance and the number of obs per year
-    p = 1-1/(rl.returnperiod * rl.model.nobsperblock * ζ)
+    Q = Chains(rl.value)
 
-    Q = quantile(rl.model.fm, p)
+    ci = Mamba.hpd(Q, alpha = α)
 
-    # Compute the credible interval
-
-    α = (1 - confidencelevel)
-
-    qsliced = slicematrix(Q)
-
-    a = rl.model.threshold .+ quantile.(qsliced, α/2)
-    b = rl.model.threshold .+ quantile.(qsliced, 1-α/2)
-
-    return slicematrix(hcat(a,b), dims=2)
+    return slicematrix(ci.value[:,:,1], dims=2)
 
 end
 

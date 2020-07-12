@@ -61,16 +61,24 @@
     end
 
     threshold = 10.0
+    nobservation = 100
+    nobsperblock = 1
+    returnPeriod = 100
 
-    x = Variable("x",collect(range(0, stop=1, length=1000)))
-    ϕ = x.value
+    x = collect(0:4.0)/5
+
+    ϕ = x
+    ξ = 0.1
+
     σ = exp.(ϕ)
 
-    pd = GeneralizedPareto.(threshold, σ, .1)
+    pd = GeneralizedPareto.(threshold, σ, ξ)
+    y = rand.(pd)
 
-    y = rand.(pd) .- threshold
-
-    fm = gpfitbayes(y, logscalecov = [x])
+    fm = Extremes.BayesianEVA(
+        Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x", x)]),
+        Mamba.Chains([0 1 .1; 0 1 .1]),
+    )
 
     @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod)" begin
         # returnPeriod < 0 throws
