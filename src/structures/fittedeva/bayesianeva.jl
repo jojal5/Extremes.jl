@@ -64,7 +64,7 @@ function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLe
 
       Q = quantile(fm, p)
 
-      return ReturnLevel(BlockMaximaModel(fm), returnPeriod, vec(mean(Q, dims=1)))
+      return ReturnLevel(BlockMaximaModel(fm), returnPeriod, Q)
 
 end
 
