@@ -116,7 +116,7 @@ function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobs
     Q = quantile(fm, p)
 
     return ReturnLevel(PeakOverThreshold(fm, threshold, nobservation, nobsperblock),
-        returnPeriod, threshold .+ vec(mean(Q, dims=1)))
+        returnPeriod, threshold .+ Q)
 
 end
 

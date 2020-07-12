@@ -50,7 +50,13 @@
         # confidencelevel not in [0, 1]
         @test_throws AssertionError cint(ReturnLevel(Extremes. BlockMaximaModel(fm), 1, [1.0]), -1)
 
-        # TODO: Test with known values
+        r = returnlevel(fm, 100)
+
+        ci = cint(r)
+
+        # Test with known values
+        @test ci[1][1] ≈ r.value[1,1]
+        @test ci[5][1] ≈ r.value[1,5]
 
     end
 
