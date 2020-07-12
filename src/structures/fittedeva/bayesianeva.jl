@@ -83,18 +83,13 @@ function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.
       # quantile level
       p = 1-1/rl.returnperiod
 
-      Q = quantile(rl.model.fm, p)
-
-      # Compute the credible interval
-
       α = (1 - confidencelevel)
 
-      qsliced = slicematrix(Q)
+      Q = Chains(rl.value)
 
-      a = quantile.(qsliced, α/2)
-      b = quantile.(qsliced, 1-α/2)
+      ci = Mamba.hpd(Q, alpha = α)
 
-      return slicematrix(hcat(a,b), dims=2)
+      return slicematrix(ci.value[:,:,1], dims=2)
 
 end
 
