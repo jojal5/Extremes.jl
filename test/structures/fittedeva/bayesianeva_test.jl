@@ -149,29 +149,6 @@
         @test_logs Extremes.showChain(buffer, fm.sim)
     end
 
-    @testset "cint(fm::BayesianEVA)" begin
-
-        μ, ϕ, ξ = 100, log(5), .1
-        y = rand(GeneralizedExtremeValue(μ,exp(ϕ), ξ), 1000)
-
-        fm = gevfitbayes(y)
-
-        @test_throws AssertionError cint(fm, 1.95)
-        @test_throws AssertionError cint(fm, -1.95)
-
-        confint = cint(fm)
-
-        @test confint[1][1] < μ < confint[1][2]
-        @test confint[2][1] < ϕ < confint[2][2]
-        @test confint[3][1] < ξ < confint[3][2]
-
-        confint = cint(fm, .99)
-
-        @test confint[1][1] < μ < confint[1][2]
-        @test confint[2][1] < ϕ < confint[2][2]
-        @test confint[3][1] < ξ < confint[3][2]
-
-    end
 
     @testset "findposteriormode(fm::BayesianEVA)" begin
 
