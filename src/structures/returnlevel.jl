@@ -3,7 +3,7 @@ abstract type ReturnLevelModel{T<:fittedEVA} end
 struct ReturnLevel{T<:fittedEVA}
       model::ReturnLevelModel{T}
       returnperiod::Real
-      value::Vector{<:Real}
+      value::Array{<:Real}
 end
 
 struct BlockMaximaModel{T<:fittedEVA{BlockMaxima}} <: ReturnLevelModel{T}
