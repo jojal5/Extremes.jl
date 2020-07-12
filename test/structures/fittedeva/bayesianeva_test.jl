@@ -16,6 +16,8 @@
         Mamba.Chains([0 1 0 .1; 0 1 0 .1]),
     )
 
+    ci_p = cint(fm)
+
     r = returnlevel(fm, 100)
 
     ci = cint(r)
@@ -46,7 +48,19 @@
 
     end
 
-    @testset "cint(fm, returnPeriod, confidencelevel)" begin
+    @testset "cint(fm, confidencelevel)" begin
+        # confidencelevel not in [0, 1]
+        @test_throws AssertionError cint(fm, 2)
+
+        # Test with known values
+        @test ci_p[1][1] ≈ 0
+        @test ci_p[2][1] ≈ 1
+        @test ci_p[3][1] ≈ 0
+        @test ci_p[4][1] ≈ .1
+
+    end
+
+    @testset "cint(rl, returnPeriod, confidencelevel)" begin
         # returnPeriod < 0 throws
         @test_throws AssertionError cint(ReturnLevel(Extremes.BlockMaximaModel(fm), -1, [1.0]), 0.95)
 
@@ -79,6 +93,8 @@
         Mamba.Chains([0 1 .1; 0 1 .1]),
     )
 
+    ci_p = cint(fm)
+
     r = returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod)
 
     ci = cint(r)
@@ -97,7 +113,18 @@
 
     end
 
-    @testset "cint(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
+    @testset "cint(fm, confidencelevel)" begin
+        # confidencelevel not in [0, 1]
+        @test_throws AssertionError cint(fm, 2)
+
+        # Test with known values
+        @test ci_p[1][1] ≈ 0
+        @test ci_p[2][1] ≈ 1
+        @test ci_p[3][1] ≈ .1
+
+    end
+
+    @testset "cint(rl, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
         # returnPeriod < 0 throws
         @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), -1, [1.0]), 0.95)
 
