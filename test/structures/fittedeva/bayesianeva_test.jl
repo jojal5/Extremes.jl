@@ -16,6 +16,9 @@
         Mamba.Chains([0 1 0 .1; 0 1 0 .1]),
     )
 
+    r = returnlevel(fm, 100)
+
+    ci = cint(r)
 
     @testset "getdistribution(fittedmodel)" begin
         @test all(Extremes.getdistribution(fm)[1,:] .== pd)
@@ -38,8 +41,8 @@
         @test_throws AssertionError Extremes.returnlevel(fm, -1)
 
         # Test with known values
-        @test returnlevel(fm, 100).value[1,:] ≈ quantile.(pd,1-1/100)
-        @test returnlevel(fm, 100).value[2,:] ≈ quantile.(pd,1-1/100)
+        @test r.value[1,:] ≈ quantile.(pd,1-1/100)
+        @test r.value[2,:] ≈ quantile.(pd,1-1/100)
 
     end
 
@@ -49,10 +52,6 @@
 
         # confidencelevel not in [0, 1]
         @test_throws AssertionError cint(ReturnLevel(Extremes. BlockMaximaModel(fm), 1, [1.0]), -1)
-
-        r = returnlevel(fm, 100)
-
-        ci = cint(r)
 
         # Test with known values
         @test ci[1][1] ≈ r.value[1,1]
@@ -80,11 +79,21 @@
         Mamba.Chains([0 1 .1; 0 1 .1]),
     )
 
+    r = returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod)
+
+    ci = cint(r)
+
+    ζ = length(y)/nobservation
+    p = 1-1/(returnPeriod * nobsperblock * ζ)
+
+
     @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod)" begin
         # returnPeriod < 0 throws
         @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1)
 
-        # TODO : Test with known values
+        # Test with known values
+        @test r.value[1,:] ≈ quantile.(pd, p)
+        @test r.value[2,:] ≈ quantile.(pd, p)
 
     end
 
@@ -96,11 +105,8 @@
         @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), 1, [1.0]), -1)
 
         # Test with known values
-        r = cint(returnlevel(fm, threshold, length(y), 1, 100), .95)
-        q = quantile.(pd, 1-1/100)
-
-        @test r[1][1] < q[1] < r[1][2]  # Beginning of interval
-        @test r[end][1] < q[end] < r[end][2]  # End of interval
+        @test ci[1][1] ≈ r.value[1,1]
+        @test ci[5][1] ≈ r.value[1,5]
 
     end
 
