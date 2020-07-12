@@ -1,23 +1,35 @@
 @testset "bayesianeva.jl" begin
 
+    x = collect(1.0:5.0)
 
-    μ, σ, ξ = 100.0, 5.0, 0.1
+    μ = x
+    ϕ = 0.0
+    ξ = 0.1
 
-    pd = GeneralizedExtremeValue(μ, σ, ξ)
-    y = [100.0]
+    σ = exp.(ϕ)
 
-    fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y)), Mamba.Chains([100.0 log(5.0) .1]))
+    pd = GeneralizedExtremeValue.(μ, σ, ξ)
+    y = rand.(pd)
+
+    fm = Extremes.BayesianEVA(
+        Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x", x)]),
+        Mamba.Chains([0 1 0 .1; 0 1 0 .1]),
+    )
+
 
     @testset "getdistribution(fittedmodel)" begin
-        @test Extremes.getdistribution(fm)[] == pd
+        @test all(Extremes.getdistribution(fm)[1,:] .== pd)
+        @test all(Extremes.getdistribution(fm)[2,:] .== pd)
     end
+
 
     @testset "quantile(fm, p)" begin
         # p not in [0, 1] throws
         @test_throws AssertionError Extremes.quantile(fm, -1)
 
         # Test with known values
-        @test quantile(fm, .95)[] ≈ quantile(pd, .95)
+        @test quantile(fm, .95)[1,:] ≈ quantile.(pd,.95)
+        @test quantile(fm, .95)[2,:] ≈ quantile.(pd,.95)
 
     end
 
@@ -26,7 +38,8 @@
         @test_throws AssertionError Extremes.returnlevel(fm, -1)
 
         # Test with known values
-        @test returnlevel(fm, 100).value[] ≈ quantile(pd, 1-1/100)
+        @test returnlevel(fm, 100).value[1,:] ≈ quantile.(pd,1-1/100)
+        @test returnlevel(fm, 100).value[2,:] ≈ quantile.(pd,1-1/100)
 
     end
 
