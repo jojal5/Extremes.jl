@@ -39,6 +39,12 @@
         @test θ̂ ≈ θ rtol = 0.1
         @test c .* V̂ ≈ V rtol = 0.1
         @test Extremes.loglike(fm.model, θ̂) ≈ 4.34 rtol = 0.1
+
+        confint = cint(fm)
+        @test confint[1] ≈ [3.82; 3.93] atol = .02
+        @test confint[2] ≈ log.([0.158,0.238]) atol = .05
+        @test confint[3] ≈ [-0.242; 0.142] atol = .02
+
         @test R₁₀.value[] ≈ 4.30 rtol = 0.1
         @test R₁₀_cint[] ≈ [4.19; 4.45] rtol = 0.1
         @test R₁₀₀.value[] ≈ 4.69 rtol = 0.1
