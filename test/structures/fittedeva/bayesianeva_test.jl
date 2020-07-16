@@ -1,15 +1,29 @@
 @testset "bayesianeva.jl" begin
 
+    n = 1000
+    nobservation = 10000
+    nobsperblock = 1
 
-    μ, σ, ξ = 100.0, 5.0, 0.1
+    threshold = 10.0
 
-    pd = GeneralizedExtremeValue(μ, σ, ξ)
-    y = [100.0]
+    x = Variable("x",randn(n))
 
-    fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y)), Mamba.Chains([100.0 log(5.0) .1]))
+    θ = [-.5; 1; 0.1]
+
+    ϕ = θ[1] .+ θ[2]*x.value
+    σ = exp.(ϕ)
+    ξ = θ[3]
+
+    pd = GeneralizedPareto.(σ, ξ)
+
+    y = rand.(pd)
+
+    model = ThresholdExceedance(Variable("y", y), logscalecov = [x])
+
+    fm = Extremes.BayesianEVA(model, Mamba.Chains(collect(θ')))
 
     @testset "getdistribution(fittedmodel)" begin
-        @test Extremes.getdistribution(fm)[] == pd
+        @test all(vec(Extremes.getdistribution(fm)) .== pd)
     end
 
     @testset "quantile(fm, p)" begin
@@ -17,65 +31,29 @@
         @test_throws AssertionError Extremes.quantile(fm, -1)
 
         # Test with known values
-        @test quantile(fm, .95)[] ≈ quantile(pd, .95)
-
+        @test vec(quantile(fm, .95)) ≈ quantile.(pd, .95)
     end
 
     @testset "returnlevel(fm, returnPeriod)" begin
         # returnPeriod < 0 throws
-        @test_throws AssertionError Extremes.returnlevel(fm, -1)
+        @test_throws AssertionError returnlevel(fm, 0, nobservation, nobsperblock, -100)
 
         # Test with known values
-        @test returnlevel(fm, 100).value[] ≈ quantile(pd, 1-1/100)
-
+        rl = returnlevel(fm, 0, nobservation, nobsperblock, 100)
+        p = 1-nobservation/(100 * nobsperblock * n)
+        @test rl.value ≈ quantile.(pd, p)
     end
 
-    @testset "cint(fm, returnPeriod, confidencelevel)" begin
-        # returnPeriod < 0 throws
-        @test_throws AssertionError cint(ReturnLevel(Extremes.BlockMaximaModel(fm), -1, [1.0]), 0.95)
 
+    @testset "cint(fm, returnPeriod, confidencelevel)" begin
         # confidencelevel not in [0, 1]
-        @test_throws AssertionError cint(ReturnLevel(Extremes. BlockMaximaModel(fm), 1, [1.0]), -1)
+        @test_throws AssertionError cint(returnlevel(fm, 0, nobservation, nobsperblock, 100), -1)
 
         # TODO: Test with known values
 
     end
 
-    threshold = 10.0
 
-    x = Variable("x",collect(range(0, stop=1, length=1000)))
-    ϕ = x.value
-    σ = exp.(ϕ)
-
-    pd = GeneralizedPareto.(threshold, σ, .1)
-
-    y = rand.(pd) .- threshold
-
-    fm = gpfitbayes(y, logscalecov = [x])
-
-    @testset "returnlevel(fm, threshold, nobservation, nobsperblock, returnPeriod)" begin
-        # returnPeriod < 0 throws
-        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1)
-
-        # TODO : Test with known values
-
-    end
-
-    @testset "cint(fm, threshold, nobservation, nobsperblock, returnPeriod, confidencelevel)" begin
-        # returnPeriod < 0 throws
-        @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), -1, [1.0]), 0.95)
-
-        # confidencelevel not in [0, 1]
-        @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), 1, [1.0]), -1)
-
-        # Test with known values
-        r = cint(returnlevel(fm, threshold, length(y), 1, 100), .95)
-        q = quantile.(pd, 1-1/100)
-
-        @test r[1][1] < q[1] < r[1][2]  # Beginning of interval
-        @test r[end][1] < q[end] < r[end][2]  # End of interval
-
-    end
 
     @testset "showfittedEVA(io, obj, prefix)" begin
         # print does not throw
@@ -89,29 +67,6 @@
         @test_logs Extremes.showChain(buffer, fm.sim)
     end
 
-    @testset "cint(fm::BayesianEVA)" begin
-
-        μ, ϕ, ξ = 100, log(5), .1
-        y = rand(GeneralizedExtremeValue(μ,exp(ϕ), ξ), 1000)
-
-        fm = gevfitbayes(y)
-
-        @test_throws AssertionError cint(fm, 1.95)
-        @test_throws AssertionError cint(fm, -1.95)
-
-        confint = cint(fm)
-
-        @test confint[1][1] < μ < confint[1][2]
-        @test confint[2][1] < ϕ < confint[2][2]
-        @test confint[3][1] < ξ < confint[3][2]
-
-        confint = cint(fm, .99)
-
-        @test confint[1][1] < μ < confint[1][2]
-        @test confint[2][1] < ϕ < confint[2][2]
-        @test confint[3][1] < ξ < confint[3][2]
-
-    end
 
     @testset "findposteriormode(fm::BayesianEVA)" begin
 
