@@ -1,7 +1,7 @@
 @testset "Reproducing Coles Results" begin
     @testset "Port Pirie example from Coles (2001)" begin
 
-        data = load("portpirie")
+        data = Extremes.dataset("portpirie")
 
         # Fit of the GEV distribution by maximum likelihood
         fm = gevfit(data, :SeaLevel)
@@ -48,7 +48,7 @@
 
     @testset "Fremantle example from Coles (2001)" begin
 
-        df = load("fremantle")
+        df = Extremes.dataset("fremantle")
 
         n = length(df[:, :SeaLevel])
 
@@ -101,7 +101,7 @@
     end
 
     @testset "Rainfall example from Coles (2001)" begin
-        df = load("rain")
+        df = Extremes.dataset("rain")
 
         threshold = 30
 
@@ -137,7 +137,7 @@
     end
 
     @testset "Dow Jones example from Coles (2001), Section 4.4.2" begin
-        df = load("dowjones")
+        df = Extremes.dataset("dowjones")
 
         X = df[:,:Index]
 
