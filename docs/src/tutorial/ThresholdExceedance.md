@@ -20,7 +20,7 @@ The *Extremes.jl* package supports maximum likelihood inference, Bayesian infere
 
 Loading the daily precipitations:
 ```@example rain
-data = load("rain")
+data = Extremes.dataset("rain")
 first(data,5)
 ```
 
