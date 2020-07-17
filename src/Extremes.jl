@@ -39,7 +39,6 @@ export
     BayesianEVA,
 
     # Data related functions
-    load,
     getcluster,
 
     # Fitting functions
