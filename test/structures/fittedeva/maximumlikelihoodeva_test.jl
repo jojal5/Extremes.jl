@@ -110,7 +110,7 @@
 
     @testset "cint(fm::MaximumLikelihoodEVA)" begin
 
-        data = load("portpirie")
+        data = Extremes.dataset("portpirie")
         fm = gevfit(data, :SeaLevel)
 
         @test_throws AssertionError cint(fm, 1.95)

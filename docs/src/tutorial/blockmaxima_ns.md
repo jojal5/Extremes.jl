@@ -21,7 +21,7 @@ using Extremes, DataFrames, Distributions, Gadfly
 
 Loading the annual maximum sea-levels at Fremantle:
 ```@example fremantle
-data = load("fremantle")
+data = Extremes.dataset("fremantle")
 first(data,5)
 ```
 

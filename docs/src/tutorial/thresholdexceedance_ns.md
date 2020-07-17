@@ -21,7 +21,7 @@ using Extremes, DataFrames, Dates, Distributions, Gadfly
 
 Loading the daily rainfall accumulations:
 ```@example rainfall
-data = load("rain")
+data = Extremes.dataset("rain")
 first(data,5)
 ```
 
