@@ -14,7 +14,7 @@ The following **julia** command will install the package:
 julia> Pkg.add("Extremes")
 ```
 
-See the [Package Documentation](https://jojal5.github.io/Extremes.jl/stable/) for details and examples.
+See the [Package Documentation](https://jojal5.github.io/Extremes.jl/latest/) for details and examples.
 
 
 ## Data
