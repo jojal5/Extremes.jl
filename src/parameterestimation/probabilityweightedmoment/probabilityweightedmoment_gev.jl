@@ -1,12 +1,27 @@
+
 """
-    gevfitpwm(y::Vector{<:Real})::pwmEVA
+    gevfitpwm(...)
 
-Estimate the Generalized Extreme value distribution parameters with the
-probability weighted moments as described in Hosking et al. (1985).
+Estimate the GEV parameters with the probability weighted moments.
 
-*Reference:*
+# Implementation
+
+Estimation with the probability weighted moments, as described by [Hosking *et al. (1985)](https://www.tandfonline.com/doi/abs/10.1080/00401706.1985.10488049),
+is only possible in the stationary case.
+
+See also [`gevfitpwm`](@ref) for the other methods, [`gevfit`](@ref), [`gevfitbayes`](@ref) and [`BlockMaxima`](@ref).
+
+# Reference
+
 Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
-    distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
+    distribution by the method of probability-weighted moments. *Technometrics*, 27:251-261.
+"""
+function gevfitpwm end
+
+"""
+    gevfitpwm(y::Vector{<:Real})
+
+Estimate the GEV parameters with the probability weighted moments.
 
 """
 function gevfitpwm(y::Vector{<:Real})::pwmEVA
@@ -20,14 +35,11 @@ function gevfitpwm(y::Vector{<:Real})::pwmEVA
 end
 
 """
-    gevfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+    gevfitpwm(df::DataFrame, datacol::Symbol)
 
-Estimate the Generalized Extreme value distribution parameters with the
-probability weighted moments as described in Hosking et al. (1985).
+Estimate the GEV parameters with the probability weighted moments.
 
-*Reference:*
-Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
-    distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
+Block maxima data are in the column `datacol` of the dataframe `df`.
 
 """
 function gevfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
@@ -41,17 +53,9 @@ function gevfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
 end
 
 """
-    gevfitpwm(model::BlockMaxima)::pwmEVA
+    gevfitpwm(model::BlockMaxima)
 
-Estimate the Generalized Extreme value distribution parameters with the
-probability weighted moments as described in Hosking et al. (1985).
-
-With the methods of moments, it is not possible to include covariates in the
-model. If covariates are provided, they are ignored and the stationary model is fitted.
-
-*Reference:*
-Hosking, J. R. M., Wallis, J. R. and Wood, E. F. (1985). Estimation of the generalized extreme-value
-    distribution by the method of probability-weighted moments. Technometrics, 27, 251-261.
+Estimate the GEV parameters with the probability weighted moments.
 
 """
 function gevfitpwm(model::BlockMaxima)::pwmEVA
