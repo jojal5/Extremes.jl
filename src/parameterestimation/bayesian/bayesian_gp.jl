@@ -49,16 +49,16 @@ function gpfitbayes end
 """
     gpfitbayes(y,
         logscalecov = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}(),
+        shapecov = Vector{Variable}(),
         niter::Int=5000,
         warmup::Int=2000
-        )::BayesianEVA
+        )
 
 Generate a sample from the GP parameters' posterior distribution.
 
 # Arguments
 
-- `y::Vector{<:Real}`: the vector of exceedances.
+- `y::Vector{<:Real}`: The vector of exceedances.
 - `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
 - `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 """
@@ -119,8 +119,6 @@ end
 
 Generate a sample from the GP parameters' posterior distribution.
 
-# Arguments
-- `model::ThresholdExceedance`: The `ThresholdExceedance` to fit.
 """
 function gpfitbayes(model::ThresholdExceedance; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
