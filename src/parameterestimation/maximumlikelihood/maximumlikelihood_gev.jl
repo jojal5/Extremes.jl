@@ -160,7 +160,7 @@ end
 """
     gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})
 
-Estimate the parameters of the `BlocMaxima` model using the given initialvalues.
+Estimate the parameters of the `BlockMaxima` model using the given initialvalues.
 """
 function gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 

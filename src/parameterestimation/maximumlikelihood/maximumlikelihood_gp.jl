@@ -1,7 +1,7 @@
 """
     gpfit(...)
 
-Fit the GEV parameters by maximum likelihood.
+Estimate the GP parameters by maximum likelihood.
 
 Data provided must be the exceedances above the threshold, *i.e.* the data above the threshold minus
 the threshold.
@@ -31,14 +31,14 @@ function gpfit end
 """
     gpfit(y,
         logscalecov = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}()
+        shapecov = Vector{Variable}()
         )
 
-Fit the GP parameters.
+Estimate the GP parameters
 
 # Arguments
 
-- `y::Vector{<:Real}`: the vector of exceedances.
+- `y::Vector{<:Real}`: The vector of exceedances.
 - `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
 - `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 """
@@ -61,15 +61,15 @@ end
     gpfit(y,
         initialvalues;
         logscalecov = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}()
+        shapecov = Vector{Variable}()
         )
 
-Fit the GP parameters.
+Estimate the GP parameters
 
 # Arguments
 
-- `y::Vector{<:Real}`: the vector of exceedances.
-- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
+- `y::Vector{<:Real}`: The vector of exceedances.
+- `initialvalues::Vector{<:Real}`: The vector of parameters initial values.
 - `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
 - `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 """
@@ -90,7 +90,7 @@ end
         shapecovid = Vector{Symbol}()
         )
 
-Fit the GP parameters.
+Estimate the GP parameters
 
 # Arguments
 - `df::DataFrame`: The dataframe containing the data.
@@ -120,7 +120,7 @@ end
         shapecovid = Vector{Symbol}()
         )
 
-Fit the GP parameters.
+Estimate the GP parameters
 
 # Arguments
 - `df::DataFrame`: The dataframe containing the data.
@@ -143,13 +143,9 @@ function gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
 end
 
 """
-    gpfit(model, intialvalues)
+    gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})
 
-Generate a sample from the GP parameters' posterior distribution.
-
-# Arguments
-- `model::ThresholdExceedance`: The `ThresholdExceedance` model to fit.
-- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
+Estimate the parameters of the `ThresholdExceedance` model using the given initialvalues.
 """
 function gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
