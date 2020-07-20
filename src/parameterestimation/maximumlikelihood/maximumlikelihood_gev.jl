@@ -1,38 +1,48 @@
 """
-    gevfit(y::Vector{<:Real};
-        locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-        logscalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-        shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}())
+    gevfit()
 
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y`.
+Fit the GEV parameters.
 
-The optional parameter `locationcov` is a vector containing the covariates for the parameter μ.
-The optional parameter `logscalecov` is a vector containing the covariates for the parameter σ.
-The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
+# Implementation
 
-Example with a non-stationary location parameter:
-```julia
-using Extremes, Distributions
+The function uses Nelder-Mead solver implemented in the [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
+package to find the point where the log-likelihood is maximal.
 
-# Sample size
-n = 300
-
-# Covariate
-x = collect(1:n)
-
-# Location as function of the covariate
-μ = x*1/100
-
-# Sample from the non-stationary GEV distribution
-pd = GeneralizedExtremeValue.(μ,1,.1)
-y = rand.(pd)
-
-# Estimate the parameters
-gevfit(y, locationcov = [Variable("x", x)])
+The GEV paramters can be modeled as function of covariates as follows:
+```math
+μ = X₁ × β₁,
+```
+```math
+ϕ = X₂ × β₂,
+```
+```math
+ξ = X₃ × β₃.
 ```
 
-The covariate may be standardized to facilitate the estimation.
+The covariates are standardized before estimating the parameters to help fit the
+ model. They are transformed back on their original scales before returning the
+ fitted model.
 
+See also [`gevfit`](@ref) for the other methods, [`gevfitpwm`](@ref), [`gevfitbayes`](@ref) and [`BlockMaxima`](@ref).
+
+"""
+function gevfit end
+
+"""
+    gevfit(y,
+        locationcov = Vector{Variable}(),
+        logscalecov = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}()
+        )::MaximumLikelihoodEVA
+
+Fit the GEV parameters.
+
+# Arguments
+
+- `y::Vector{<:Real}`: the vector of block maxima.
+- `locationcov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the location parameter.
+- `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
+- `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 """
 function gevfit(y::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
@@ -52,15 +62,22 @@ function gevfit(y::Vector{<:Real};
 end
 
 """
-    gevfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
-        locationcov::Vector{<:DataItem} = Vector{Variable}(),
-        logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}(),)::MaximumLikelihoodEVA
+    gevfit(y,
+        initialvalues,
+        locationcov = Vector{Variable}(),
+        logscalecov = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}()
+        )::MaximumLikelihoodEVA
 
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data `y` using the intial values `initialvalues`.
+Fit the GEV parameters.
 
-The covariate may be standardized to facilitate the estimation.
+# Arguments
 
+- `y::Vector{<:Real}`: the vector of block maxima.
+- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
+- `locationcov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the location parameter.
+- `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
+- `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 """
 function gevfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
@@ -74,13 +91,21 @@ function gevfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
 end
 
 """
-    gevfit(df::DataFrame, datacol::Symbol;
-        locationcovid::Vector{Symbol}=Symbol[],
-        logscalecovid::Vector{Symbol}=Symbol[],
-        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    gevfit(df::DataFrame,
+        datacol::Symbol,
+        locationcovid = Vector{Symbol}(),
+        logscalecovid = Vector{Symbol}(),
+        shapecovid = Vector{Symbol}()
+        )
 
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol`.
+Fit the GEV parameters.
 
+# Arguments
+- `df::DataFrame`: The dataframe containing the data.
+- `datacol::Symbol`: The symbol of the column of `df` containing the block maxima data.
+- `locationcovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the location parameter.
+- `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
+- `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
 """
 function gevfit(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
@@ -100,13 +125,22 @@ function gevfit(df::DataFrame, datacol::Symbol;
 end
 
 """
-    gevfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
-        locationcovid::Vector{Symbol}=Symbol[],
-        logscalecovid::Vector{Symbol}=Symbol[],
-        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    gevfit(df::DataFrame,
+        datacol::Symbol,
+        locationcovid = Vector{Symbol}(),
+        logscalecovid = Vector{Symbol}(),
+        shapecovid = Vector{Symbol}()
+        )
 
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol` using the initial values `ìnitialvalues`.
+Fit the GEV parameters.
 
+# Arguments
+- `df::DataFrame`: The dataframe containing the data.
+- `datacol::Symbol`: The symbol of the column of `df` containing the block maxima data.
+- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
+- `locationcovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the location parameter.
+- `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
+- `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
 """
 function gevfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
     locationcovid::Vector{Symbol}=Symbol[],
@@ -123,12 +157,14 @@ function gevfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
 
 end
 
-
 """
-    gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
+    gevfit(model, initialvalues)
 
-Fit the Generalized Extreme Value (GEV) distribution by maximum likelihood of the BlockMaxima model `model`.
+Generate a sample from the GEV parameters' posterior distribution.
 
+# Arguments
+- `model::BlockMaxima`: The `BlockMaxima` model to fit.
+-- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
 """
 function gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 

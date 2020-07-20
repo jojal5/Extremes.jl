@@ -34,7 +34,7 @@ The covariates are standardized before estimating the parameters to help fit the
  model. They are transformed back on their original scales before returning the
  fitted model.
 
-See also [`gpfitbayes`](@ref) for the other methods, [`gpfitpwm`](@ref) and [`ThresholdExceedance`](@ref).
+See also [`gpfitbayes`](@ref) for the other methods, [`gpfitpwm`](@ref), [`gpfit`](@ref) and [`ThresholdExceedance`](@ref).
 
 # Reference
 
@@ -61,8 +61,6 @@ Generate a sample from the GP parameters' posterior distribution.
 - `y::Vector{<:Real}`: the vector of exceedances.
 - `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
 - `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
-
-See also [`gpfitbayes`](@ref) for the other methods, [`gpfitpwm`](@ref) and [`ThresholdExceedance`](@ref).
 """
 function gpfitbayes(y::Vector{<:Real};
      logscalecov::Vector{<:DataItem} = Vector{Variable}(),
@@ -95,8 +93,6 @@ Generate a sample from the GP parameters' posterior distribution.
 - `datacol::Symbol`: The symbol of the column of `df` containing the exceedances.
 - `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
 - `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
-
-See also [`gpfitbayes`](@ref) for the other methods, [`gpfitpwm`](@ref) and [`ThresholdExceedance`](@ref).
 """
 function gpfitbayes(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
@@ -125,8 +121,6 @@ Generate a sample from the GP parameters' posterior distribution.
 
 # Arguments
 - `model::ThresholdExceedance`: The `ThresholdExceedance` to fit.
-
-See also [`gpfitbayes`](@ref) for the other methods, [`gpfitpwm`](@ref) and [`ThresholdExceedance`](@ref).
 """
 function gpfitbayes(model::ThresholdExceedance; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 

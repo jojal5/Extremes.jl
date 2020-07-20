@@ -34,7 +34,7 @@ The covariates are standardized before estimating the parameters to help fit the
  model. They are transformed back on their original scales before returning the
  fitted model.
 
-See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref) and [`BlockMaxima`](@ref).
+See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref), [`gevfit`](@ref) and [`BlockMaxima`](@ref).
 
 # Reference
 
@@ -63,7 +63,6 @@ Generate a sample from the GEV parameters' posterior distribution.
 - `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
 - `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 
-See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref) and [`BlockMaxima`](@ref).
 """
 function gevfitbayes(y::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
@@ -100,8 +99,6 @@ Generate a sample from the GEV parameters' posterior distribution.
 - `locationcovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the location parameter.
 - `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
 - `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
-
-See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref) and [`BlockMaxima`](@ref).
 """
 function gevfitbayes(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
@@ -130,8 +127,6 @@ Generate a sample from the GEV parameters' posterior distribution.
 
 # Arguments
 - `model::BlockMaxima`: The `BlockMaxima` to fit.
-
-See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref) and [`BlockMaxima`](@ref).
 """
 function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
