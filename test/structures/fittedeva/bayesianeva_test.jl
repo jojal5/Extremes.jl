@@ -1,7 +1,7 @@
 @testset "bayesianeva.jl" begin
 
     n = 1000
-    nobservation = 10000
+    nobservation = 1000
     nobsperblock = 1
 
     threshold = 10.0
@@ -22,6 +22,10 @@
 
     fm = Extremes.BayesianEVA(model, Mamba.Chains(collect(θ')))
 
+    rl = returnlevel(fm, 0, nobservation, nobsperblock, 100)
+
+    ci = cint(rl)
+
     @testset "getdistribution(fittedmodel)" begin
         @test all(vec(Extremes.getdistribution(fm)) .== pd)
     end
@@ -40,9 +44,8 @@
         @test_throws AssertionError returnlevel(fm, 0, nobservation, nobsperblock, -100)
 
         # Test with known values
-        rl = returnlevel(fm, 0, nobservation, nobsperblock, 100)
         p = 1-nobservation/(100 * nobsperblock * n)
-        @test rl.value ≈ quantile.(pd, p)
+        @test vec(rl.value) ≈ quantile.(pd, p)
     end
 
 
@@ -51,8 +54,8 @@
         @test_throws AssertionError cint(returnlevel(fm, 0, nobservation, nobsperblock, 100), -1)
 
         # Test with known values
-        @test ci[1][1] ≈ r.value[1,1]
-        @test ci[5][1] ≈ r.value[1,5]
+        @test ci[1][1] ≈ rl.value[1,1]
+        @test ci[5][1] ≈ rl.value[1,5]
 
     end
 
