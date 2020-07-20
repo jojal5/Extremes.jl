@@ -8,7 +8,7 @@ end
 Base.Broadcast.broadcastable(obj::EVA) = Ref(obj)
 
 """
-    computeparamfunction(covariates::Vector{Variable})::Function
+    computeparamfunction(covariates::Vector{Variable})
 
 Establish the parameter as function of the corresponding covariates.
 
@@ -35,7 +35,7 @@ function computeparamfunction(covariates::Vector{<:DataItem})::Function
 end
 
 """
-    loglike(model::EVA, θ::Vector{<:Real})::Real
+    loglike(model::EVA, θ::Vector{<:Real})
 
 Compute the model loglikelihood evaluated at θ.
 
@@ -53,9 +53,12 @@ function loglike(model::EVA, θ::Vector{<:Real})::Real
 end
 
 """
-    quantile(model::EVA, θ::Vector{<:Real}, p::Real):Vector{<:Real}
+    quantile(model::EVA, θ::Vector{<:Real}, p::Real)
 
-Compute the quantile of level `p` from the model evaluated at `θ"". If the model is non-stationary, then the effective quantiles are returned.
+Compute the quantile of level `p` from the model evaluated at `θ"".
+
+If the model is non-stationary, then the *effective quantiles* are returned,
+*i.e.* one for each covariate value.
 
 """
 function quantile(model::EVA, θ::Vector{<:Real}, p::Real)::Vector{<:Real}
@@ -73,7 +76,7 @@ end
 """
     validatestationarity(model::T)::T where T<:EVA
 
-Warns that the non-stationarity won't be taken into account for this fit and returns a stationary model.
+Throw warning if the model is nonstationary.
 
 """
 function validatestationarity(model::T)::T where T<:EVA
@@ -120,7 +123,7 @@ end
 """
     validatelength(length::Real, explvariables::Vector{Variable})
 
-Validates that the values of the explanatory variables are of length `length`.
+Validate that the explanatory variables are of length `length`.
 """
 function validatelength(n::Real, explvariables::Vector{<:DataItem})
 
