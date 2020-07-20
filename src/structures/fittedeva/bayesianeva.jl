@@ -64,7 +64,7 @@ function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLe
 
       Q = quantile(fm, p)
 
-      return ReturnLevel(BlockMaximaModel(fm), returnPeriod, vec(mean(Q, dims=1)))
+      return ReturnLevel(BlockMaximaModel(fm), returnPeriod, Q)
 
 end
 
@@ -83,18 +83,13 @@ function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.
       # quantile level
       p = 1-1/rl.returnperiod
 
-      Q = quantile(rl.model.fm, p)
-
-      # Compute the credible interval
-
       α = (1 - confidencelevel)
 
-      qsliced = slicematrix(Q)
+      Q = Chains(rl.value)
 
-      a = quantile.(qsliced, α/2)
-      b = quantile.(qsliced, 1-α/2)
+      ci = Mamba.hpd(Q, alpha = α)
 
-      return slicematrix(hcat(a,b), dims=2)
+      return slicematrix(ci.value[:,:,1], dims=2)
 
 end
 
@@ -121,7 +116,7 @@ function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobs
     Q = quantile(fm, p)
 
     return ReturnLevel(PeakOverThreshold(fm, threshold, nobservation, nobsperblock),
-        returnPeriod, threshold .+ vec(mean(Q, dims=1)))
+        returnPeriod, threshold .+ Q)
 
 end
 
@@ -139,24 +134,13 @@ function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
 
-    # Exceedance probability
-    ζ = length(rl.model.fm.model.data.value)/rl.model.nobservation
+    α = 1 - confidencelevel
 
-    # Appropriate quantile level given the probability exceedance and the number of obs per year
-    p = 1-1/(rl.returnperiod * rl.model.nobsperblock * ζ)
+    Q = Chains(rl.value)
 
-    Q = quantile(rl.model.fm, p)
+    ci = Mamba.hpd(Q, alpha = α)
 
-    # Compute the credible interval
-
-    α = (1 - confidencelevel)
-
-    qsliced = slicematrix(Q)
-
-    a = rl.model.threshold .+ quantile.(qsliced, α/2)
-    b = rl.model.threshold .+ quantile.(qsliced, 1-α/2)
-
-    return slicematrix(hcat(a,b), dims=2)
+    return slicematrix(ci.value[:,:,1], dims=2)
 
 end
 
@@ -305,25 +289,16 @@ end
 
 Estimate the parameter estimates highest posterior density interval.
 """
-function cint(fm::BayesianEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
+function cint(fm::BayesianEVA, confidencelevel::Real=.95)::Array{Array{Float64,1},1}
 
-    @assert 0<clevel<1 "the confidence level should be between 0 and 1."
+    @assert 0<confidencelevel<1 "the confidence level should be between 0 and 1."
 
-    α = 1-clevel
+    α = 1-confidencelevel
 
     # Chain summary
-    s = hpd(fm.sim, alpha=.05)
+    ci = hpd(fm.sim[:,:,1], alpha = α)
 
-    # Values
-    v = s.value[:,:,1]
-
-    credint = Vector{Vector{Float64}}()
-
-    for r in eachrow(v)
-        push!(credint, r)
-    end
-
-    return credint
+    return slicematrix(ci.value[:,:,1], dims=2)
 
 end
 

@@ -19,7 +19,7 @@ using Extremes, Dates, DataFrames, Distributions, Gadfly
 ```
 
 ```@example wooster
-data = load("wooster")
+data = Extremes.dataset("wooster")
 set_default_plot_size(12cm, 8cm) # hide
 plot(data, x=:Date, y=:Temperature, Geom.point)
 ```

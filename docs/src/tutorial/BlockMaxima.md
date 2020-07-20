@@ -22,7 +22,7 @@ The *Extremes.jl* package supports maximum likelihood inference, Bayesian infere
 
 Loading the annual maximum sea-levels at Port Pirie:
 ```@example portpirie
-data = load("portpirie")
+data = Extremes.dataset("portpirie")
 first(data,5)
 ```
 

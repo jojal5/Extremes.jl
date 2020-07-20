@@ -26,6 +26,7 @@
         @test all(vec(Extremes.getdistribution(fm)) .== pd)
     end
 
+
     @testset "quantile(fm, p)" begin
         # p not in [0, 1] throws
         @test_throws AssertionError Extremes.quantile(fm, -1)
@@ -49,7 +50,9 @@
         # confidencelevel not in [0, 1]
         @test_throws AssertionError cint(returnlevel(fm, 0, nobservation, nobsperblock, 100), -1)
 
-        # TODO: Test with known values
+        # Test with known values
+        @test ci[1][1] ≈ r.value[1,1]
+        @test ci[5][1] ≈ r.value[1,5]
 
     end
 
