@@ -1,5 +1,61 @@
 @testset "bayesianeva.jl" begin
 
+    n = 100
+
+    x = Variable("x",randn(n))
+
+    θ = [1; 1; -.5; .3; .1]
+
+    μ = θ[1] .+ θ[2]*x.value
+    ϕ = θ[3] .+ θ[4]*x.value
+    σ = exp.(ϕ)
+    ξ = θ[5]
+
+    pd = GeneralizedExtremeValue.(μ,σ, ξ)
+
+    y = rand.(pd)
+
+    model = BlockMaxima(Variable("y", y), locationcov = [x] ,logscalecov = [x])
+
+    fm = Extremes.BayesianEVA(model, Mamba.Chains(collect(θ')))
+
+    rl = returnlevel(fm, 100)
+
+    ci = cint(rl)
+
+    @testset "getdistribution(fittedmodel)" begin
+        @test all(vec(Extremes.getdistribution(fm)) .== pd)
+    end
+
+
+    @testset "quantile(fm, p)" begin
+        # p not in [0, 1] throws
+        @test_throws AssertionError Extremes.quantile(fm, -1)
+
+        # Test with known values
+        @test vec(quantile(fm, .95)) ≈ quantile.(pd, .95)
+    end
+
+    @testset "returnlevel(fm, returnPeriod)" begin
+        # returnPeriod < 0 throws
+        @test_throws AssertionError returnlevel(fm, -100)
+
+        # Test with known values
+        @test vec(rl.value) ≈ quantile.(pd, 1-1/100)
+    end
+
+
+    @testset "cint(fm, returnPeriod, confidencelevel)" begin
+        # confidencelevel not in [0, 1]
+        @test_throws AssertionError cint(rl, -1)
+
+        # Test with known values
+        @test ci[1][1] ≈ rl.value[1,1]
+        @test ci[5][1] ≈ rl.value[1,5]
+
+    end
+
+
     n = 1000
     nobservation = 1000
     nobsperblock = 1
