@@ -4,7 +4,7 @@
 Generate a sample from the GEV parameters' posterior distribution.
 
 # Arguments
-- `niter::Int = 5000`: The total number of MCMC iterations
+- `niter::Int = 5000`: The total number of MCMC iterations.
 - `warmup::Int = 2000`: The number of warmup iterations (burn-in).
 
 # Implementation
@@ -36,7 +36,7 @@ The covariates are standardized before estimating the parameters to help fit the
 
 See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref), [`gevfit`](@ref) and [`BlockMaxima`](@ref).
 
-# Reference
+# References
 
 Hoffman M. D. and Gelman A. (2014). The No-U-Turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo. *Journal of Machine Learning Research*, 15:1593–1623.
 
@@ -49,16 +49,16 @@ function gevfitbayes end
     gevfitbayes(y,
         locationcov = Vector{Variable}(),
         logscalecov = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}(),
+        shapecov = Vector{Variable}(),
         niter::Int=5000,
         warmup::Int=2000
-        )::BayesianEVA
+        )
 
 Generate a sample from the GEV parameters' posterior distribution.
 
 # Arguments
 
-- `y::Vector{<:Real}`: the vector of block maxima.
+- `y::Vector{<:Real}`: The vector of block maxima.
 - `locationcov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the location parameter.
 - `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
 - `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
@@ -123,10 +123,7 @@ end
         niter::Int=5000,
         warmup::Int=2000)
 
-Generate a sample from the GEV parameters' posterior distribution.
-
-# Arguments
-- `model::BlockMaxima`: The `BlockMaxima` to fit.
+Generate a sample from the `BlockMaxima` model parameters' posterior distribution.
 """
 function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
