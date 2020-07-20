@@ -1,12 +1,12 @@
 @testset "pwmeva.jl" begin
 
-    θ = [0.0, 1.0, 0.1]
+    θ = [0.0, 0.0, 0.1]
 
-    pd = GeneralizedExtremeValue(θ...)
+    pd = GeneralizedExtremeValue(θ[1], exp(θ[2]), θ[3])
 
     y = [0]
 
-    fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", y)), [θ[1]; log(θ[2]); θ[3]])
+    fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", y)), θ)
 
     @testset "getdistribution(fittedmodel)" begin
         @test Extremes.getdistribution(fm)[] == pd
@@ -21,91 +21,78 @@
 
     end
 
-    @testset "parametervar(fm, nboot)" begin
-        # nboot < 0 throws
-        @test_throws AssertionError Extremes.parametervar(fm, -1)
-
-        # TODO : test with known values (J)
-
-    end
-
-    @testset "quantilevar(fm, level, nboot)" begin
-        # TODO : test with known values (J)
-
-    end
-
     @testset "returnlevel(fm, returnPeriod)" begin
-        pd = GeneralizedExtremeValue(10,1,.1)
-        y = rand(pd,1000)
-
-        fm = gevfitpwm(y)
 
         # returnPeriod < 0 throws
         @test_throws AssertionError returnlevel(fm, -1)
 
-        r = returnlevel(fm, 100)
-        q = quantile(pd, 1-1/100)
-
         # Test with known values
-        @test r.value[] ≈ q rtol = .05
+        @test returnlevel(fm, 100).value[] ≈ quantile(pd, 1-1/100)
     end
 
-    @testset "cint(fm, returnPeriod, confidencelevel)" begin
-        pd = GeneralizedExtremeValue(10,1,.1)
-        y = rand(pd,1000)
+    @testset "parametervar(fm, nboot)" begin
+        # nboot < 0 throws
+        @test_throws AssertionError Extremes.parametervar(fm, -1)
 
-        fm = gevfitpwm(y)
+        # Tested in cint(fm)
+    end
 
+    @testset "quantilevar(fm, level, nboot)" begin
+        # Tested in cint(fm)
+    end
+
+    @testset "cint(fm)" begin
         # returnPeriod < 0 throws
         @test_throws AssertionError cint(ReturnLevel(Extremes.BlockMaximaModel(fm), -1, [1.0]), 0.95)
 
         # confidencelevel not in [0, 1]
         @test_throws AssertionError cint(ReturnLevel(Extremes.BlockMaximaModel(fm), 1, [1.0]), -1)
 
-        r = cint(returnlevel(fm, 100), .95)
-        q = quantile(pd, 1-1/100)
+        niter = 1000
 
-        # Test with known values
-        @test r[][1] < q < r[][2]
+        cover = falses(niter,3)
+
+        Threads.@threads  for i in 1:niter
+            y = rand(pd, 100)
+            fm = gevfitpwm(y)
+            ci = cint(fm, .95 ,1000)
+            for j in eachindex(θ)
+                cover[i,j] = ci[j][1] < θ[j] < ci[j][2]
+            end
+        end
+
+        @test all(count.(eachcol(cover))/niter .> .9)
     end
 
-    @testset "returnlevel(fm, returnPeriod)" begin
-        threshold = 10.0
-        pd = GeneralizedPareto(threshold, 1,.1)
-        y = rand(pd,1000) .- threshold
 
-        fm = gpfitpwm(y)
 
-        # returnPeriod < 0 throws
-        @test_throws AssertionError returnlevel(fm, threshold, length(y), 1, -1)
 
-        # Test with known values
-        r = returnlevel(fm, threshold, length(y), 1, 100)
-        q = quantile(pd, 1-1/100)
-
-        # Test with known values
-        @test r.value[] ≈ q rtol = .05
-    end
 
     @testset "cint(fm, returnPeriod, confidencelevel)" begin
-        threshold = 10.0
-        pd = GeneralizedPareto(threshold, 1,.1)
-        y = rand(pd,1000) .- threshold
-
-        fm = gpfitpwm(y)
-
-        # returnPeriod < 0 throws
-        @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), -1, [1.0]), 0.95)
-
         # confidencelevel not in [0, 1]
-        @test_throws AssertionError cint(ReturnLevel(Extremes.PeakOverThreshold(fm, threshold, length(y), 1), 1, [1.0]), 1.95)
+        @test_throws AssertionError cint(ReturnLevel(Extremes.BlockMaximaModel(fm), 1, [1.0]), -1)
 
         # Test with known values
-        r = cint(returnlevel(fm, threshold, length(y), 1, 100), .95)
+
+        θ = [100; log(5); .1]
+
+        pd = GeneralizedExtremeValue(θ[1],exp(θ[2]),θ[3])
+
         q = quantile(pd, 1-1/100)
 
-        # Test with known values
-        @test r[][1] < q < r[][2]
+        niter = 1000
+
+        cover = falses(niter)
+
+        Threads.@threads  for i in 1:niter
+            y = rand(pd, 200)
+            fm = gevfitpwm(y)
+            rl = returnlevel(fm, 100)
+            ci = cint(rl, .95 , 500)
+            cover[i] = ci[][1] < q < ci[][2]
+        end
+
+        @test count(cover)/niter > .9
     end
 
 
@@ -113,37 +100,6 @@
         # print does not throw
         buffer = IOBuffer()
         @test_logs Extremes.showfittedEVA(buffer, fm, prefix = "\t")
-
-    end
-
-    @testset "cint(fm::pwmEVA)" begin
-
-        μ, ϕ, ξ = 100, log(5), .1
-        y = rand(GeneralizedExtremeValue(μ,exp(ϕ), ξ), 1000)
-
-        fm = gevfitpwm(y)
-
-        @test_throws AssertionError cint(fm, 1.95)
-        @test_throws AssertionError cint(fm, -1.95)
-        @test_throws AssertionError cint(fm, .95, -10)
-
-        confint = cint(fm)
-
-        @test confint[1][1] < μ < confint[1][2]
-        @test confint[2][1] < ϕ < confint[2][2]
-        @test confint[3][1] < ξ < confint[3][2]
-
-        confint = cint(fm, .99)
-
-        @test confint[1][1] < μ < confint[1][2]
-        @test confint[2][1] < ϕ < confint[2][2]
-        @test confint[3][1] < ξ < confint[3][2]
-
-        confint = cint(fm, .99, 1000)
-
-        @test confint[1][1] < μ < confint[1][2]
-        @test confint[2][1] < ϕ < confint[2][2]
-        @test confint[3][1] < ξ < confint[3][2]
 
     end
 
