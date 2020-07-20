@@ -3,7 +3,7 @@
 
 Generate a sample from the GP parameters' posterior distribution.
 
-Data provided must be exceedances above the threshold, *i.e.* the data minus
+Data provided must be the exceedances above the threshold, *i.e.* the data above the threshold minus
 the threshold.
 
 # Arguments

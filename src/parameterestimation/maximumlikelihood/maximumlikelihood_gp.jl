@@ -1,35 +1,46 @@
 """
-    gpfit(y::Vector{<:Real};
-        logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+    gpfit(...)
 
-Fit the Generalized Pareto (GP) distribution by maximum likelihood to the vector of data `y`.
+Fit the GEV parameters by maximum likelihood.
 
-The optional parameter `logscalecov` is a vector containing the covariates for the parameter σ.
-The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
+Data provided must be the exceedances above the threshold, *i.e.* the data above the threshold minus
+the threshold.
 
-Example with a non-stationary location parameter:
-```julia
-# Sample size
-n = 300
+# Implementation
 
-# Covariate
-x = collect(1:n)
+The function uses Nelder-Mead solver implemented in the [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
+package to find the point where the log-likelihood is maximal.
 
-# Location as function of the covariate
-ϕ = x*1/500
-σ = exp.(ϕ)
-
-# Sample from the non-stationary GEV distribution
-pd = GeneralizedPareto.(σ,.1)
-y = rand.(pd)
-
-# Estimate the parameters
-gpfit(y, logscalecov = [Variable("x", x)])
+The GP parameters can be modeled as function of covariates as follows:
+```math
+ϕ = X₂ × β₂,
+```
+```math
+ξ = X₃ × β₃.
 ```
 
-The covariate may be standardized to facilitate the estimation.
+The covariates are standardized before estimating the parameters to help fit the
+ model. They are transformed back on their original scales before returning the
+ fitted model.
 
+See also [`gpfit`](@ref) for the other methods, [`gpfitpwm`](@ref), [`gpfitbayes`](@ref) and [`ThresholdExceedance`](@ref).
+
+"""
+function gpfit end
+
+"""
+    gpfit(y,
+        logscalecov = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}()
+        )
+
+Fit the GP parameters.
+
+# Arguments
+
+- `y::Vector{<:Real}`: the vector of exceedances.
+- `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
+- `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 """
 function gpfit(y::Vector{<:Real};
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
@@ -47,17 +58,20 @@ function gpfit(y::Vector{<:Real};
 end
 
 """
-    gpfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
-        logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+    gpfit(y,
+        initialvalues;
+        logscalecov = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}()
+        )
 
-Fit the Generalized Pareto (GP) distribution by maximum likelihood to the vector of data `y` using the initial values `initialvalues`.
+Fit the GP parameters.
 
-The optional parameter `logscalecov` is a vector containing the covariates for the parameter σ.
-The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
+# Arguments
 
-The covariate may be standardized to facilitate the estimation.
-
+- `y::Vector{<:Real}`: the vector of exceedances.
+- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
+- `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
+- `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 """
 function gpfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
@@ -70,12 +84,19 @@ function gpfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
 end
 
 """
-    gpfit(df::DataFrame, datacol::Symbol;
-        logscalecovid::Vector{Symbol}=Symbol[],
-        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    gpfit(df::DataFrame,
+        datacol::Symbol,
+        logscalecovid = Vector{Symbol}(),
+        shapecovid = Vector{Symbol}()
+        )
 
-Fit a Generalized Pareto (GP) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol`.
+Fit the GP parameters.
 
+# Arguments
+- `df::DataFrame`: The dataframe containing the data.
+- `datacol::Symbol`: The symbol of the column of `df` containing the exceedances.
+- `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
+- `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
 """
 function gpfit(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
@@ -93,12 +114,20 @@ function gpfit(df::DataFrame, datacol::Symbol;
 end
 
 """
-    gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
-        logscalecovid::Vector{Symbol}=Symbol[],
-        shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    gpfit(df::DataFrame,
+        datacol::Symbol,
+        logscalecovid = Vector{Symbol}(),
+        shapecovid = Vector{Symbol}()
+        )
 
-Fit a Generalized Pareto (GP) distribution by maximum likelihood to the vector of data contained in the dataframe `df` at the column `datacol` using the initial values `initialvalues`.
+Fit the GP parameters.
 
+# Arguments
+- `df::DataFrame`: The dataframe containing the data.
+- `datacol::Symbol`: The symbol of the column of `df` containing the exceedances.
+- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
+- `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
+- `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
 """
 function gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
     logscalecovid::Vector{Symbol}=Symbol[],
@@ -114,10 +143,13 @@ function gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
 end
 
 """
-    gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
+    gpfit(model, intialvalues)
 
-Fit the Generalized Pareto (GP) distribution by maximum likelihood to the ThresholdExceedance model.
+Generate a sample from the GP parameters' posterior distribution.
 
+# Arguments
+- `model::ThresholdExceedance`: The `ThresholdExceedance` model to fit.
+- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
 """
 function gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 

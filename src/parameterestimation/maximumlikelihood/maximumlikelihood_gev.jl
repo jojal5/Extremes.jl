@@ -8,7 +8,7 @@ Fit the GEV parameters.
 The function uses Nelder-Mead solver implemented in the [Optim.jl](https://github.com/JuliaNLSolvers/Optim.jl)
 package to find the point where the log-likelihood is maximal.
 
-The GEV paramters can be modeled as function of covariates as follows:
+The GEV parameters can be modeled as function of covariates as follows:
 ```math
 μ = X₁ × β₁,
 ```
@@ -33,7 +33,7 @@ function gevfit end
         locationcov = Vector{Variable}(),
         logscalecov = Vector{Variable}(),
         shapecov::Vector{<:DataItem} = Vector{Variable}()
-        )::MaximumLikelihoodEVA
+        )
 
 Fit the GEV parameters.
 
