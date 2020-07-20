@@ -1,12 +1,30 @@
+
 """
-    gumbelfitpwm(y::Vector{<:Real})::pwmEVA
+    gumbelfitpwm(...)
 
-Estimate the Gumbel distribution with the probability weighted moments as described in Landwehr et al. (1979).
+Estimate the Gumbel parameters with the probability weighted moments.
 
-*Reference:*
+# Implementation
+
+Estimation with the probability weighted moments, as described by [Landwehr *et al. (1979)](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/WR015i005p01055),
+is only possible in the stationary case.
+
+See also [`gumbelfitpwm`](@ref) for the other methods, [`gevfit`](@ref), [`gevfitbayes`](@ref) and [`BlockMaxima`](@ref).
+
+# Reference
+
 Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
-    some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
-    15(5), 1055–1064.
+    some traditional techniques in estimating Gumbel parameters and quantiles. *Water Resources Research*,
+    15:1055–1064.
+"""
+function gumbelfitpwm end
+
+
+
+"""
+    gumbelfitpwm(y::Vector{<:Real})
+
+Estimate the Gumbel parameters with the probability weighted moments.
 
 """
 function gumbelfitpwm(y::Vector{<:Real})::pwmEVA
@@ -22,13 +40,9 @@ end
 """
     gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
 
-Estimate the Gumbel distribution with the probability weighted moments as described in Landwehr et al. (1979).
+Estimate the Gumbel parameters with the probability weighted moments.
 
-*Reference:*
-Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
-    some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
-    15(5), 1055–1064.
-
+Block maxima data are in the column `datacol` of the dataframe `df`.
 """
 function gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
 
@@ -41,15 +55,9 @@ function gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
 end
 
 """
-    gumbelfitpwm(model::BlockMaxima)::pwmEVA
+    gumbelfitpwm(model::BlockMaxima)
 
-Estimate the Gumbel distribution with the probability weighted moments as described in Landwehr et al. (1979).
-
-*Reference:*
-Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
-    some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
-    15(5), 1055–1064.
-
+Estimate the Gumbel parameters with the probability weighted moments.
 """
 function gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
