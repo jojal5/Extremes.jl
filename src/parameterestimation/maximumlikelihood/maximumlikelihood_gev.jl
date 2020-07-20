@@ -1,7 +1,7 @@
 """
     gevfit()
 
-Fit the GEV parameters.
+Estimate the GEV parameters by maximum likelihood.
 
 # Implementation
 
@@ -32,14 +32,14 @@ function gevfit end
     gevfit(y,
         locationcov = Vector{Variable}(),
         logscalecov = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}()
+        shapecov = Vector{Variable}()
         )
 
-Fit the GEV parameters.
+Estimate the GEV parameters.
 
 # Arguments
 
-- `y::Vector{<:Real}`: the vector of block maxima.
+- `y::Vector{<:Real}`: The vector of block maxima.
 - `locationcov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the location parameter.
 - `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
 - `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
@@ -66,10 +66,10 @@ end
         initialvalues,
         locationcov = Vector{Variable}(),
         logscalecov = Vector{Variable}(),
-        shapecov::Vector{<:DataItem} = Vector{Variable}()
-        )::MaximumLikelihoodEVA
+        shapecov = Vector{Variable}()
+        )
 
-Fit the GEV parameters.
+Estimate the GEV parameters.
 
 # Arguments
 
@@ -98,7 +98,7 @@ end
         shapecovid = Vector{Symbol}()
         )
 
-Fit the GEV parameters.
+Estimate the GEV parameters.
 
 # Arguments
 - `df::DataFrame`: The dataframe containing the data.
@@ -132,7 +132,7 @@ end
         shapecovid = Vector{Symbol}()
         )
 
-Fit the GEV parameters.
+Estimate the GEV parameters.
 
 # Arguments
 - `df::DataFrame`: The dataframe containing the data.
@@ -158,13 +158,9 @@ function gevfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
 end
 
 """
-    gevfit(model, initialvalues)
+    gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})
 
-Generate a sample from the GEV parameters' posterior distribution.
-
-# Arguments
-- `model::BlockMaxima`: The `BlockMaxima` model to fit.
--- `initialvalues::Vector{<:Real}`: Vector of parameters initial values.
+Estimate the parameters of the `BlocMaxima` model using the given initialvalues.
 """
 function gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
 
