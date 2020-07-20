@@ -1,7 +1,7 @@
 """
     fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
-Fits the extreme-value model under the Bayesian paradigm.
+Fit the extreme value model under the Bayesian paradigm.
 
 """
 function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
