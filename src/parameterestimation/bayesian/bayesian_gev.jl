@@ -1,41 +1,69 @@
 """
-    gevfitbayes(y::Vector{<:Real};
-        locationcov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-        logscalecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-        shapecov::Vector{Vector{T}} where T<:Real = Vector{Vector{Float64}}(),
-        niter::Int=5000, warmup::Int=2000)
+    gevfitbayes(..., niter::Int=5000, warmup::Int=2000)
 
-Fit the Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data `y`.
+Generate a sample from the GEV parameters' posterior distribution.
 
-The optional parameter `locationcov` is a vector containing the covariates for the parameter μ.
-The optional parameter `logscalecov` is a vector containing the covariates for the parameter σ.
-The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
+# Arguments
+- `niter::Int = 5000`: The total number of MCMC iterations
+- `warmup::Int = 2000`: The number of warmup iterations (burn-in).
 
-The covariate may be standardized to facilitate the estimation.
+# Implementation
 
-A random sample of the posterior distribution is generated using the NUTS algortihm.
+The function uses the No-U-Turn Sampler (NUTS; [Hoffman and Gelman, 2014](http://jmlr.org/papers/v15/hoffman14a.html))
+implemented in the [Mamba.jl](https://mambajl.readthedocs.io/en/latest/index.html)
+package to generate a random sample from the posterior distribution.
 
-Only flat prior is now supported.
-
-Example with a non-stationary location parameter:
-```julia
-# Sample size
-n = 300
-
-# Covariate
-x = collect(1:n)
-
-# Location as function of the covariate
-μ = x*1/100
-
-# Sample from the non-stationary GEV distribution
-pd = GeneralizedExtremeValue.(μ,1,.1)
-y = rand.(pd)
-
-# Estimate the parameters
-gevfitbayes(y, locationcov = [Variable("x", x)])
+Currently, only the improper uniform prior is implemented, *i.e.*
+```math
+f_{(β₁,β₂,β₃)}(β₁,β₂,β₃) ∝ 1,
 ```
+where
+```math
+μ = X₁ × β₁,
+```
+```math
+ϕ = X₂ × β₂,
+```
+```math
+ξ = X₃ × β₃.
+```
+In the stationary case, this improper prior yields to a proper posterior if the
+sample size is larger than 3 ([Northrop and Attalides, 2016](https://www.jstor.org/stable/24721296?seq=1)).
 
+The covariates are standardized before estimating the parameters to help fit the
+ model. They are transformed back on their original scales before returning the
+ fitted model.
+
+See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref) and [`BlockMaxima`](@ref).
+
+# Reference
+
+Hoffman M. D. and Gelman A. (2014). The No-U-Turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo. *Journal of Machine Learning Research*, 15:1593–1623.
+
+Paul J. Northrop P. J. and Attalides N. (2016). Posterior propriety in Bayesian extreme value analyses using reference priors. *Statistica Sinica*, 26:721-743.
+
+"""
+function gevfitbayes end
+
+"""
+    gevfitbayes(y,
+        locationcov = Vector{Variable}(),
+        logscalecov = Vector{Variable}(),
+        shapecov::Vector{<:DataItem} = Vector{Variable}(),
+        niter::Int=5000,
+        warmup::Int=2000
+        )::BayesianEVA
+
+Generate a sample from the GEV parameters' posterior distribution.
+
+# Arguments
+
+- `y::Vector{<:Real}`: the vector of block maxima.
+- `locationcov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the location parameter.
+- `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
+- `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
+
+See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref) and [`BlockMaxima`](@ref).
 """
 function gevfitbayes(y::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
@@ -56,14 +84,24 @@ function gevfitbayes(y::Vector{<:Real};
 end
 
 """
-    gevfitbayes(df::DataFrame, datacol::Symbol;
-        locationcovid::Vector{Symbol}=Symbol[],
-        logscalecovid::Vector{Symbol}=Symbol[],
-        shapecovid::Vector{Symbol}=Symbol[],
-        niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
+    gevfitbayes(df::DataFrame,
+        datacol::Symbol,
+        locationcovid = Vector{Symbol}(),
+        logscalecovid = Vector{Symbol}(),
+        shapecovid = Vector{Symbol}(),
+        niter::Int=5000,
+        warmup::Int=2000)
 
-Fit a Generalized Extreme Value (GEV) distribution under the Bayesian paradigm to the vector of data contained in the dataframe `df` at the column `datacol`.
+Generate a sample from the GEV parameters' posterior distribution.
 
+# Arguments
+- `df::DataFrame`: The dataframe containing the data.
+- `datacol::Symbol`: The symbol of the column of `df` containing the block maxima data.
+- `locationcovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the location parameter.
+- `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
+- `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
+
+See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref) and [`BlockMaxima`](@ref).
 """
 function gevfitbayes(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
@@ -84,10 +122,16 @@ function gevfitbayes(df::DataFrame, datacol::Symbol;
 end
 
 """
-    gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)
+    gevfitbayes(model::BlockMaxima;
+        niter::Int=5000,
+        warmup::Int=2000)
 
-Fit a non-stationary Generalized Extreme Value (GEV) distribution under the Bayesian paradigm of the BlockMaxima model `model`.
+Generate a sample from the GEV parameters' posterior distribution.
 
+# Arguments
+- `model::BlockMaxima`: The `BlockMaxima` to fit.
+
+See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref) and [`BlockMaxima`](@ref).
 """
 function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 

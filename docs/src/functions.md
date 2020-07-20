@@ -2,7 +2,7 @@
 
 ```@autodocs
 Modules = [Extremes]
-Private = true
+Private = false
 Order = [:function]
 ```
 # Types
