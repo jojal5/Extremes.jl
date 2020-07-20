@@ -20,9 +20,14 @@ end
 Base.Broadcast.broadcastable(obj::Cluster) = Ref(obj)
 
 """
-    getcluster(y::Vector{<:Real}, u₁::Real, u₂::Real)::Vector{Cluster}
+    getcluster(y::Vector{<:Real}, u₁::Real, u₂::Real)
 
-Returns a DataFrame with clusters for exceedance models. A cluster is defined as a sequence where values are higher than u₂ with at least a value higher than threshold u₁.
+Extract the clusters from vector `y`.
+
+A cluster is defined as a sequence of values higher than threshold u₂ with at
+least a value higher than threshold u₁.
+
+See also [`Cluster`](@ref).
 
 """
 function getcluster(y::Vector{<:Real}, u₁::Real, u₂::Real)::Vector{Cluster}
@@ -80,8 +85,13 @@ end
 """
     getcluster(y::Vector{<:Real}, u::Real; runlength::Int=1)::Vector{Cluster}
 
-Threshold exceedances separated by fewer than *r* non-exceedances belong to the same cluster. The value *r* is corresponds to the runlength parameter.
-This approach is referred to as the *runs declustering scheme* (see Coles, 2001 sec. 5.3.2).
+Extract the clusters from vector `y`.
+
+Threshold exceedances separated by fewer than *r* non-exceedances belong to the
+same cluster. The value *r* is corresponds to the runlength parameter. This
+approach is referred to as the *runs declustering scheme* (see Coles, 2001 sec. 5.3.2).
+
+See also [`Cluster`](@ref).
 """
 function getcluster(y::Vector{<:Real}, u::Real; runlength::Int=1)
 
