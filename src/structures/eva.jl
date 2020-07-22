@@ -35,6 +35,46 @@ function computeparamfunction(covariates::Vector{<:DataItem})::Function
 end
 
 """
+    getcovariatenumber(model::EVA)::Int
+
+Return the number of covariates.
+
+"""
+function getcovariatenumber end
+
+"""
+    getdistribution(model::EVA, θ::Vector{<:Real})
+
+Return the distributions corresponding to the model with parameter vector `θ`.
+
+# Implementation
+
+In the stationary case, a single extreme value distribution is returned.
+
+In the non-stationary case, a vector of extreme value distributions is returned,
+one for each data value.
+
+"""
+function getdistribution end
+
+"""
+    getinitialvalue(model::EVA)
+
+Get an initial estimates of the model parameters.
+
+"""
+function getinitialvalue end
+
+
+"""
+    paramindex(model::EVA)
+
+Return the postitions corresponding to the location, scale and shape parameter.
+"""
+function paramindex end
+
+
+"""
     loglike(model::EVA, θ::Vector{<:Real})
 
 Compute the model loglikelihood evaluated at θ.

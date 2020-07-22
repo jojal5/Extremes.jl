@@ -32,12 +32,6 @@ function BlockMaxima(data::Variable;
 
 end
 
-"""
-    paramindex(model::BlockMaxima)::Dict{Symbol,Vector{<:Int}}
-
-Get the parameter indexing for a BlockMaxima.
-
-"""
 function paramindex(model::BlockMaxima)::Dict{Symbol,Vector{<:Int}}
 
     i = 0
@@ -53,36 +47,21 @@ function paramindex(model::BlockMaxima)::Dict{Symbol,Vector{<:Int}}
 
 end
 
-"""
-    getcovariatenumber(model::BlockMaxima)::Int
 
-Return the number of covariates.
-
-"""
 function getcovariatenumber(model::BlockMaxima)::Int
 
     return sum([length(model.location.covariate), length(model.logscale.covariate), length(model.shape.covariate)])
 
 end
 
-"""
-    nparameter(model::BlockMaxima)::Int
 
-Get the number of parameters in a BlockMaxima.
-
-"""
 function nparameter(model::BlockMaxima)::Int
 
     return 3 + getcovariatenumber(model)
 
 end
 
-"""
-    getdistribution(model::BlockMaxima, θ::Vector{<:Real})::Vector{<:Distribution}
 
-Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
-
-"""
 function getdistribution(model::BlockMaxima, θ::AbstractVector{<:Real})::Vector{<:Distribution}
 
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
@@ -100,12 +79,7 @@ function getdistribution(model::BlockMaxima, θ::AbstractVector{<:Real})::Vector
 
 end
 
-"""
-    getinitialvalue(model::BlockMaxima)::Vector{<:Real}
 
-Get an initial values vector for the parameters of model.
-
-"""
 function getinitialvalue(model::BlockMaxima)::Vector{<:Real}
 
     y = model.data.value

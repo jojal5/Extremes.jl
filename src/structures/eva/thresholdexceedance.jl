@@ -27,12 +27,7 @@ function ThresholdExceedance(exceedances::Variable;
 
 end
 
-"""
-    paramindex(model::ThresholdExceedance)::Dict{Symbol,Vector{<:Int}}
 
-Get the parameter indexing for a ThresholdExceedance.
-
-"""
 function paramindex(model::ThresholdExceedance)::Dict{Symbol,Vector{<:Int}}
 
     i = 0
@@ -47,36 +42,21 @@ function paramindex(model::ThresholdExceedance)::Dict{Symbol,Vector{<:Int}}
 
 end
 
-"""
-    getcovariatenumber(model::ThresholdExceedance)::Int
 
-Return the number of covariates.
-
-"""
 function getcovariatenumber(model::ThresholdExceedance)::Int
 
     return sum([length(model.logscale.covariate), length(model.shape.covariate)])
 
 end
 
-"""
-    nparameter(model::ThresholdExceedance)::Int
 
-Get the number of parameters in a ThresholdExceedance.
-
-"""
 function nparameter(model::ThresholdExceedance)::Int
 
     return 2 + getcovariatenumber(model)
 
 end
 
-"""
-    getdistribution(model::ThresholdExceedance, θ::Vector{<:Real})::Vector{<:Distribution}
 
-Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
-
-"""
 function getdistribution(model::ThresholdExceedance, θ::AbstractVector{<:Real})::Vector{<:Distribution}
 
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
@@ -94,12 +74,7 @@ function getdistribution(model::ThresholdExceedance, θ::AbstractVector{<:Real})
 end
 
 
-"""
-    getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
 
-Get an initial values vector for the parameters of model.
-
-"""
 function getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
 
     y = model.data.value
