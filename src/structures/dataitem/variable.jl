@@ -12,10 +12,10 @@ Standardize the values of the Variable.
 # Implementation
 
 The Variable values are standardized by substracting the empirical mean
-and dividing by the empirical standard deviation. A `VariableStd` type
+and dividing by the empirical standard deviation. A [`VariableStd`](@ref) type
 is returned.
 
-See also `Variable`, `VariableStd` and `reconstruct`.
+See also [`Variable`](@ref), [`VariableStd`](@ref) and [`reconstruct`](@ref).
 """
 function standardize(v::Variable)::VariableStd
 
