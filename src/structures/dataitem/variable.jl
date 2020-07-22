@@ -5,9 +5,17 @@ struct Variable <: DataItem
 end
 
 """
-    standardize(v::Variable)::VariableStd
+    standardize(v::Variable)
 
-Standardize the vector of values in `v.values` and return a type `VariableStd`.
+Standardize the values of the Variable.
+
+# Implementation
+
+The Variable values are standardized by substracting the empirical mean
+and dividing by the empirical standard deviation. A `VariableStd` type
+is returned.
+
+See also `Variable`, `VariableStd` and `reconstruct`.
 """
 function standardize(v::Variable)::VariableStd
 
