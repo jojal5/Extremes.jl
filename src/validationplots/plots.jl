@@ -1,5 +1,7 @@
 """
-# TODO : desc
+    probplot(fm::fittedEVA)
+
+Probability plot
 """
 function probplot(fm::fittedEVA)::Plot
 
@@ -19,7 +21,9 @@ end
 
 
 """
-# TODO : desc
+    qqplot(fm::fittedEVA)
+
+Quantile-Quantile plot
 """
 function qqplot(fm::fittedEVA)::Plot
 
@@ -39,7 +43,9 @@ end
 
 
 """
-# TODO : desc
+    returnlevelplot(fm::fittedEVA)
+
+Return level plot
 """
 function returnlevelplot(fm::fittedEVA)::Plot
 
@@ -57,7 +63,9 @@ end
 
 
 """
-# TODO : desc
+    histplot(fm::fittedEVA)
+
+Histogram plot
 """
 function histplot(fm::fittedEVA)::Plot
 
@@ -78,7 +86,9 @@ end
 
 
 """
-# TODO : desc
+    diagnosticplots(fm::fittedEVA)
+
+Diagnostic plots
 """
 function diagnosticplots(fm::fittedEVA)::Gadfly.Compose.Context
 
@@ -97,9 +107,11 @@ end
 
 
 """
-    mrlplot(y::Vector{<:Real}, steps::Int = 100)::Plot
+    mrlplot(y::Vector{<:Real}, steps::Int = 100)
 
-Show the mean residual life from vector `y` using the set of thresholds from the `minimum(y)` value to the second-to-last larger value in `steps` steps.
+Mean residual plot
+
+See also [`mrlplot_data`](@ref).
 """
 function mrlplot(y::Vector{<:Real}, steps::Int=100)::Plot
 

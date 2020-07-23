@@ -1,3 +1,13 @@
+"""
+    fittedEVA{T<:EVA}
+
+Abstract type containing the fitted extreme value model types.
+
+- BayesianEVA
+- MaximumLikelihoodEVA
+- pwmEVA
+
+"""
 abstract type fittedEVA{T<:EVA} end
 
 Base.Broadcast.broadcastable(obj::fittedEVA) = Ref(obj)

@@ -1,6 +1,30 @@
 """
-# TODO : desc
+    probplot_data(fm::fittedModel)
+
+Return the probability plot data in a DataFrame.
 """
+function probplot_data end
+
+"""
+    qqplot_data(fm::fittedModel)
+
+Return the quantile-quantile plot data in a DataFrame.
+"""
+function qqplot_data end
+
+"""
+    returnlevelplot_data(fm::fittedModel)
+
+Return the return level plot data in a DataFrame.
+"""
+function qqplot_data end
+
+"""
+    histplot_data(fm::fittedModel)
+
+Return the histogram plot data in a Dictionary.
+"""
+
 function probplot_data(fm::BayesianEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -24,9 +48,7 @@ function probplot_data(fm::BayesianEVA)::DataFrame
 
 end
 
-"""
-# TODO : desc
-"""
+
 function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -41,9 +63,7 @@ function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
 end
 
-"""
-# TODO : desc
-"""
+
 function probplot_data(fm::pwmEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -59,9 +79,7 @@ function probplot_data(fm::pwmEVA)::DataFrame
 end
 
 
-"""
-# TODO : desc
-"""
+
 function qqplot_data(fm::BayesianEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -85,9 +103,7 @@ function qqplot_data(fm::BayesianEVA)::DataFrame
 
 end
 
-"""
-# TODO : desc
-"""
+
 function qqplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -106,9 +122,7 @@ function qqplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
 end
 
-"""
-# TODO : desc
-"""
+
 function qqplot_data(fm::pwmEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -127,9 +141,7 @@ function qqplot_data(fm::pwmEVA)::DataFrame
 
 end
 
-"""
-# TODO : desc
-"""
+
 function returnlevelplot_data(fm::BayesianEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -155,9 +167,7 @@ function returnlevelplot_data(fm::BayesianEVA)::DataFrame
 end
 
 
-"""
-# TODO : desc
-"""
+
 function returnlevelplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -181,9 +191,7 @@ function returnlevelplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 end
 
 
-"""
-# TODO : desc
-"""
+
 function returnlevelplot_data(fm::pwmEVA)::DataFrame
 
     checkstationarity(fm.model)
@@ -205,9 +213,6 @@ function returnlevelplot_data(fm::pwmEVA)::DataFrame
 end
 
 
-"""
-# TODO : desc
-"""
 function histplot_data(fm::BayesianEVA)::Dict
 
     checkstationarity(fm.model)
@@ -237,9 +242,7 @@ function histplot_data(fm::BayesianEVA)::Dict
 
 end
 
-"""
-# TODO : desc
-"""
+
 function histplot_data(fm::MaximumLikelihoodEVA)::Dict
 
     checkstationarity(fm.model)
@@ -259,9 +262,7 @@ function histplot_data(fm::MaximumLikelihoodEVA)::Dict
 
 end
 
-"""
-# TODO : desc
-"""
+
 function histplot_data(fm::pwmEVA)::Dict
 
     checkstationarity(fm.model)
@@ -281,11 +282,13 @@ function histplot_data(fm::pwmEVA)::Dict
 
 end
 
-
 """
     mrlplot_data(y::Vector{<:Real}, steps::Int = 100)::DataFrame
 
-Compute the mean residual life from vector `y` using the set of thresholds from the `minimum(y)` value to the second-to-last larger value in `steps` steps.
+Compute the mean residual life from vector `y`.
+
+The set of thresholds ranges from `minimum(y)` to the second-to-last larger
+value in `steps` number of steps.
 """
 function mrlplot_data(y::Vector{<:Real}, steps::Int = 100)::DataFrame
 

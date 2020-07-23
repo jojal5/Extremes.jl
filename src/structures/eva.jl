@@ -1,3 +1,13 @@
+
+"""
+    EVA
+
+Abstract type containing the extreme value model types.
+
+- BlockMaxima
+- ThresholdExceedance
+
+"""
 abstract type EVA end
 
 struct paramfun
@@ -60,7 +70,7 @@ In the non-stationary case, a vector of extreme value distributions is returned,
 one for each data value.
 
 In the Bayesian fitted model case, a array of distributions is returned where
-each column corresponds to a MCMC iteration. 
+each column corresponds to a MCMC iteration.
 
 """
 function getdistribution end
