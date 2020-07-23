@@ -44,8 +44,13 @@ function getcovariatenumber end
 
 """
     getdistribution(model::EVA, θ::Vector{<:Real})
+    getdistribution(fm::fittedEVA)
 
-Return the distributions corresponding to the model with parameter vector `θ`.
+Return the distributions corresponding to the model or the fitted model.
+
+If an extreme value model is provided, the distributions corresponding to the
+parameter vector `θ` are returned. If a fitted extreme value model is provident,
+the distributions corresponding to the parameter estimates are returned.
 
 # Implementation
 
@@ -53,6 +58,9 @@ In the stationary case, a single extreme value distribution is returned.
 
 In the non-stationary case, a vector of extreme value distributions is returned,
 one for each data value.
+
+In the Bayesian fitted model case, a array of distributions is returned where
+each column corresponds to a MCMC iteration. 
 
 """
 function getdistribution end

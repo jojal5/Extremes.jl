@@ -66,11 +66,6 @@ function parametervar(fm::pwmEVA, nboot::Int=1000)::Array{Float64, 2}
 end
 
 
-"""
-    cint(fm::pwmEVA, clevel::Real=.95, nboot::Int=1000)::Array{Array{Float64,1},1}
-
-Estimate the parameter estimates confidence interval by bootstrap.
-"""
 function cint(fm::pwmEVA, clevel::Real=.95, nboot::Int=5000)::Array{Array{Float64,1},1}
 
     @assert 0<clevel<1 "the confidence level should be between 0 and 1."
@@ -173,12 +168,7 @@ function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPer
 
 end
 
-"""
-    cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
-Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
-
-"""
 function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
@@ -234,15 +224,7 @@ function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, t
 
 end
 
-"""
-    cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
-Compute the confidence intervel for the return level corresponding to the return period
-`returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
-
-The threshold should be a scalar. A varying threshold is not yet implemented.
-
-"""
 function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
