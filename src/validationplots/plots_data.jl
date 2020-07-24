@@ -17,13 +17,15 @@ function qqplot_data end
 
 Return the return level plot data in a DataFrame.
 """
-function qqplot_data end
+function returnlevelplot_data end
 
 """
     histplot_data(fm::fittedModel)
 
 Return the histogram plot data in a Dictionary.
 """
+function hisplot_data end
+
 
 function probplot_data(fm::BayesianEVA)::DataFrame
 

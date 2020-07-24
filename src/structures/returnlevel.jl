@@ -1,5 +1,12 @@
+
+
 abstract type ReturnLevelModel{T<:fittedEVA} end
 
+"""
+    ReturnLevel
+
+ReturnLevel type constructed by the function [`returnlevel`](@ref).
+"""
 struct ReturnLevel{T<:fittedEVA}
       model::ReturnLevelModel{T}
       returnperiod::Real

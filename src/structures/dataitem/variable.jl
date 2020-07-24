@@ -1,4 +1,8 @@
+"""
+    Variable(name::String, value :: Vector{<:Real})
 
+Construct a Variable type
+"""
 struct Variable <: DataItem
     name :: String
     value :: Vector{<:Real}
