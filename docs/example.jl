@@ -71,3 +71,18 @@ p[2]
 p = plot(fm.sim)
 
 hstack([p[1], p[2]])
+
+
+
+
+
+# Lis all files in a directory
+filenames = String[]
+
+
+for (root, dirs, files) in walkdir("src/validationplots/")
+    for file in files
+        push!(filenames, joinpath(root, file))
+        # println(joinpath(root, file)) # path to files
+    end
+end
