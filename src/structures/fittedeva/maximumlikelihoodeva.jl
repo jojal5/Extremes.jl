@@ -124,13 +124,7 @@ function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real):
 
 end
 
-"""
-    cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
-Compute the confidence intervel for the return level corresponding to the return period
-`returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
-
-"""
 function cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
@@ -182,15 +176,6 @@ function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::R
 end
 
 
-"""
-    cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
-
-Compute the confidence intervel for the return level corresponding to the return period
-`returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
-
-The threshold should be a scalar. A varying threshold is not yet implemented.
-
-"""
 function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
@@ -329,11 +314,6 @@ function transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
 end
 
 
-"""
-    cint(fm::MaximumLikelihoodEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
-
-Compute the Wald parameter confidence intervals using the approximate parameter estimates covariance matrix.
-"""
 function cint(fm::MaximumLikelihoodEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
 
     @assert 0<clevel<1 "the confidence level should be between 0 and 1."

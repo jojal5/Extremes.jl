@@ -1,14 +1,10 @@
-"""
-# TODO : desc
-"""
+
 function standardize(y::Real, μ::Real, σ::Real, ξ::Real)::Real
     return 1 / ξ * log( 1 + ξ/σ * ( y - μ ) )
 
 end
 
-"""
-# TODO : desc
-"""
+
 function standardize(fm::MaximumLikelihoodEVA)::Vector{<:Real}
 
     y = fm.model.data.value
@@ -18,9 +14,7 @@ function standardize(fm::MaximumLikelihoodEVA)::Vector{<:Real}
 
 end
 
-"""
-# TODO : desc
-"""
+
 function standardize(fm::BayesianEVA)::Vector{<:Real}
 
     θ̂ = findposteriormode(fm)
@@ -38,23 +32,17 @@ function standardize(fm::BayesianEVA)::Vector{<:Real}
 end
 
 
-"""
-# TODO : desc
-"""
+
 function standarddist(::BlockMaxima)::Distribution
     return Gumbel()
 end
 
-"""
-# TODO : desc
-"""
+
 function standarddist(::ThresholdExceedance)::Distribution
     return Exponential()
 end
 
-"""
-# TODO : desc
-"""
+
 function probplot_std_data(fm::fittedEVA)::DataFrame
 
     z = standardize(fm)
@@ -65,9 +53,7 @@ function probplot_std_data(fm::fittedEVA)::DataFrame
 
 end
 
-"""
-# TODO : desc
-"""
+
 function qqplot_std_data(fm::fittedEVA)::DataFrame
 
     z = standardize(fm)
@@ -79,9 +65,7 @@ function qqplot_std_data(fm::fittedEVA)::DataFrame
 end
 
 
-"""
-# TODO : desc
-"""
+
 function histplot_std_data(fm::fittedEVA)::Dict
 
     dist = standarddist(fm.model)

@@ -1,13 +1,25 @@
+"""
+    Variable(name::String, value :: Vector{<:Real})
 
+Construct a Variable type
+"""
 struct Variable <: DataItem
     name :: String
     value :: Vector{<:Real}
 end
 
 """
-    standardize(v::Variable)::VariableStd
+    standardize(v::Variable)
 
-Standardize the vector of values in `v.values` and return a type `VariableStd`.
+Standardize the values of the Variable.
+
+# Implementation
+
+The Variable values are standardized by substracting the empirical mean
+and dividing by the empirical standard deviation. A [`VariableStd`](@ref) type
+is returned.
+
+See also [`Variable`](@ref), [`VariableStd`](@ref) and [`reconstruct`](@ref).
 """
 function standardize(v::Variable)::VariableStd
 

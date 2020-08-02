@@ -1,40 +1,66 @@
 """
-    gpfitbayes(y::Vector{<:Real};
-         logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-         shapecov::Vector{<:DataItem} = Vector{Variable}(),
-         niter::Int=5000, warmup::Int=2000)::BayesianEVA
+    gpfitbayes(..., niter::Int=5000, warmup::Int=2000)
 
-Fit a non-stationary Generalized Pareto (GEV) distribution under the Bayesian paradigm to the vector of data contained in the Vector y.
+Generate a sample from the GP parameters' posterior distribution.
 
-The optional parameter `logscalecov` is a vector containing the covariates for the parameter σ.
-The optional parameter `shapecov` is a vector containing the covariates for the parameter ξ.
+Data provided must be the exceedances above the threshold, *i.e.* the data above the threshold minus
+the threshold.
 
-The covariate may be standardized to facilitate the estimation.
+# Arguments
+- `niter::Int = 5000`: The total number of MCMC iterations
+- `warmup::Int = 2000`: The number of warmup iterations (burn-in).
 
-A random sample of the posterior distribution is generated using the NUTS algortihm.
+# Implementation
 
-Only flat prior is now supported.
+The function uses the No-U-Turn Sampler (NUTS; [Hoffman and Gelman, 2014](http://jmlr.org/papers/v15/hoffman14a.html))
+implemented in the [Mamba.jl](https://mambajl.readthedocs.io/en/latest/index.html)
+package to generate a random sample from the posterior distribution.
 
-Example with a non-stationary location parameter:
-```julia
-# Sample size
-n = 300
-
-# Covariate
-x = collect(1:n)
-
-# Location as function of the covariate
-ϕ = x*1/500
-σ = exp.(ϕ)
-
-# Sample from the non-stationary GEV distribution
-pd = GeneralizedPareto.(σ,.1)
-y = rand.(pd)
-
-# Estimate the parameters
-gpfitbayes(y, logscalecov = [Variable("x", x)])
+Currently, only the improper uniform prior is implemented, *i.e.*
+```math
+f_{(β₂,β₃)}(β₂,β₃) ∝ 1,
 ```
+where
+```math
+ϕ = X₂ × β₂,
+```
+```math
+ξ = X₃ × β₃.
+```
+In the stationary case, this improper prior yields to a proper posterior if the
+sample size is larger than 2 ([Northrop and Attalides, 2016](https://www.jstor.org/stable/24721296?seq=1)).
 
+The covariates are standardized before estimating the parameters to help fit the
+ model. They are transformed back on their original scales before returning the
+ fitted model.
+
+See also [`gpfitbayes`](@ref) for the other methods, [`gpfitpwm`](@ref), [`gpfit`](@ref) and [`ThresholdExceedance`](@ref).
+
+# Reference
+
+Hoffman M. D. and Gelman A. (2014). The No-U-Turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo. *Journal of Machine Learning Research*, 15:1593–1623.
+
+Paul J. Northrop P. J. and Attalides N. (2016). Posterior propriety in Bayesian extreme value analyses using reference priors. *Statistica Sinica*, 26:721-743.
+
+"""
+function gpfitbayes end
+
+
+"""
+    gpfitbayes(y,
+        logscalecov = Vector{Variable}(),
+        shapecov = Vector{Variable}(),
+        niter::Int=5000,
+        warmup::Int=2000
+        )
+
+Generate a sample from the GP parameters' posterior distribution.
+
+# Arguments
+
+- `y::Vector{<:Real}`: The vector of exceedances.
+- `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
+- `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 """
 function gpfitbayes(y::Vector{<:Real};
      logscalecov::Vector{<:DataItem} = Vector{Variable}(),
@@ -53,13 +79,20 @@ function gpfitbayes(y::Vector{<:Real};
 end
 
 """
-    gpfitbayes(df::DataFrame, datacol::Symbol;
-        logscalecovid::Vector{Symbol}=Symbol[],
-        shapecovid::Vector{Symbol}=Symbol[],
-        niter::Int=5000, warmup::Int=2000)::MaximumLikelihoodEVA
+    gpfitbayes(df::DataFrame,
+        datacol::Symbol,
+        logscalecovid = Vector{Symbol}(),
+        shapecovid = Vector{Symbol}(),
+        niter::Int=5000,
+        warmup::Int=2000)
 
-Fit a Generalized Pareto (GP) distribution under the Bayesian paradigm to the vector of data contained in the dataframe `df` at the column `datacol`.
+Generate a sample from the GP parameters' posterior distribution.
 
+# Arguments
+- `df::DataFrame`: The dataframe containing the data.
+- `datacol::Symbol`: The symbol of the column of `df` containing the exceedances.
+- `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
+- `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
 """
 function gpfitbayes(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
@@ -80,13 +113,11 @@ function gpfitbayes(df::DataFrame, datacol::Symbol;
 end
 
 """
-    gpfitbayes(model::ThresholdExceedance, niter::Int=5000, warmup::Int=2000)::BayesianEVA
+    gpfitbayes(model::ThresholdExceedance;
+        niter::Int=5000,
+        warmup::Int=2000)
 
-Fit the Generalized Pareto (GP) distribution under the Bayesian paradigm to the ThresholdExceedance model.
-
-A random sample from the posterior distribution is generated using the NUTS algortihm.
-
-Only flat prior is now supported.
+Generate a sample from the GP parameters' posterior distribution.
 
 """
 function gpfitbayes(model::ThresholdExceedance; niter::Int=5000, warmup::Int=2000)::BayesianEVA

@@ -3,6 +3,14 @@
 
 Compute the initial values of the GEV parameters given the data `y`.
 
+If the probability weighted moment estimations are valid, then those values are
+returned. Otherwise, the probability weighted moment estimations of the Gumbel
+distribution are returned.
+
+# Example
+```julia-repl
+julia> Extremes.getinitialvalue(GeneralizedExtremeValue, y)
+```
 """
 function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vector{<:Real}
 
@@ -35,10 +43,17 @@ function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vec
 end
 
 """
-     getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
+    getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
 
-Compute the initial values of the GP parameters given the data `y`.
+Compute the initial values of the GP distribution parameters given the data `y`.
 
+If the probability weighted moment estimations are valid, then those values are
+returned. Otherwise, the moment estimation of the exponential distribution is returned.
+
+# Example
+```julia-repl
+julia> Extremes.getinitialvalue(GeneralizedPareto, y)
+```
 """
 function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
 
@@ -66,8 +81,16 @@ end
 """
     slicematrix(A::AbstractMatrix{T}; dims::Int=1)::Array{Array{T,1},1} where T
 
-Convert a Matrix in a Vector of Vector. The slicing dimension can be defined with `dims`.
+Convert a Matrix in a Vector of Vectors.
 
+The slicing dimension is defined with the optional `dims` keyword.
+
+# Examples
+```julia-repl
+julia> A = rand(1:10,5,4)
+julia> V₁ = Extremes.slicematrix(A)
+julia> V₂ = Extremes.slicematrix(A, dims=2)
+```
 """
 function slicematrix(A::AbstractMatrix{T}; dims::Int=1)::Array{Array{T,1},1} where T
 
@@ -91,11 +114,20 @@ function slicematrix(A::AbstractMatrix{T}; dims::Int=1)::Array{Array{T,1},1} whe
 
 end
 
+
 """
     unslicematrix(B::Array{Array{T,1},1}; dims::Int=1)::AbstractMatrix{T} where T
 
-Convert a Vector of Vector in a Matrix. The vectors within each vector should be of the same length.
+Convert a Vector of Vectors in a Matrix if all vectors share the same length.
 
+The concatenation dimension is defined with the optional `dims` keyword.
+
+# Examples
+```julia-repl
+julia> V = Extremes.slicematrix(rand(1:10, 5, 4))
+julia> A₁ = Extremes.unslicematrix(V)
+julia> A₂ = Extremes.unslicematrix(V, dims=2)
+```
 """
 function unslicematrix(B::Array{Array{T,1},1}; dims::Int=1)::AbstractMatrix{T} where T
 
@@ -135,8 +167,13 @@ end
 """
     buildVariables(df::DataFrame, ids::Vector{Symbol})::Vector{Variable}
 
-Creates the explanatory variables with names corresponding to the symbols.
+Build the `Variable` type from the columns `ids` of the DataFrame `df`.
 
+# Example
+```julia-repl
+julia> df = Extremes.dataset("fremantle")
+julia> Extremes.buildVariables(df, [:Year, :SOI])
+```
 """
 function buildVariables(df::DataFrame, ids::Vector{Symbol})::Vector{Variable}
 

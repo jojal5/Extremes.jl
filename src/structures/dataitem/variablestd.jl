@@ -10,6 +10,7 @@ end
     VariableStd(name::String, z::Vector{<:Real})::VariableStd
 
 Construct a VariableStd type from the standardized vector `z` with the name `name`.
+
 """
 function VariableStd(name::String, z::Vector{<:Real})::VariableStd
 
@@ -22,10 +23,17 @@ function VariableStd(name::String, z::Vector{<:Real})::VariableStd
     return VariableStd(name,z,0,1)
 end
 
-"""
-    reconstruct(vstd::VariableStd)::Variable
 
-Reconstruct the orginial variable from the standardized one.
+
+
+"""
+    reconstruct(vstd::VariableStd)
+
+Reconstruct the original Variable from the standardized one.
+
+See also
+
+See also [`Variable`](@ref), [`VariableStd`](@ref)  and [`standardize`](@ref).
 """
 function reconstruct(vstd::VariableStd)::Variable
 

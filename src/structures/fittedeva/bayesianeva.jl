@@ -5,11 +5,7 @@ struct BayesianEVA{T} <: fittedEVA{T}
     sim::Mamba.Chains
 end
 
-"""
-    getdistribution(fm::bayesianEVA)::Vector{<:Distribution}
 
-Return the distributions for each MCMC iteration.
-"""
 function getdistribution(fm::BayesianEVA)::Array{<:ContinuousUnivariateDistribution,2}
 
     v = fm.sim.value[:,:,1]
@@ -27,9 +23,11 @@ end
 """
     quantile(fm::BayesianEVA,p::Real)::Real
 
-Compute the quantile of level `p` from the fitted Bayesian model `fm`. If the
-model is stationary, then a quantile is returned for each MCMC steps. If the
-model is non-stationary, a matrix of quantiles is returned, where each row
+Compute the quantile of level `p` from the fitted Bayesian model `fm`.
+
+If the model is stationary, then a quantile is returned for each MCMC steps.
+
+If the model is non-stationary, a matrix of quantiles is returned, where each row
 corresponds to a MCMC step and each column to a covariate.
 
 """
@@ -68,13 +66,7 @@ function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLe
 
 end
 
-"""
-    cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}};, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
-Compute the confidence interval for the return level corresponding to the return period
-`returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
-
-"""
 function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
@@ -120,15 +112,7 @@ function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobs
 
 end
 
-"""
-    cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
-Compute the confidence interval for the return level corresponding to the return period
-`returnPeriod` from the fitted model `fm` with the confidence level `confidencelevel`.
-
-The threshold should be a scalar. A varying threshold is not yet implemented.
-
-"""
 function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
@@ -283,12 +267,6 @@ function parametervar(fm::BayesianEVA)::Array{Float64, 2}
 end
 
 
-
-"""
-    cint(fm::pwmEVA, clevel::Real=.95, nboot::Int=1000)::Array{Array{Float64,1},1}
-
-Estimate the parameter estimates highest posterior density interval.
-"""
 function cint(fm::BayesianEVA, confidencelevel::Real=.95)::Array{Array{Float64,1},1}
 
     @assert 0<confidencelevel<1 "the confidence level should be between 0 and 1."

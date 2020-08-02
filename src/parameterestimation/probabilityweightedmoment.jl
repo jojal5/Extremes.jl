@@ -1,16 +1,20 @@
 """
- pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)::Real
+    pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)
 
-Compute the empirical probability weighted moments defined by:
+Compute the empirical probability weighted moments.
+
+The probability weighted moments are defined by [Landwehr *et al. (1979)](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/WR015i005p01055)
+as follows:
 ```math
 M_{p,r,s} = \\mathbb{E}\\left[ X^p F^r(X) \\left\\{ 1-F(X) \\right\\}^s  \\right].
 ```
-The unbiased empirical estimate is computed using the formula given by Landwehr et al. (1979).
+The unbiased empirical estimates is computed using the formula given by [Landwehr *et al. (1979)](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/WR015i005p01055).
 
-*Reference:*
+# Reference
+
 Landwehr, J. M., Matalas, N. C. and Wallis, J. R. (1979). Probability weighted moments compared with
- some traditional techniques in estimating Gumbel Parameters and quantiles. Water Resources Research,
- 15(5), 1055–1064.
+    some traditional techniques in estimating Gumbel parameters and quantiles. *Water Resources Research*,
+    15:1055–1064.
 
 """
 function pwm(x::Vector{<:Real},p::Int,r::Int,s::Int)::Real

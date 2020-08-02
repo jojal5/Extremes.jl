@@ -1,12 +1,28 @@
+
 """
-    gpfitpwm(y::Vector{<:Real})::pwmEVA
+    gpfitpwm(...)
 
-Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
-in Hosking & Wallis (1987).
+Estimate the GP parameters with the probability weighted moments.
 
-*Reference:*
-Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
-    Technometrics, 29(3), 339-349.
+# Implementation
+
+Estimation with the probability weighted moments, as described by [Hosking and Wallis (1987)](https://www.jstor.org/stable/1269343?seq=1),
+is only possible in the stationary case.
+
+See also [`gpfitpwm`](@ref) for the other methods, [`gpfit`](@ref), [`gpfitbayes`](@ref) and [`ThresholdExceedance`](@ref).
+
+# Reference
+
+Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and quantile estimation for the Generalized Pareto distribution,
+    *Technometrics*, 29:339-349.
+"""
+function gpfitpwm end
+
+
+"""
+    gpfitpwm(y::Vector{<:Real})
+
+Estimate the GP parameters with the probability weighted moments.
 
 """
 function gpfitpwm(y::Vector{<:Real})::pwmEVA
@@ -20,14 +36,11 @@ function gpfitpwm(y::Vector{<:Real})::pwmEVA
 end
 
 """
-    gpfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+    gpfitpwm(df::DataFrame, datacol::Symbol)
 
-Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
-in Hosking & Wallis (1987).
+Estimate the GP parameters with the probability weighted moments.
 
-*Reference:*
-Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
-    Technometrics, 29(3), 339-349.
+Block maxima data are in the column `datacol` of the dataframe `df`.
 
 """
 function gpfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
@@ -41,14 +54,9 @@ function gpfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
 end
 
 """
-    gpfitpwm(model::ThresholdExceedance)::pwmEVA
+    gpfitpwm(model::ThresholdExceedance)
 
-Estimate the Generalized Pareto distribution parameters with the probability weighted moments as described
-in Hosking & Wallis (1987).
-
-*Reference:*
-Hosking, J. R. M. and Wallis, J. R. (1987). Parameter and Quantile Estimation for the Generalized Pareto Distribution,
-    Technometrics, 29(3), 339-349.
+Estimate the GP parameters with the probability weighted moments.
 
 """
 function gpfitpwm(model::ThresholdExceedance)::pwmEVA
