@@ -169,7 +169,14 @@ function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPer
 end
 
 
+<<<<<<< HEAD
 function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
+=======
+Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
+
+"""
+function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, confidencelevel::Real=.95, nboot::Int=1000)::Vector{Vector{Real}}
+>>>>>>> dev
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -178,8 +185,6 @@ function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, con
       p = 1-1/rl.returnperiod
 
       # Compute the credible interval
-
-      nboot = 5000
       α = (1 - confidencelevel)
 
       y = rl.model.fm.model.data.value
