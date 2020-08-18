@@ -1,7 +1,17 @@
 [deps]
-Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Fontconfig = "186bb1d3-e1f7-5a2c-a377-96d770f13627"
+Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
 
 [compat]
-Documenter = "0.20, 0.21, 0.22, 0.23, 0.24"
+Cairo = "1"
 DataFrames = "0.19, 0.20, 0.21"
+Distributions = "0.18, 0.19, 0.20, 0.21, 0.22, 0.23"
+Documenter = "0.20, 0.21, 0.22, 0.23, 0.24"
+Fontconfig = "0.4"
+Gadfly = "1"
+
