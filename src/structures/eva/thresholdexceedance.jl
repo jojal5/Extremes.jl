@@ -30,14 +30,12 @@ end
 
 function paramindex(model::ThresholdExceedance)::Dict{Symbol,Vector{<:Int}}
 
-    i = 0
-    function increasei()
-        i = i + 1
-        return i
-    end
+    sϕ = length(model.logscale.covariate) + 1
+    sξ = length(model.shape.covariate) + 1
+
     return Dict{Symbol,Vector{<:Int}}(
-        :ϕ => Int64[increasei() for k in 1:length(model.logscale.covariate) + 1],
-        :ξ => Int64[increasei() for k in 1:length(model.shape.covariate) + 1]
+        :ϕ => Int64[k for k in (1:sϕ)],
+        :ξ => Int64[k for k in .+ sϕ .+ (1:sξ)]
     )
 
 end
