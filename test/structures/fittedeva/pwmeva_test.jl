@@ -61,7 +61,7 @@
             end
         end
 
-        @test all(count.(eachcol(cover))/niter .> .9)
+        @test all(count.(eachcol(cover))/niter .> .85)
     end
 
 
@@ -92,7 +92,7 @@
             cover[i] = ci[][1] < q < ci[][2]
         end
 
-        @test count(cover)/niter > .9
+        @test count(cover)/niter > .85
     end
 
 
