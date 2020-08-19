@@ -80,7 +80,7 @@
 
         q = quantile(pd, 1-1/100)
 
-        niter = 1000
+        niter = 1200
 
         cover = falses(niter)
 
