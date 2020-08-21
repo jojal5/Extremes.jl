@@ -11,7 +11,6 @@ Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
 Cairo = "1"
 DataFrames = "0.19, 0.20, 0.21"
 Distributions = "0.18, 0.19, 0.20, 0.21, 0.22, 0.23"
-Documenter = "0.20, 0.21, 0.22, 0.23, 0.24"
+Documenter = "0.20, 0.21, 0.22, 0.23, 0.24, 0.25"
 Fontconfig = "0.4"
 Gadfly = "1"
-

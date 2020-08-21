@@ -3,7 +3,6 @@ using Documenter, Extremes, Cairo, Fontconfig
 CI = get(ENV, "CI", nothing) == "true"
 
 makedocs(sitename = "Extremes.jl",
-    #doctest = false,
     format = Documenter.HTML(
     prettyurls = CI,
     ),
@@ -21,12 +20,14 @@ makedocs(sitename = "Extremes.jl",
 
 )
 
-if CI
-    deploydocs(
-    repo   = "github.com/jojal5/Extremes.jl.git",
-    devbranch = "dev",
-    versions = ["stable" => "v^", "v#.#"],
-    push_preview = false,
-    target = "build"
-    )
-end
+# if CI
+#     deploydocs(
+#     repo   = "github.com/jojal5/Extremes.jl.git",
+#     devbranch = "dev",
+#     versions = ["stable" => "v^", "v#.#"],
+#     push_preview = false,
+#     target = "build"
+#     )
+# end
+
+deploydocs(repo = "github.com/jojal5/Extremes.jl.git")
