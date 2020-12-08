@@ -23,7 +23,7 @@ Please use the following bibtex, when you refer Extremes.jl from your papers.
 ```
 @software{JalbertExtremes,
     title  = {Extremes.jl, Extreme value analysis package for Julia},
-    author = {Jalbert, Jonathan and Farmer, Mylène and Roy, Philippe},
+    author = {Jalbert, Jonathan and Farmer, Marilou and Roy, Philippe},
     url    = {https://github.com/jojal5/Extremes.jl},
     year   = {2020}
 }
