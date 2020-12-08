@@ -16,6 +16,18 @@ julia> Pkg.add("Extremes")
 
 See the [Package Documentation](https://jojal5.github.io/Extremes.jl/dev/) for details and examples.
 
+## Citation
+
+Please use the following bibtex, when you refer Extremes.jl from your papers.
+
+```
+@software{JalbertExtremes,
+    title  = {Extremes.jl, Extreme value analysis package for Julia},
+    author = {Jalbert, Jonathan and Farmer, Mylène and Roy, Philippe},
+    url    = {https://github.com/jojal5/Extremes.jl},
+    year   = {2020}
+}
+```
 
 ## Data
 The datasets that are available through this package are the datasets referenced in *An Introduction to Statistical Modeling of Extreme Values* by Stuart Coles.
