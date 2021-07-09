@@ -1,7 +1,7 @@
 name = "Extremes"
 uuid = "fe3fe864-1b39-11e9-20b8-1f96fa57382d"
 authors = ["Jonathan Jalbert <jonathan.jalbert@polymtl.ca>"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
