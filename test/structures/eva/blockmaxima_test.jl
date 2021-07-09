@@ -141,7 +141,7 @@
         model = BlockMaxima(Variable("y", y))
         ini = Extremes.getinitialvalue(model)
         @test ini[1] ≈ -1.027 atol = .001
-        @test ini[2] ≈ -.319 atol = .001
+        @test ini[2] ≈ 0.726 atol = .001
         @test ini[3] ≈ 0 atol = .001
 
     end
