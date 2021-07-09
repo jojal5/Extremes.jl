@@ -32,11 +32,11 @@ function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vec
     else
         fm = gumbelfitpwm(y)
         μ₀ = fm.θ̂[1]
-        σ₀ = fm.θ̂[2]
+        ϕ₀ = fm.θ̂[2]
         ξ₀ = 0.0
     end
 
-    initialvalues = [μ₀, log(σ₀), ξ₀]
+    initialvalues = [μ₀, ϕ₀, ξ₀]
 
     return initialvalues
 
