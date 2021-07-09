@@ -30,10 +30,10 @@
         y = rand(pd, 10000)
 
         # theoritical form of the pwm for the Gumbel distribution (Greenwood and al., 1979)
-        f(j::Int) = μ/(1+j) + σ/(1+j) * (log(1+j) + MathConstants.eulergamma)
+        f2(j::Int) = μ/(1+j) + σ/(1+j) * (log(1+j) + MathConstants.eulergamma)
 
         for j=1:3
-            @test f(j) ≈ Extremes.pwm(y,1,j,0) rtol=.1
+            @test f2(j) ≈ Extremes.pwm(y,1,j,0) rtol=.1
         end
 
     end
