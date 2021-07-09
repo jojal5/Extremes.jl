@@ -2,7 +2,7 @@ language: julia
 os:
   - linux
 julia:
-  - 1
+  - 1.6
   - nightly
 
 script:
@@ -14,7 +14,7 @@ jobs:
     - julia: nightly
   include:
     - stage: "Documentation"
-      julia: 1
+      julia: 1.6
       os: linux
       script:
         - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
