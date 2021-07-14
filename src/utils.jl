@@ -27,16 +27,16 @@ function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vec
      values are replaced by the Gumbel initial values. =#
     if valid_initialvalues
         μ₀ = location(fd)
-        σ₀ = scale(fd)
+        ϕ₀ = log(scale(fd))
         ξ₀ = Distributions.shape(fd)
     else
         fm = gumbelfitpwm(y)
         μ₀ = fm.θ̂[1]
-        σ₀ = fm.θ̂[2]
+        ϕ₀ = fm.θ̂[2]
         ξ₀ = 0.0
     end
 
-    initialvalues = [μ₀, log(σ₀), ξ₀]
+    initialvalues = [μ₀, ϕ₀, ξ₀]
 
     return initialvalues
 
