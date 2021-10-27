@@ -72,8 +72,8 @@ function gevfitpwm(model::BlockMaxima)::pwmEVA
     # GEV parameters estimations. Expressions retrieved from Hosking et al. (1985).
     c = (2b₁ - b₀)/(3b₂ - b₀) - log(2)/log(3)
     k = 7.859c + 2.9554c^2
-    σ̂ = k *( 2b₁-b₀ ) /(1-2^(-k))/gamma(1+k)
-    μ̂ = b₀ - σ̂/k*( 1-gamma(1+k) )
+    σ̂ = k *( 2b₁-b₀ ) /(1-2^(-k))/SpecialFunctions.gamma(1+k)
+    μ̂ = b₀ - σ̂/k*( 1-SpecialFunctions.gamma(1+k) )
 
     ξ̂ = -k
     ϕ̂ = log(σ̂)
