@@ -9,8 +9,8 @@ Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
 
 [compat]
 Cairo = ">= 1"
-DataFrames = ">= 1.2"
-Distributions = ">= 0.23"
+DataFrames = ">= 0.19"
+Distributions = ">= 0.18"
 Documenter = ">= 0.20"
 Fontconfig = ">= 0.4"
 Gadfly = ">= 1"

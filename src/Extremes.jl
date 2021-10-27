@@ -1,12 +1,14 @@
 module Extremes
 
 using Distributions, DataFrames, Dates
-using Optim, NLSolversBase, ForwardDiff
-using SpecialFunctions, LinearAlgebra, Statistics
+using Optim
+using LinearAlgebra, Statistics
 using Mamba, ProgressMeter
 using Gadfly
 
 import CSV
+import ForwardDiff, SpecialFunctions
+
 import Distributions.quantile
 import Statistics.var
 import Base.length, Base.maximum, Base.sum
