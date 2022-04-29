@@ -27,17 +27,7 @@
 
     @testset "fit(model)" begin
         # No solution warn test
-        n = 10
-
-        μ = 0.0
-        σ = 1.0
-        ξ = .8
-
-        ϕ = log(σ)
-        θ = [μ; ϕ; ξ]
-
-        pd = GeneralizedExtremeValue(μ, σ, ξ)
-        y = rand(pd, n)
+		y = [14.6, -0.5, 505.9]
 
         model = Extremes.BlockMaxima(Variable("y", y))
 
