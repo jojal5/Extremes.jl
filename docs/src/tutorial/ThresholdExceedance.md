@@ -153,10 +153,10 @@ Most functions described in the previous sections also work in the Bayesian cont
 
 ### GP parameter estimation
 
-The Bayesian GEV parameter estimation is performed with the [`gpfitbayes`](@ref) function:
+The Bayesian GP parameter estimation is performed with the [`gpfitbayes`](@ref) function:
 
 ```@repl rain
-fm = gevfitbayes(df, :Exceedance)
+fm = gpfitbayes(df, :Exceedance)
 ```
 
 !!! note "Prior"
@@ -186,7 +186,7 @@ Most functions described in the previous sections also work for the model fitted
 The parameter estimation based on the probability weighted moments is performed with the [`gpfitpwm`](@ref) function:
 
 ```@repl rain
-fm = gevfitpwm(df, :Exceedance)
+fm = gpfitpwm(df, :Exceedance)
 ```
 
 The approximate covariance matrix of the parameter estimates using a bootstrap procedure can be obtained with the [`parametervar`](@ref) function:
