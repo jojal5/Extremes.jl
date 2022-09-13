@@ -2,7 +2,7 @@ struct BayesianEVA{T} <: fittedEVA{T}
     "Extreme value model definition"
     model::T
     "MCMC outputs"
-    sim::Mamba.Chains
+    sim::MCMCChains.Chains
 end
 
 
@@ -77,12 +77,12 @@ function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.
 
       α = (1 - confidencelevel)
 
-      Q = Chains(rl.value)
+      Q = MCMCChains.Chains(rl.value)
 
-      ci = Mamba.hpd(Q, alpha = α)
-
-      return slicematrix(ci.value[:,:,1], dims=2)
-
+      ci = MCMCChains.hpd(Q, alpha = α)
+	
+      #return slicematrix(ci.value[:,:,1], dims=2)
+	  return slicematrix(hcat(ci.nt.lower, ci.nt.upper), dims=2)
 end
 
 """
@@ -120,11 +120,12 @@ function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel
 
     α = 1 - confidencelevel
 
-    Q = Chains(rl.value)
+    Q = MCMCChains.Chains(rl.value)
 
-    ci = Mamba.hpd(Q, alpha = α)
+    ci = MCMCChains.hpd(Q, alpha = α)
 
-    return slicematrix(ci.value[:,:,1], dims=2)
+    #return slicematrix(ci.value[:,:,1], dims=2)
+	return slicematrix(hcat(ci.nt.lower, ci.nt.upper), dims=2)
 
 end
 
@@ -145,19 +146,18 @@ function showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
 end
 
 """
-    showChain(io::IO, obj::Mamba.Chains; prefix::String = "")
-
-Displays a Mamba.Chains with the prefix `prefix` before every line.
+    showChain(io::IO, chain::MCMCChains.Chains; prefix::String = "")
+Displays a MCMCChains.Chains with the prefix `prefix` before every line.
 """
-function showChain(io::IO, chain::Mamba.Chains; prefix::String = "")
+function showChain(io::IO, chain::MCMCChains.Chains; prefix::String = "")
 
-    println(io, prefix, "Mamba.Chains")
-    println(io, prefix, "Iterations :\t\t", chain.range[1], ":", chain.range[end])
-    println(io, prefix, "Thinning interval :\t", step(chain.range))
-    println(io, prefix, "Chains :\t\t", length(chain.chains))
-    println(io, prefix, "Samples per chain :\t", size(chain.value, 1))
-    println(io, prefix, "Value :\t\t\t", typeof(chain.value), "[", size(chain.value, 1),
-        ",", size(chain.value, 2), ",", size(chain.value, 3),"]")
+    println(io, prefix, "MCMCChains.Chains")
+	println(io, prefix, "Iterations :\t\t",  first(chain), ":", last(chain))
+    println(io, prefix, "Thinning interval :\t", range(chain).step)
+    println(io, prefix, "Chains :\t\t", size(chain, 3))
+    println(io, prefix, "Samples per chain :\t", length(range(chain)))
+    println(io, prefix, "Value :\t\t\t", typeof(chain.value.data), "[", size(chain.value.data, 1),
+        ",", size(chain.value.data, 2), ",", size(chain.value.data, 3),"]")
 
 end
 
@@ -274,9 +274,10 @@ function cint(fm::BayesianEVA, confidencelevel::Real=.95)::Array{Array{Float64,1
     α = 1-confidencelevel
 
     # Chain summary
-    ci = hpd(fm.sim[:,:,1], alpha = α)
+    ci = MCMCChains.hpd(fm.sim[:,:,1], alpha = α)
 
-    return slicematrix(ci.value[:,:,1], dims=2)
+    #return slicematrix(ci.value[:,:,1], dims=2)
+	return slicematrix(hcat(ci.nt.lower, ci.nt.upper), dims=2)
 
 end
 
