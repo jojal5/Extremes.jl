@@ -3,7 +3,7 @@ module Extremes
 using Distributions, DataFrames, Dates
 using Optim
 using LinearAlgebra, Statistics
-using Mamba, ProgressMeter
+using MCMCChains, AdvancedHMC
 using Gadfly
 
 import CSV
