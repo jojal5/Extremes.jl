@@ -2,7 +2,7 @@ using DataFrames, Dates, SpecialFunctions
 using Distributions, Extremes
 using Test
 using LinearAlgebra, Random
-using Mamba
+using MCMCChains, AdvancedHMC
 using Statistics
 
 # Set the seed for reproductible test results

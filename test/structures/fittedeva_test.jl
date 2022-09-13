@@ -1,7 +1,7 @@
 @testset "fittedeva.jl" begin
     @testset "Base.show(io, obj)" begin
         # Print BayesianEVA does not throw
-        fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", [100.0])), Mamba.Chains([100.0 log(5.0) .1]))
+        fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", [100.0])), MCMCChains.Chains([100.0 log(5.0) .1]))
         buffer = IOBuffer()
         @test_logs Base.show(buffer, fm)
 
