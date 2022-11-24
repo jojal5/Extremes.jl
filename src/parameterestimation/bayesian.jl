@@ -28,7 +28,7 @@ function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
     proposal = NUTS{SliceTS,ClassicNoUTurn}(integrator)
     adaptor = StanHMCAdaptor(MassMatrixAdaptor(metric), StepSizeAdaptor(0.8, integrator))
 
-    # Run the sampler to draw samples from the specified Gaussian, where
+    # Run the sampler to draw samples from the specified model, where
     #   - `samples` will store the samples
     #   - `stats` will store diagnostic statistics for each sample
     samples, stats = sample(hamiltonian, proposal, initialvalues, niter, adaptor, warmup; drop_warmup=true, verbose=false, progress=false);

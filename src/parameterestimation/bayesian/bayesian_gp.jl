@@ -13,7 +13,7 @@ the threshold.
 # Implementation
 
 The function uses the No-U-Turn Sampler (NUTS; [Hoffman and Gelman, 2014](http://jmlr.org/papers/v15/hoffman14a.html))
-implemented in the [Mamba.jl](https://mambajl.readthedocs.io/en/latest/index.html)
+implemented in the [AdvancedHMC.jl](https://github.com/TuringLang/AdvancedHMC.jl)
 package to generate a random sample from the posterior distribution.
 
 Currently, only the improper uniform prior is implemented, *i.e.*

@@ -129,7 +129,7 @@ fm = gevfitbayes(data, :SeaLevel)
 
     Currently, the No-U-Turn Sampler extension ([Hoffman and Gelman, 2014](http://jmlr.org/papers/v15/hoffman14a.html)) to Hamiltonian Monte Carlo ([Neel, 2011, Chapter 5](https://www.mcmchandbook.net/)) is implemented for simulating an autocorrelated sample from the posterior distribution.
 
-The generated sample from the posterior distribution is contained in the field `sim` of the fitted structure. It is an object of type *Chains* from the [*Mamba.jl*](https://mambajl.readthedocs.io/en/latest/index.html) package.
+The generated sample from the posterior distribution is contained in the field `sim` of the fitted structure. It is an object of type *MCMCChains* from the [*MCMCChains.jl*](https://github.com/TuringLang/MCMCChains.jl) package.
 
 Credible intervals for the parameters are obtained with the [`cint`](@ref) function:
 ```@repl portpirie
