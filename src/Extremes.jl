@@ -39,6 +39,7 @@ export
     pwmEVA,
     MaximumLikelihoodEVA,
     BayesianEVA,
+	GeneralizedMaximumLikelihoodEVA,
 
     # Data related functions
     getcluster,
@@ -47,6 +48,7 @@ export
     gevfit,
     gevfitbayes,
     gevfitpwm,
+	gevfitgmle,
     gpfit,
     gpfitbayes,
     gpfitpwm,
