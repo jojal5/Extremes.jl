@@ -1,6 +1,8 @@
 """
     generalizedloglike(model::EVA, θ::Vector{<:Real})
+
 Compute the model generalized loglikelihood evaluated at θ.
+
 """
 function generalizedloglike(model::EVA, θ::Vector{<:Real}, shapeprior::Distribution)
        
@@ -27,7 +29,9 @@ end
 
 """
     gmlefit(model::EVA; initialvalues::Vector{<:Real}; α::Float64=6.0, β::Float64=9.0))::GeneralizedMaximumLikelihoodEVA
-Fit the extreme value model by Generalized maximum likelihood.
+
+Fit the extreme value model by generalized maximum likelihood.
+
 """
 function fitgmle(model::EVA, initialvalues::Vector{<:Real}; shapeprior::Distribution=LocationScale(-.5, 1, Beta(6, 9)))::GeneralizedMaximumLikelihoodEVA
     
@@ -55,8 +59,10 @@ function fitgmle(model::EVA, initialvalues::Vector{<:Real}; shapeprior::Distribu
 end
 
 """
-    fitgmle(model::EVA)::MaximumLikelihoodEVA
-Fit the extreme value model by maximum likelihood.
+    fitgmle(model::EVA)::GeneralizedMaximumLikelihoodEVA
+
+Fit the extreme value model by generalized maximum likelihood.
+
 """
 function fitgmle(model::EVA; shapeprior::Distribution=LocationScale(-.5, 1, Beta(6, 9)))::GeneralizedMaximumLikelihoodEVA
 
