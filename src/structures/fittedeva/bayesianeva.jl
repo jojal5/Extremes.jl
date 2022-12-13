@@ -2,7 +2,7 @@ struct BayesianEVA{T} <: fittedEVA{T}
     "Extreme value model definition"
     model::T
     "MCMC outputs"
-    sim::MambaLite.Chains
+    sim::Mamba.Chains
 end
 
 
@@ -79,7 +79,7 @@ function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.
 
       Q = Chains(rl.value)
 
-      ci = MambaLite.hpd(Q, alpha = α)
+      ci = Mamba.hpd(Q, alpha = α)
 
       return slicematrix(ci.value[:,:,1], dims=2)
 
@@ -122,7 +122,7 @@ function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel
 
     Q = Chains(rl.value)
 
-    ci = MambaLite.hpd(Q, alpha = α)
+    ci = Mamba.hpd(Q, alpha = α)
 
     return slicematrix(ci.value[:,:,1], dims=2)
 
@@ -145,13 +145,13 @@ function showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
 end
 
 """
-    showChain(io::IO, obj::MambaLite.Chains; prefix::String = "")
+    showChain(io::IO, obj::Mamba.Chains; prefix::String = "")
 
-Displays a MambaLite.Chains with the prefix `prefix` before every line.
+Displays a Mamba.Chains with the prefix `prefix` before every line.
 """
-function showChain(io::IO, chain::MambaLite.Chains; prefix::String = "")
+function showChain(io::IO, chain::Mamba.Chains; prefix::String = "")
 
-    println(io, prefix, "MambaLite.Chains")
+    println(io, prefix, "Mamba.Chains")
     println(io, prefix, "Iterations :\t\t", chain.range[1], ":", chain.range[end])
     println(io, prefix, "Thinning interval :\t", step(chain.range))
     println(io, prefix, "Chains :\t\t", length(chain.chains))
@@ -274,7 +274,7 @@ function cint(fm::BayesianEVA, confidencelevel::Real=.95)::Array{Array{Float64,1
     α = 1-confidencelevel
 
     # Chain summary
-    ci = MambaLite.hpd(fm.sim[:,:,1], alpha = α)
+    ci = hpd(fm.sim[:,:,1], alpha = α)
 
     return slicematrix(ci.value[:,:,1], dims=2)
 

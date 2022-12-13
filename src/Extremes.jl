@@ -2,8 +2,8 @@ module Extremes
 
 using Distributions, DataFrames, Dates
 using Optim
-using LinearAlgebra, MambaLite, Statistics
-using ProgressMeter
+using LinearAlgebra, Statistics
+using Mamba, ProgressMeter
 using Gadfly
 
 import CSV

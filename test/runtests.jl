@@ -1,7 +1,8 @@
 using DataFrames, Dates, SpecialFunctions
 using Distributions, Extremes
 using Test
-using LinearAlgebra, MambaLite, Random
+using LinearAlgebra, Random
+using Mamba
 using Statistics
 
 # Set the seed for reproductible test results

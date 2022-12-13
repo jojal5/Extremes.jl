@@ -22,7 +22,7 @@ function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
     sim = Chains(niter, nparameter(model), start = (warmup + 1))
     θ = NUTSVariate(initialvalues, logfgrad)
     @showprogress for i in 1:niter
-        MambaLite.sample!(θ, adapt = (i <= warmup))
+        sample!(θ, adapt = (i <= warmup))
         if i > warmup
             sim[i, :, 1] = θ
         end
