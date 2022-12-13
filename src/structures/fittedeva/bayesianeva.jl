@@ -83,6 +83,10 @@ function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.
 
       return slicematrix(ci.value[:,:,1], dims=2)
 
+      ci = MCMCChains.hpd(Q, alpha = α)
+	
+      #return slicematrix(ci.value[:,:,1], dims=2)
+	  return slicematrix(hcat(ci.nt.lower, ci.nt.upper), dims=2)
 end
 
 """
@@ -120,11 +124,12 @@ function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel
 
     α = 1 - confidencelevel
 
-    Q = Chains(rl.value)
+    Q = MCMCChains.Chains(rl.value)
 
     ci = MambaLite.hpd(Q, alpha = α)
 
-    return slicematrix(ci.value[:,:,1], dims=2)
+    #return slicematrix(ci.value[:,:,1], dims=2)
+	return slicematrix(hcat(ci.nt.lower, ci.nt.upper), dims=2)
 
 end
 
@@ -276,7 +281,8 @@ function cint(fm::BayesianEVA, confidencelevel::Real=.95)::Array{Array{Float64,1
     # Chain summary
     ci = MambaLite.hpd(fm.sim[:,:,1], alpha = α)
 
-    return slicematrix(ci.value[:,:,1], dims=2)
+    #return slicematrix(ci.value[:,:,1], dims=2)
+	return slicematrix(hcat(ci.nt.lower, ci.nt.upper), dims=2)
 
 end
 

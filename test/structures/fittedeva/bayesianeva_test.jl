@@ -141,6 +141,7 @@
         fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y), locationcov=[x]),
             MambaLite.Chains([10.0 1.0 0.0 .1; -10.0 1.0 0.0 .1; 20.0 1.0 0.0 .1]))
 
+
         θ̂ = Extremes.findposteriormode(fm)
         @test θ̂ ≈ [10.0; 1.0; 0.0; .1]
 

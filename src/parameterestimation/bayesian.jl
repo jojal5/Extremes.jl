@@ -1,11 +1,12 @@
 """
     fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
-
 Fit the extreme value model under the Bayesian paradigm.
-
 """
 function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
-
+    
+    # Choose parameter dimensionality 
+    D = Extremes.nparameter(model)
+    
     # Set initial values to the maximum likelihood estimates
     ml = fit(model)
     initialvalues = ml.θ̂
@@ -26,7 +27,9 @@ function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
         if i > warmup
             sim[i, :, 1] = θ
         end
+
     end
+    sim = MCMCChains.Chains(chn, start = (warmup + 1))
 
     fittedmodel = BayesianEVA(model, sim)
 

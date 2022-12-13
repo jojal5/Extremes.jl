@@ -6,6 +6,7 @@ Abstract type containing the fitted extreme value model types.
 - BayesianEVA
 - MaximumLikelihoodEVA
 - pwmEVA
+- GeneralizedMaximumLikelihoodEVA
 
 """
 abstract type fittedEVA{T<:EVA} end
@@ -50,3 +51,4 @@ include("returnlevel.jl")
 include(joinpath("fittedeva", "bayesianeva.jl"))
 include(joinpath("fittedeva", "maximumlikelihoodeva.jl"))
 include(joinpath("fittedeva", "pwmeva.jl"))
+include(joinpath("fittedeva", "generalizedmaximumlikelihoodeva.jl"))
