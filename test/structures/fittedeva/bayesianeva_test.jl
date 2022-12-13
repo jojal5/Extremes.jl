@@ -17,7 +17,7 @@
 
     model = BlockMaxima(Variable("y", y), locationcov = [x] ,logscalecov = [x])
 
-    fm = Extremes.BayesianEVA(model, Mamba.Chains(collect(θ')))
+    fm = Extremes.BayesianEVA(model, MambaLite.Chains(collect(θ')))
 
     rl = returnlevel(fm, 100)
 
@@ -76,7 +76,7 @@
 
     model = ThresholdExceedance(Variable("y", y), logscalecov = [x])
 
-    fm = Extremes.BayesianEVA(model, Mamba.Chains(collect(θ')))
+    fm = Extremes.BayesianEVA(model, MambaLite.Chains(collect(θ')))
 
     rl = returnlevel(fm, 0, nobservation, nobsperblock, 100)
 
@@ -139,7 +139,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
         fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y), locationcov=[x]),
-            Mamba.Chains([10.0 1.0 0.0 .1; -10.0 1.0 0.0 .1; 20.0 1.0 0.0 .1]))
+            MambaLite.Chains([10.0 1.0 0.0 .1; -10.0 1.0 0.0 .1; 20.0 1.0 0.0 .1]))
 
         θ̂ = Extremes.findposteriormode(fm)
         @test θ̂ ≈ [10.0; 1.0; 0.0; .1]
