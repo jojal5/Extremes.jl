@@ -62,3 +62,16 @@
     end
 
 end
+
+@testset "Flat distribution" begin
+    @testset "Constructor" begin
+        @test typeof(Flat()) <: Flat 
+    end
+
+    @testset "Evaluations" begin
+        @test minimum(Flat()) == -Inf
+        @test maximum(Flat()) == Inf
+        @test insupport(Flat(), 0) == true
+        @test logpdf(Flat(), 0) ≈ 0.0
+    end
+end
