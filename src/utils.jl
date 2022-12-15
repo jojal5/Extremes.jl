@@ -186,3 +186,16 @@ function buildVariables(df::DataFrame, ids::Vector{Symbol})::Vector{Variable}
     return variables
 
 end
+
+"""
+    Flat()
+
+Construct a Flat <: ContinuousUnivariateDistribution object representing an improper uniform distribution on the real line.
+"""
+struct Flat <: ContinuousUnivariateDistribution end
+
+minimum(pd::Flat) = -Inf
+maximum(pd::Flat) = Inf
+insupport(pd::Flat, y::Real) = true
+
+logpdf(pd::Flat, y::Real) = 0.0
