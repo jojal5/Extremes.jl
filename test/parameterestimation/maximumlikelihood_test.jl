@@ -12,7 +12,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
 
         # Initial value vector length != nparameter throws
         @test_throws AssertionError Extremes.fit(model, [0.0, 0.0, 0.0, 0.0])
@@ -29,7 +29,7 @@
         # No solution warn test
 		y = [14.6, -0.5, 505.9]
 
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
 
         @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") Extremes.fit(model)
 
@@ -46,7 +46,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
 
         fm = Extremes.fit(model)
 
@@ -72,7 +72,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
 
         fm = Extremes.fit(model)
 

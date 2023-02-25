@@ -30,14 +30,14 @@
 
     @testset "gevfitpwm(model)" begin
         # non-stationary warn
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("t", collect(1:n))])
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = [Variable("t", collect(1:n))])
 
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned.") Extremes.gevfitpwm(model)
 
         # stationary GEV fit by pwm
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
 
         fm = Extremes.gevfitpwm(model)
 

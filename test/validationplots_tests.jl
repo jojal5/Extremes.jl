@@ -19,8 +19,8 @@
     @testset "checkstationarity(m)" begin
         y = Variable("y", collect(1:10))
 
-        sfm = MaximumLikelihoodEVA(BlockMaxima(y), [1.0, 1.0 ,0.0])
-        nsfm = MaximumLikelihoodEVA(BlockMaxima(y, logscalecov = [y]), [1.0, 1.0, 1.0 ,0.0])
+        sfm = MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(y), [1.0, 1.0 ,0.0])
+        nsfm = MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(y, logscalecov = [y]), [1.0, 1.0, 1.0 ,0.0])
 
         # Model stationary and shouldbestationary no info
         @test_logs Extremes.checkstationarity(sfm.model)
@@ -33,8 +33,8 @@
     @testset "checknonstationarity(m)" begin
         y = Variable("y", collect(1:10))
 
-        sfm = MaximumLikelihoodEVA(BlockMaxima(y), [1.0, 1.0 ,0.0])
-        nsfm = MaximumLikelihoodEVA(BlockMaxima(y, logscalecov = [y]), [1.0, 1.0, 1.0 ,0.0])
+        sfm = MaximumLikelihoodEVA({GeneralizedExtremeValue}(y), [1.0, 1.0 ,0.0])
+        nsfm = MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(y, logscalecov = [y]), [1.0, 1.0, 1.0 ,0.0])
 
         # Model stationary and !shouldbestationary info
         @test_logs (:info, "The graph is optimized for non-stationary models and the model provided is not.") Extremes.checknonstationarity(sfm.model)

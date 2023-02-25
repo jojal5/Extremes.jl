@@ -1,4 +1,4 @@
-struct pwmEVA{T, U<:Distribution} <: fittedEVA{T}
+struct pwmEVA{T} <: fittedEVA{T}
     "Extreme value model definition"
     model::T
     "Maximum likelihood estimate"
@@ -98,34 +98,36 @@ end
 
 
 """
-    fitpwmfunction(fm::pwmEVA{BlockMaxima, GeneralizedExtremeValue})::Function
+    fitpwmfunction(fm::pwmEVA{BlockMaxima{GeneralizedExtremeValue})::Function
 
 Returns the corresponding fitpwm function.
 
 """
-function fitpwmfunction(fm::pwmEVA{BlockMaxima, GeneralizedExtremeValue})::Function
+function fitpwmfunction(fm::pwmEVA{BlockMaxima{GeneralizedExtremeValue}})::Function 
     return gevfitpwm
 end
 
 """
-    fitpwmfunction(fm::pwmEVA{ThresholdExceedance, GeneralizedPareto})::Function
+    fitpwmfunction(fm::pwmEVA{BlockMaxima{Gumbel}})::Function
 
 Returns the corresponding fitpwm function.
 
 """
-function fitpwmfunction(fm::pwmEVA{ThresholdExceedance, GeneralizedPareto})::Function
+function fitpwmfunction(fm::pwmEVA{BlockMaxima{Gumbel}})::Function
+    return gumbelfitpwm
+end
+
+"""
+    fitpwmfunction(fm::pwmEVA{ThresholdExceedance})::Function
+
+Returns the corresponding fitpwm function.
+
+"""
+function fitpwmfunction(fm::pwmEVA{ThresholdExceedance})::Function
     return gpfitpwm
 end
 
-"""
-    fitpwmfunction(fm::pwmEVA{BlockMaxima, Gumbel})::Function
 
-Returns the corresponding fitpwm function.
-
-"""
-function fitpwmfunction(fm::pwmEVA{BlockMaxima, Gumbel})::Function
-    return gumbelfitpwm
-end
 
 """
     quantilevar(fm::pwmEVA, level::Real, nboot::Int=1000)::Vector{<:Real}
@@ -157,7 +159,7 @@ Compute the confidence intervel for the return level corresponding to the return
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
 
 """
-function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::ReturnLevel
+function returnlevel(fm::pwmEVA{BlockMaxima{T}}, returnPeriod::Real)::ReturnLevel where T
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -170,7 +172,7 @@ end
 
 
 
-function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, confidencelevel::Real=.95, nboot::Int=1000)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{pwmEVA{BlockMaxima{T}}}, confidencelevel::Real=.95, nboot::Int=1000)::Vector{Vector{Real}} where T
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -207,7 +209,7 @@ Compute the return level corresponding to the return period `returnPeriod` from 
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
+function returnlevel(fm::pwmEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
@@ -224,7 +226,7 @@ function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, t
 end
 
 
-function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."

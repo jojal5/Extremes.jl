@@ -6,3 +6,4 @@ build/
 docs/site/
 .vscode/
 .DS_Store
+test/script.jl

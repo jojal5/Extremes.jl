@@ -113,7 +113,7 @@ end
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
+function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima{T}}, returnPeriod::Real)::ReturnLevel where T
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -125,7 +125,7 @@ function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real):
 end
 
 
-function cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima{T}}}, confidencelevel::Real=.95)::Vector{Vector{Real}} where T
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -236,7 +236,7 @@ end
 
 Transform the fitted model for the original covariate scales.
 """
-function transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
+function transform(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}})::MaximumLikelihoodEVA
 
     locationcovstd = fm.model.location.covariate
     logscalecovstd = fm.model.logscale.covariate
@@ -247,7 +247,7 @@ function transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
     shapecov = Extremes.reconstruct.(shapecovstd)
 
     # Model on the original covariate scale
-    model = BlockMaxima(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    model = BlockMaxima{GeneralizedExtremeValue}(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
     # Transformation of the parameter estimates
     θ̂ = deepcopy(fm.θ̂)

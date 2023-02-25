@@ -1,12 +1,14 @@
-struct BlockMaxima <: EVA
+struct BlockMaxima{T} <: EVA
     data::Variable
     location::paramfun
     logscale::paramfun
     shape::paramfun
 end
 
+# BlockMaxima{GeneralizedExtremeValue}
+
 """
-    BlockMaxima(data::Vector{<:Real};
+    BlockMaxima{GeneralizedExtremeValue}(data::Vector{<:Real};
         locationcov::Vector{Variable} = Vector{Variable}(),
         logscalecov::Vector{Variable} = Vector{Variable}(),
         shapecov::Vector{Variable} = Vector{Variable}())::BlockMaxima
@@ -14,7 +16,7 @@ end
 Creates a BlockMaxima structure.
 
 """
-function BlockMaxima(data::Variable;
+function BlockMaxima{GeneralizedExtremeValue}(data::Variable;
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
     shapecov::Vector{<:DataItem} = Vector{Variable}())::BlockMaxima
@@ -28,11 +30,11 @@ function BlockMaxima(data::Variable;
     logscalefun = computeparamfunction(logscalecov)
     shapefun = computeparamfunction(shapecov)
 
-    return BlockMaxima(data, paramfun(locationcov, locationfun), paramfun(logscalecov, logscalefun), paramfun(shapecov, shapefun))
+    return BlockMaxima{GeneralizedExtremeValue}(data, paramfun(locationcov, locationfun), paramfun(logscalecov, logscalefun), paramfun(shapecov, shapefun))
 
 end
 
-function paramindex(model::BlockMaxima)::Dict{Symbol,Vector{<:Int}}
+function paramindex(model::BlockMaxima{GeneralizedExtremeValue})::Dict{Symbol,Vector{<:Int}}
 
     sμ = length(model.location.covariate) + 1
     sϕ = length(model.logscale.covariate) + 1
@@ -47,21 +49,21 @@ function paramindex(model::BlockMaxima)::Dict{Symbol,Vector{<:Int}}
 end
 
 
-function getcovariatenumber(model::BlockMaxima)::Int
+function getcovariatenumber(model::BlockMaxima{GeneralizedExtremeValue})::Int
 
     return sum([length(model.location.covariate), length(model.logscale.covariate), length(model.shape.covariate)])
 
 end
 
 
-function nparameter(model::BlockMaxima)::Int
+function nparameter(model::BlockMaxima{GeneralizedExtremeValue})::Int
 
     return 3 + getcovariatenumber(model)
 
 end
 
 
-function getdistribution(model::BlockMaxima, θ::AbstractVector{<:Real})::Vector{<:Distribution}
+function getdistribution(model::BlockMaxima{GeneralizedExtremeValue}, θ::AbstractVector{<:Real})::Vector{<:Distribution}
 
     @assert length(θ)==nparameter(model) "The length of the parameter vector should be equal to the model number of parameters."
 
@@ -79,7 +81,7 @@ function getdistribution(model::BlockMaxima, θ::AbstractVector{<:Real})::Vector
 end
 
 
-function getinitialvalue(model::BlockMaxima)::Vector{<:Real}
+function getinitialvalue(model::BlockMaxima{GeneralizedExtremeValue})::Vector{<:Real}
 
     y = model.data.value
 
@@ -100,14 +102,14 @@ function getinitialvalue(model::BlockMaxima)::Vector{<:Real}
 end
 
 """
-    showEVA(io::IO, obj::BlockMaxima; prefix::String = "")
+    showEVA(io::IO, obj::BlockMaxima{GeneralizedExtremeValue}; prefix::String = "")
 
-Displays a BlockMaxima with the prefix `prefix` before every line.
+Displays a BlockMaxima{GeneralizedExtremeValue} with the prefix `prefix` before every line.
 
 """
-function showEVA(io::IO, obj::BlockMaxima; prefix::String = "")
+function showEVA(io::IO, obj::BlockMaxima{GeneralizedExtremeValue}; prefix::String = "")
 
-    println(io, prefix, "BlockMaxima")
+    println(io, prefix, "BlockMaxima{GeneralizedExtremeValue}")
     println(io, prefix, "data :\t\t", typeof(obj.data.value), "[", length(obj.data.value), "]")
     println(io, prefix, "location :\t", showparamfun("μ", obj.location))
     println(io, prefix, "logscale :\t", showparamfun("ϕ", obj.logscale))

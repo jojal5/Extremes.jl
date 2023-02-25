@@ -53,7 +53,7 @@ end
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
+function returnlevel(fm::BayesianEVA{BlockMaxima{T}}, returnPeriod::Real)::ReturnLevel where T
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -67,7 +67,7 @@ function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLe
 end
 
 
-function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima{T}}}, confidencelevel::Real=.95)::Vector{Vector{Real}} where T
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -162,11 +162,11 @@ function showChain(io::IO, chain::MambaLite.Chains; prefix::String = "")
 end
 
 """
-    transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
+    transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})::BayesianEVA
 
 Transform the fitted model for the original covariate scales.
 """
-function transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
+function transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})::BayesianEVA
 
     locationcovstd = fm.model.location.covariate
     logscalecovstd = fm.model.logscale.covariate
@@ -177,7 +177,7 @@ function transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
     shapecov = Extremes.reconstruct.(shapecovstd)
 
     # Model on the original covariate scale
-    model = BlockMaxima(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    model = BlockMaxima{GeneralizedExtremeValue}(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
     # Transformation of the parameter estimates
     z = fm.sim.value[:,:,1]

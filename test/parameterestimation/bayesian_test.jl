@@ -14,7 +14,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
 
         fm = Extremes.fitbayes(model, niter=500, warmup=400)
 
@@ -40,7 +40,7 @@
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
 
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
 
         fm = Extremes.fitbayes(model, niter=500, warmup=400)
 

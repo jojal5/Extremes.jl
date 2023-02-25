@@ -1,16 +1,16 @@
 @testset "fittedeva.jl" begin
     @testset "Base.show(io, obj)" begin
         # Print BayesianEVA does not throw
-        fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", [100.0])), MambaLite.Chains([100.0 log(5.0) .1]))
+        fm = Extremes.BayesianEVA(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [100.0])), MambaLite.Chains([100.0 log(5.0) .1]))
         buffer = IOBuffer()
         @test_logs Base.show(buffer, fm)
 
         # Print MaximumLikelihoodEVA does not throw
-        fm = Extremes.MaximumLikelihoodEVA(BlockMaxima(Variable("y", [1])), [1.0, 1.0, 0.1])
+        fm = Extremes.MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1])), [1.0, 1.0, 0.1])
         @test_logs Base.show(buffer, fm)
 
         # Print PwmEVA does not throw
-        fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", [0])), [1.0; 0.0; 0.1])
+        fm = Extremes.pwmEVA{BlockMaxima{GeneralizedExtremeValue}}(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [0])), [1.0; 0.0; 0.1])
         @test_logs Base.show(buffer, fm)
 
     end

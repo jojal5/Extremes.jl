@@ -81,7 +81,7 @@
 
     @testset "gevfit(model, initialvalues)" begin
         # non-stationary location, logscale and shape
-        model = Extremes.BlockMaxima(Variable("y", y),
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y),
             locationcov = [x₁],
             logscalecov = [x₂],
             shapecov = [x₃])

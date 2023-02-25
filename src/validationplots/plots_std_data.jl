@@ -33,7 +33,7 @@ end
 
 
 
-function standarddist(::BlockMaxima)::Distribution
+function standarddist(::BlockMaxima{T})::Distribution where T
     return Gumbel()
 end
 

@@ -16,7 +16,7 @@
 
     y = rand.(pd)
 
-    model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
 
     fm = Extremes.MaximumLikelihoodEVA(model, θ)
 
@@ -68,7 +68,7 @@
 
         Threads.@threads  for i in 1:niter
             y = rand.(pd)
-            m = BlockMaxima(Variable("y",y), locationcov = [x₂, x₃], logscalecov=[x₁])
+            m = BlockMaxima{GeneralizedExtremeValue}(Variable("y",y), locationcov = [x₂, x₃], logscalecov=[x₁])
             fm = gevfit(m, θ)
             ci = cint(fm)
             for j in eachindex(θ)
@@ -103,7 +103,7 @@
 
         Threads.@threads  for i in 1:niter
             y = rand(pd, 300)
-            m = BlockMaxima(Variable("y",y))
+            m = BlockMaxima{GeneralizedExtremeValue}(Variable("y",y))
             fm = gevfit(m, θ)
             rl = returnlevel(fm, 100)
             ci = cint(rl)

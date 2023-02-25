@@ -6,7 +6,7 @@
 
     y = [0]
 
-    fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", y)), θ)
+    fm = Extremes.pwmEVA{BlockMaxima{GeneralizedExtremeValue}}(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y)), θ)
 
     @testset "getdistribution(fittedmodel)" begin
         @test Extremes.getdistribution(fm)[] == pd

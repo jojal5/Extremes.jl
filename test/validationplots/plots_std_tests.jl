@@ -4,13 +4,13 @@
     x = rand(n)
 
     ybm = rand.(GeneralizedExtremeValue.(x, 1.0, 0.1))
-    fmbm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", ybm), locationcov = [Variable("x", x)]), [0.0, 1.0, 1.0, 0.1])
+    fmbm = MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(Variable("y", ybm), locationcov = [Variable("x", x)]), [0.0, 1.0, 1.0, 0.1])
 
     yte = rand.(GeneralizedPareto.(x, 0.1))
     fmte = MaximumLikelihoodEVA(ThresholdExceedance(Variable("y", yte), logscalecov = [Variable("x", x)]), [0.0, 1.0, 0.1])
 
     ys = rand(GeneralizedExtremeValue(0.0, 1.0, 0.1), n)
-    fms = MaximumLikelihoodEVA(BlockMaxima(Variable("y", ys)), [0.0, 1.0, 0.1])
+    fms = MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(Variable("y", ys)), [0.0, 1.0, 0.1])
 
     @testset "standardize(y, μ, σ, ξ)" begin
         # Simple standardized values

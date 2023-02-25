@@ -74,7 +74,7 @@ function gevfitbayes(y::Vector{<:Real};
     logscalecovstd = standardize.(logscalecov)
     shapecovstd = standardize.(shapecov)
 
-    model = BlockMaxima(Variable("y", y), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -110,7 +110,7 @@ function gevfitbayes(df::DataFrame, datacol::Symbol;
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
     shapecovstd = standardize.(buildVariables(df, shapecovid))
 
-    model = BlockMaxima(Variable(string(datacol), df[:, datacol]), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable(string(datacol), df[:, datacol]), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -119,13 +119,13 @@ function gevfitbayes(df::DataFrame, datacol::Symbol;
 end
 
 """
-    gevfitbayes(model::BlockMaxima;
+    gevfitbayes(model::BlockMaxima{GeneralizedExtremeValue};
         niter::Int=5000,
         warmup::Int=2000)
 
 Generate a sample from the `BlockMaxima` model parameters' posterior distribution.
 """
-function gevfitbayes(model::BlockMaxima; niter::Int=5000, warmup::Int=2000)::BayesianEVA
+function gevfitbayes(model::BlockMaxima{GeneralizedExtremeValue}; niter::Int=5000, warmup::Int=2000)::BayesianEVA
 
     return fitbayes(model, niter=niter, warmup=warmup)
 

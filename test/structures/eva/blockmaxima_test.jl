@@ -8,20 +8,20 @@
 
     ev = [Variable("x", x)]
 
-    smodel = Extremes.BlockMaxima(Variable("y", y))
-    nsmodel = Extremes.BlockMaxima(Variable("y", y), locationcov = ev, logscalecov = ev, shapecov = ev)
+    smodel = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
+    nsmodel = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = ev, logscalecov = ev, shapecov = ev)
 
-    @testset "BlockMaxima(data; locationcov, logscalecov, shapecov)" begin
+    @testset "BlockMaxima{GeneralizedExtremeValue}(data; locationcov, logscalecov, shapecov)" begin
         ev10 = Extremes.Variable("t", collect(1:n+10))
 
         # Build with locationcov length != y length
-        @test_throws AssertionError Extremes.BlockMaxima(Variable("y", y), locationcov = [ev10])
+        @test_throws AssertionError Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = [ev10])
 
         # Build with logscalecov length != y length
-        @test_throws AssertionError Extremes.BlockMaxima(Variable("y", y), logscalecov = [ev10])
+        @test_throws AssertionError Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), logscalecov = [ev10])
 
         # Build with shapecov length != y length
-        @test_throws AssertionError Extremes.BlockMaxima(Variable("y", y), shapecov = [ev10])
+        @test_throws AssertionError Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), shapecov = [ev10])
 
         # Build with all optional parameters set
         @test nsmodel.data.value == y
@@ -33,7 +33,7 @@
 
     @testset "paramindex(model)" begin
         # model with stationary and non-stationary parameters
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = ev)
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = ev)
 
         paramin = Extremes.paramindex(model)
 
@@ -79,7 +79,7 @@
         pd = GeneralizedExtremeValue(μ, σ, ξ)
         y = rand(pd, n)
 
-        model = BlockMaxima(Variable("y", y))
+        model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
 
         fd = Extremes.getdistribution(model, θ)[]
 
@@ -102,7 +102,7 @@
 
         y = rand.(pd)
 
-        model = BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
+        model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
 
         fd = Extremes.getdistribution(model, θ)
 
@@ -130,7 +130,7 @@
     @testset "getinitialvalue(model)" begin
         # Test with valid pwm GEV estimates
         y = [0.0, 1.0, 2.0]
-        model = BlockMaxima(Variable("y", y))
+        model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
         ini = Extremes.getinitialvalue(model)
         @test ini[1] ≈ .586 atol = .001
         @test ini[2] ≈ .164 atol = .001
@@ -138,7 +138,7 @@
 
         # Test with invalid pwm GEV estimates
         y = [0.0 , 1.0, 1.0, 1.0, 3.0,-5.0]
-        model = BlockMaxima(Variable("y", y))
+        model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
         ini = Extremes.getinitialvalue(model)
         @test ini[1] ≈ -1.027 atol = .001
         @test ini[2] ≈ 0.726 atol = .001
