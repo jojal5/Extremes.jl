@@ -116,3 +116,46 @@ function showEVA(io::IO, obj::BlockMaxima{GeneralizedExtremeValue}; prefix::Stri
     println(io, prefix, "shape :\t\t", showparamfun("ξ", obj.shape))
 
 end
+
+
+# BlockMaxima{Gumbel}
+
+"""
+    BlockMaxima{GeneralizedExtremeValue}(data::Vector{<:Real};
+        locationcov::Vector{Variable} = Vector{Variable}(),
+        logscalecov::Vector{Variable} = Vector{Variable}(),
+        shapecov::Vector{Variable} = Vector{Variable}())::BlockMaxima
+
+Creates a BlockMaxima structure.
+
+"""
+function BlockMaxima{Gumbel}(data::Variable;
+    locationcov::Vector{<:DataItem} = Vector{Variable}(),
+    logscalecov::Vector{<:DataItem} = Vector{Variable}(),
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::BlockMaxima
+
+    n = length(data.value)
+    validatelength(n, locationcov)
+    validatelength(n, logscalecov)
+    validatelength(n, shapecov)
+
+    locationfun = computeparamfunction(locationcov)
+    logscalefun = computeparamfunction(logscalecov)
+    shapefun = computeparamfunction(shapecov)
+
+    return BlockMaxima{Gumbel}(data, paramfun(locationcov, locationfun), paramfun(logscalecov, logscalefun), paramfun(shapecov, shapefun))
+
+end
+
+function getcovariatenumber(model::BlockMaxima{Gumbel})::Int
+
+    return sum([length(model.location.covariate), length(model.logscale.covariate)])
+
+end
+
+
+function nparameter(model::BlockMaxima{Gumbel})::Int
+
+    return 2 + getcovariatenumber(model)
+
+end

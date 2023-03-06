@@ -77,7 +77,7 @@ function gpfitpwm(model::ThresholdExceedance)::pwmEVA
 
     θ̂ = [ϕ̂; ξ̂]
 
-    fm = pwmEVA{ThresholdExceedance, GeneralizedPareto}(model, θ̂)
+    fm = pwmEVA{ThresholdExceedance}(model, θ̂)
 
     return fm
 

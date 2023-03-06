@@ -33,7 +33,7 @@
     @testset "checknonstationarity(m)" begin
         y = Variable("y", collect(1:10))
 
-        sfm = MaximumLikelihoodEVA({GeneralizedExtremeValue}(y), [1.0, 1.0 ,0.0])
+        sfm = MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(y), [1.0, 1.0 ,0.0])
         nsfm = MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(y, logscalecov = [y]), [1.0, 1.0, 1.0 ,0.0])
 
         # Model stationary and !shouldbestationary info
