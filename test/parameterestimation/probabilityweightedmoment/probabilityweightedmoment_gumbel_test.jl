@@ -1,50 +1,46 @@
 @testset "probabilityweightedmoment_gumbel.jl" begin
-    n = 5000
-    θ = [0.0 ; 0.0]
-
-    pd = Gumbel(θ[1], exp(θ[2]))
-    y = rand(pd, n)
+   
+    df = CSV.read("test/dataset/gumbel_stationary.csv", DataFrame)
 
     @testset "gumbelfitpwm(y)" begin
-        # stationary model building
-        fm = Extremes.gumbelfitpwm(y)
 
-        cinterval = cint(fm)
+       fm =  Extremes.gumbelfitpwm(df.y)
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+       @test typeof(fm.model) == BlockMaxima{Gumbel}
+
+       @test fm.θ̂[1] ≈ -0.0149 atol=0.0001
+       @test fm.θ̂[2] ≈ 0.0068 atol=0.0001
 
     end
 
     @testset "gumbelfitpwm(df, datacol)" begin
-        # stationary model building
-        df = DataFrame(y = y)
+    
         fm = Extremes.gumbelfitpwm(df, :y)
 
-        cinterval = cint(fm)
+        @test typeof(fm.model) == BlockMaxima{Gumbel}
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        @test fm.θ̂[1] ≈ -0.0149 atol=0.0001
+        @test fm.θ̂[2] ≈ 0.0068 atol=0.0001
 
     end
 
     @testset "gumbelfitpwm(model)" begin
         # non-stationary warn
-        model = Extremes.BlockMaxima{Gumbel}(Variable("y", y), locationcov = [Variable("t", collect(1:n))])
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", y), locationcov = [Variable("t", collect(1:nrow(df)))])
 
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned.") Extremes.gumbelfitpwm(model)
 
         # stationary Gumbel fit by pwm
-        model = Extremes.BlockMaxima{Gumbel}(Variable("y", y))
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", df.y))
 
         fm = Extremes.gumbelfitpwm(model)
 
-        cinterval = cint(fm)
+        @test typeof(fm.model) == BlockMaxima{Gumbel}
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        @test fm.θ̂[1] ≈ -0.0149 atol=0.0001
+        @test fm.θ̂[2] ≈ 0.0068 atol=0.0001
 
     end
 end

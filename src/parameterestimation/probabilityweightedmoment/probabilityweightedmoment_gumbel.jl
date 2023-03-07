@@ -74,7 +74,7 @@ function gumbelfitpwm(model::BlockMaxima{Gumbel})::pwmEVA
 
     ϕ̂ = log(σ̂)
 
-    θ̂ = [μ̂, ϕ̂, 0.0]
+    θ̂ = [μ̂, ϕ̂]
 
     fm = pwmEVA{BlockMaxima{Gumbel}}(model,θ̂)
 
