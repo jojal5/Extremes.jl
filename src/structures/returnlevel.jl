@@ -13,8 +13,12 @@ struct ReturnLevel{T<:fittedEVA}
       value::Array{<:Real}
 end
 
-struct BlockMaximaModel{T<:fittedEVA{BlockMaxima{GeneralizedExtremeValue}}} <: ReturnLevelModel{T} 
-  fm::T
+# struct BlockMaximaModel{T<:fittedEVA{BlockMaxima}} <: ReturnLevelModel{T}
+#   fm::T
+# end
+
+struct BlockMaximaModel{obj<:fittedEVA{BlockMaxima{T}} where T} <: ReturnLevelModel{obj}
+  fm::obj
 end
 
 struct PeakOverThreshold{T<:fittedEVA{ThresholdExceedance}} <: ReturnLevelModel{T}

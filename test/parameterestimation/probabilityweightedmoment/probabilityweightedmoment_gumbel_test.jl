@@ -1,6 +1,6 @@
 @testset "probabilityweightedmoment_gumbel.jl" begin
    
-    df = CSV.read("test/dataset/gumbel_stationary.csv", DataFrame)
+    df = CSV.read("dataset/gumbel_stationary.csv", DataFrame)
 
     @testset "gumbelfitpwm(y)" begin
 
@@ -26,7 +26,7 @@
 
     @testset "gumbelfitpwm(model)" begin
         # non-stationary warn
-        model = Extremes.BlockMaxima{Gumbel}(Variable("y", y), locationcov = [Variable("t", collect(1:nrow(df)))])
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", df.y), locationcov = [Variable("t", collect(1:nrow(df)))])
 
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.

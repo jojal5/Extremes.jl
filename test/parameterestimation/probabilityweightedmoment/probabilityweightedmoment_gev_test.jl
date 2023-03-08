@@ -1,6 +1,6 @@
 @testset "probabilityweightedmoment_gev.jl" begin
 
-    df = CSV.read("test/dataset/gev_stationary.csv", DataFrame)
+    df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
     @testset "gevfitpwm(y)" begin
 
@@ -28,7 +28,7 @@
 
     @testset "gevfitpwm(model)" begin
         # non-stationary warn
-        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = [Variable("t", collect(1:nrow(df)))])
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y), locationcov = [Variable("t", collect(1:nrow(df)))])
 
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
