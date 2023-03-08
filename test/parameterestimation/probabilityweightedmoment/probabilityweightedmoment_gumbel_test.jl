@@ -1,15 +1,12 @@
 @testset "probabilityweightedmoment_gumbel.jl" begin
    
-    df = CSV.read("dataset/gumbel_stationary.csv", DataFrame)
+    df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
     @testset "gumbelfitpwm(y)" begin
 
        fm =  Extremes.gumbelfitpwm(df.y)
 
-       @test typeof(fm.model) == BlockMaxima{Gumbel}
-
-       @test fm.θ̂[1] ≈ -0.0149 atol=0.0001
-       @test fm.θ̂[2] ≈ 0.0068 atol=0.0001
+       @test typeof(fm) == pwmEVA{BlockMaxima{Gumbel}}
 
     end
 
@@ -17,10 +14,7 @@
     
         fm = Extremes.gumbelfitpwm(df, :y)
 
-        @test typeof(fm.model) == BlockMaxima{Gumbel}
-
-        @test fm.θ̂[1] ≈ -0.0149 atol=0.0001
-        @test fm.θ̂[2] ≈ 0.0068 atol=0.0001
+        @test typeof(fm) == pwmEVA{BlockMaxima{Gumbel}}
 
     end
 
@@ -37,10 +31,10 @@
 
         fm = Extremes.gumbelfitpwm(model)
 
-        @test typeof(fm.model) == BlockMaxima{Gumbel}
+        @test typeof(fm) == pwmEVA{BlockMaxima{Gumbel}}
 
-        @test fm.θ̂[1] ≈ -0.0149 atol=0.0001
-        @test fm.θ̂[2] ≈ 0.0068 atol=0.0001
+        @test fm.θ̂[1] ≈ -0.0020 atol=0.0001
+        @test fm.θ̂[2] ≈ 0.0095 atol=0.0001
 
     end
 end

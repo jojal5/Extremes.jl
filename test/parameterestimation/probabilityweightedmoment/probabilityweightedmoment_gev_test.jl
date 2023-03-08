@@ -6,11 +6,7 @@
 
         fm = Extremes.gevfitpwm(df.y)
 
-        @test typeof(fm.model) == BlockMaxima{GeneralizedExtremeValue}
-
-        @test fm.θ̂[1] ≈ -0.0005 atol=0.0001
-        @test fm.θ̂[2] ≈ 0.0125 atol=0.0001
-        @test fm.θ̂[3] ≈ -0.0033 atol=0.0001
+        @test typeof(fm) == pwmEVA{BlockMaxima{GeneralizedExtremeValue}}
 
     end
 
@@ -18,11 +14,7 @@
 
         fm = Extremes.gevfitpwm(df, :y)
 
-        @test typeof(fm.model) == BlockMaxima{GeneralizedExtremeValue}
-
-        @test fm.θ̂[1] ≈ -0.0005 atol=0.0001
-        @test fm.θ̂[2] ≈ 0.0125 atol=0.0001
-        @test fm.θ̂[3] ≈ -0.0033 atol=0.0001
+        @test typeof(fm) == pwmEVA{BlockMaxima{GeneralizedExtremeValue}}
 
     end
 
@@ -38,6 +30,8 @@
         model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y))
 
         fm = Extremes.gevfitpwm(model)
+
+        @test typeof(fm) == pwmEVA{BlockMaxima{GeneralizedExtremeValue}}
 
         @test fm.θ̂[1] ≈ -0.0005 atol=0.0001
         @test fm.θ̂[2] ≈ 0.0125 atol=0.0001
