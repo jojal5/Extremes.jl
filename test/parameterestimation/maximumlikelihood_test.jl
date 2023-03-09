@@ -29,7 +29,7 @@
 
     end
        
-    @test_set "fit(BlockMaxima{GeneralizedExtremeValue}, initialvalues) -- stationary" begin
+    @testset "fit(BlockMaxima{GeneralizedExtremeValue}, initialvalues) -- stationary" begin
 
         df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
@@ -41,7 +41,7 @@
 
     end
 
-    @test_set "fit(BlockMaxima{GeneralizedExtremeValue}, initialvalues) -- non-stationary" begin
+    @testset "fit(BlockMaxima{GeneralizedExtremeValue}, initialvalues) -- non-stationary" begin
 
         df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
@@ -56,7 +56,7 @@
 
     end
 
-    @test_set "fit(BlockMaxima{Gumbel}, initialvalues) -- stationary" begin
+    @testset "fit(BlockMaxima{Gumbel}, initialvalues) -- stationary" begin
 
         df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
@@ -68,7 +68,7 @@
 
     end
 
-    @test_set "fit(BlockMaxima{Gumbel}, initialvalues) -- non-stationary" begin
+    @testset "fit(BlockMaxima{Gumbel}, initialvalues) -- non-stationary" begin
 
         df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
@@ -82,9 +82,9 @@
 
     end
 
-    @test_set "fit(ThresholdExceedance, initialvalues) -- stationary" begin
+    @testset "fit(ThresholdExceedance, initialvalues) -- stationary" begin
 
-        df = CSV.read("test/dataset/gp_stationary.csv", DataFrame)
+        df = CSV.read("dataset/gp_stationary.csv", DataFrame)
 
         model = Extremes.ThresholdExceedance(Variable("y", df.y))
 
@@ -94,7 +94,7 @@
 
     end
 
-    @test_set "fit(ThresholdExceedance, initialvalues) -- non-stationary" begin
+    @testset "fit(ThresholdExceedance, initialvalues) -- non-stationary" begin
 
         df = CSV.read("dataset/gp_nonstationary.csv", DataFrame)
 
