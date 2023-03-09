@@ -272,6 +272,43 @@ function transform(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}
 
 end
 
+"""
+    transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
+
+Transform the fitted model for the original covariate scales.
+"""
+function transform(fm::MaximumLikelihoodEVA{BlockMaxima{Gumbel}})::MaximumLikelihoodEVA
+
+    locationcovstd = fm.model.location.covariate
+    logscalecovstd = fm.model.logscale.covariate
+
+    locationcov = Extremes.reconstruct.(locationcovstd)
+    logscalecov = Extremes.reconstruct.(logscalecovstd)
+
+    # Model on the original covariate scale
+    model = BlockMaxima{Gumbel}(fm.model.data, locationcov = locationcov, logscalecov = logscalecov)
+
+    # Transformation of the parameter estimates
+    θ̂ = deepcopy(fm.θ̂)
+    ind = Extremes.paramindex(fm.model)
+
+    for (var, par) in zip([locationcovstd, logscalecovstd],[:μ, :ϕ])
+        if !isempty(var)
+            a = getfield.(var, :scale)
+            b = getfield.(var, :offset)
+
+            for i=1:length(a)
+                θ̂[ind[par][1]] -= fm.θ̂[ind[par][1+i]]*b[i]/a[i]
+                θ̂[ind[par][1+i]] = fm.θ̂[ind[par][1+i]]/a[i]
+            end
+        end
+    end
+
+    # Contruction of the fittedEVA structure
+    return MaximumLikelihoodEVA(model, θ̂)
+
+end
+
 
 
 """

@@ -43,3 +43,4 @@ end
 
 include(joinpath("maximumlikelihood", "maximumlikelihood_gev.jl"))
 include(joinpath("maximumlikelihood", "maximumlikelihood_gp.jl"))
+include(joinpath("maximumlikelihood", "maximumlikelihood_gumbel.jl"))
