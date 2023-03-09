@@ -205,6 +205,48 @@ function transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})::Bayes
 
 end
 
+"""
+    transform(fm::BayesianEVA{BlockMaxima{Gumbel}})::BayesianEVA
+
+Transform the fitted model for the original covariate scales.
+"""
+function transform(fm::BayesianEVA{BlockMaxima{Gumbel}})::BayesianEVA
+
+    locationcovstd = fm.model.location.covariate
+    logscalecovstd = fm.model.logscale.covariate
+
+    locationcov = Extremes.reconstruct.(locationcovstd)
+    logscalecov = Extremes.reconstruct.(logscalecovstd)
+
+    # Model on the original covariate scale
+    model = BlockMaxima{Gumbel}(fm.model.data, locationcov = locationcov, logscalecov = logscalecov)
+
+    # Transformation of the parameter estimates
+    z = fm.sim.value[:,:,1]
+
+    x = deepcopy(z)
+    ind = Extremes.paramindex(fm.model)
+
+    for (var, par) in zip([locationcovstd, logscalecovstd],[:μ, :ϕ])
+        if !isempty(var)
+            a = getfield.(var, :scale)
+            b = getfield.(var, :offset)
+
+            for i=1:length(a)
+                x[:,ind[par][1]] = x[:,ind[par][1]] - z[:,ind[par][1+i]] * b[i]/a[i]
+                x[:,ind[par][1+i]] = z[:,ind[par][1+i]]/a[i]
+            end
+        end
+    end
+
+    sim = fm.sim
+    sim.value[:,:,1] = x
+
+    # Contruction of the fittedEVA structure
+    return BayesianEVA(model, sim)
+
+end
+
 
 
 """
