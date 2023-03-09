@@ -109,5 +109,6 @@
 
     include(joinpath("maximumlikelihood", "maximumlikelihood_gev_test.jl"))
     include(joinpath("maximumlikelihood", "maximumlikelihood_gp_test.jl"))
+    include(joinpath("maximumlikelihood", "maximumlikelihood_gumbel_test.jl"))
 
 end
