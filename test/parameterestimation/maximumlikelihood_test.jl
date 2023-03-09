@@ -1,5 +1,6 @@
 @testset "maximumlikelihood.jl" begin
-    @testset "fit(model, initialvalues)" begin
+
+    @testset "fit(model, initialvalues) -- arguments control" begin
         
         df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
@@ -18,7 +19,7 @@
 
     end
 
-    @testset "fit(model)" begin
+    @testset "fit(model) no solution" begin
         # No solution warn test
 		y = [14.6, -0.5, 505.9]
 
@@ -26,17 +27,22 @@
 
         @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") Extremes.fit(model)
 
-        # stationary GEV fit by ML
+    end
+       
+    @test_set "fit(BlockMaxima{GeneralizedExtremeValue}, initialvalues) -- stationary" begin
 
         df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
         model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y))
 
-        fm = Extremes.gevfit(model, [0., 0., 0.])
+        fm = Extremes.fit(model, [0., 0., 0.])
 
         @test all(isapprox.(fm.θ̂,[0.0009, 0.0142, -0.0060], atol=.0001))
 
-        # non-stationary GEV fit by ML
+    end
+
+    @test_set "fit(BlockMaxima{GeneralizedExtremeValue}, initialvalues) -- non-stationary" begin
+
         df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
         model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y),
@@ -44,54 +50,60 @@
             logscalecov = [Variable("x₂", df.x₂)],
             shapecov = [Variable("x₃", df.x₃)])
 
-        fm = Extremes.gevfit(model, [0., 0., 0., 0., 0., 0.])
+        fm = Extremes.fit(model, [0., 0., 0., 0., 0., 0.])
 
-        @test all(isapprox.(fm.θ̂,[1.0182, 1.0036, -0.4793, 0.9833, -0.0093, -0.0451], atol=.0001))
+        @test all(isapprox.(fm.θ̂, [1.0182, 1.0036, -0.4793, 0.9833, -0.0093, -0.0451], atol=.0001))
 
-        # stationary GP fit by ML
-        n = 5000
+    end
 
-        σ = 1.0
-        ξ = 0.1
+    @test_set "fit(BlockMaxima{Gumbel}, initialvalues) -- stationary" begin
 
-        ϕ = log(σ)
-        θ = [ϕ; ξ]
+        df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
-        pd = GeneralizedPareto(σ, ξ)
-        y = rand(pd, n)
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", df.y))
 
-        model = Extremes.ThresholdExceedance(Variable("y", y))
+        fm = Extremes.fit(model, [0., 0.])
 
-        fm = Extremes.fit(model)
+        @test all(isapprox.(fm.θ̂, [-0.0023, 0.0124], atol=.0001))
 
-        cinterval = cint(fm)
+    end
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+    @test_set "fit(BlockMaxima{Gumbel}, initialvalues) -- non-stationary" begin
 
-        # non-stationary GP fit by ML
-        n = 5000
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
-        x₁ = randn(n) / 3
-        x₂ = randn(n) / 10
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", df.y),
+            locationcov = [Variable("x₁", df.x₁)],
+            logscalecov = [Variable("x₂", df.x₂)])
 
-        ϕ = -.5 .+ x₁
-        ξ = x₂
+        fm = Extremes.fit(model, [0., 0., 0., 0.])
 
-        σ = exp.(ϕ)
-        θ = [-.5; 1.0; 0.0; 1.0]
+        @test all(isapprox.(fm.θ̂, [1.0155, 1.0035, -0.4820, 0.9847], atol=.0001))
 
-        pd = GeneralizedPareto.(σ, ξ)
-        y = rand.(pd)
+    end
 
-        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x₁", x₁)], shapecov = [Variable("x₂", x₂)])
+    @test_set "fit(ThresholdExceedance, initialvalues) -- stationary" begin
 
-        fm = Extremes.fit(model)
+        df = CSV.read("test/dataset/gp_stationary.csv", DataFrame)
 
-        cinterval = cint(fm)
+        model = Extremes.ThresholdExceedance(Variable("y", df.y))
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        fm = Extremes.fit(model, [0., 0.])
+
+        @test all(isapprox.(fm.θ̂, [-0.0135, 0.0059], atol=.0001))
+
+    end
+
+    @test_set "fit(ThresholdExceedance, initialvalues) -- non-stationary" begin
+
+        df = CSV.read("dataset/gp_nonstationary.csv", DataFrame)
+
+        model = Extremes.ThresholdExceedance(Variable("y", df.y),
+            logscalecov = [Variable("x₁", df.x₁)])
+
+        fm = Extremes.fit(model, [0., 0., 0.])
+
+        @test all(isapprox.(fm.θ̂, [-0.4957, 1.0136, -0.0034], atol=.0001))
 
     end
 

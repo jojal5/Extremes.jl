@@ -13,4 +13,15 @@ n = 5000
 ϕ = -0.5 + x₂
 ξ = 0 + 0*x₃
 
-The following **julia** command will install the package:
+**gp_stationary.csv**
+n = 5000
+μ = 0
+ϕ = 0
+ξ = 0
+
+**gp_nonstationary.csv**
+n = 5000
+μ = 0
+ϕ = -0.5 + x₂
+ξ = 0 
+
