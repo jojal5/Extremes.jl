@@ -36,3 +36,4 @@ end
 
 include(joinpath("bayesian", "bayesian_gev.jl"))
 include(joinpath("bayesian", "bayesian_gp.jl"))
+include(joinpath("bayesian", "bayesian_gumbel.jl"))

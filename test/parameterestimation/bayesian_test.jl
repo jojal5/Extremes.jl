@@ -126,5 +126,6 @@
 
     include(joinpath("bayesian", "bayesian_gev_test.jl"))
     include(joinpath("bayesian", "bayesian_gp_test.jl"))
+    include(joinpath("bayesian", "bayesian_gumbel_test.jl"))
 
 end

@@ -51,6 +51,7 @@ export
     gpfitbayes,
     gpfitpwm,
     gumbelfit,
+    gumbelfitbayes,
     gumbelfitpwm,
     cint,
 
