@@ -1,6 +1,13 @@
 
 function standardize(y::Real, μ::Real, σ::Real, ξ::Real)::Real
-    return 1 / ξ * log( 1 + ξ/σ * ( y - μ ) )
+
+    if ξ ≈ 0
+        z = (y-μ)/σ
+    else
+        z = 1 / ξ * log( 1 + ξ/σ * ( y - μ ) )
+    end
+
+    return z
 
 end
 

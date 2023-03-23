@@ -9,7 +9,7 @@ using Gadfly
 import CSV
 import ForwardDiff, SpecialFunctions
 
-import Distributions: insupport, logpdf, maximum, minimum, pdf, quantile
+import Distributions: insupport, logpdf, maximum, minimum, pdf, quantile, shape
 import Statistics.var
 import Base.length, Base.maximum, Base.sum
 
