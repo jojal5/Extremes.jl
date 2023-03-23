@@ -11,11 +11,13 @@ Pages = [
     "src/parameterestimation/probabilityweightedmoment.jl",
     "src/parameterestimation/bayesian.jl",
     "src/parameterestimation/maximumlikelihood/maximumlikelihood_gev.jl",
+    "src/parameterestimation/maximumlikelihood/maximumlikelihood_gumbel.jl",
     "src/parameterestimation/maximumlikelihood/maximumlikelihood_gp.jl",
     "src/parameterestimation/probabilityweightedmoment/probabilityweightedmoment_gev.jl",
     "src/parameterestimation/probabilityweightedmoment/probabilityweightedmoment_gumbel.jl",
     "src/parameterestimation/probabilityweightedmoment/probabilityweightedmoment_gp.jl",
     "src/parameterestimation/bayesian/bayesian_gev.jl",
+    "src/parameterestimation/bayesian/bayesian_gumbel.jl",
     "src/parameterestimation/bayesian/bayesian_gp.jl"
     ]
 ```
