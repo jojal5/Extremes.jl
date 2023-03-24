@@ -6,6 +6,45 @@ struct MaximumLikelihoodEVA{T} <: fittedEVA{T}
 end
 
 """
+    aic(fm:::MaximumLikelihoodEVA)
+
+Compute the Akaike information criterion (AIC) of the fitted model by maximum likelihood method.
+
+## Details
+
+The AIC is defined as follows:
+
+```math
+AIC = 2k - 2 log L;
+```
+where ``k`` is the number of estimated parameters and ``L`` is the maximized value of the likelihood function for the model. 
+
+"""
+function aic(fm::MaximumLikelihoodEVA)
+    return 2*nparameter(fm.model)-2*loglike(fm)
+end
+
+"""
+    bic(fm:::MaximumLikelihoodEVA)
+
+Compute the Bayesian information criterion (BIC) of the fitted model by maximum likelihood method.
+
+## Details
+
+The BIC is defined as follows:
+
+```math
+BIC = k log n - 2 log L;
+```
+where ``k`` is the number of estimated parameters, ``n`` is the number of data and ``L`` is the maximized value of the likelihood function for the model. 
+
+"""
+function bic(fm::MaximumLikelihoodEVA)
+    n = length(fm.model.data.value)
+    return nparameter(fm.model)*log(n)-2*loglike(fm)
+end
+
+"""
     hessian(model::MaximumLikelihoodEVA)::Array{Float64, 2}
 
 Calculates the Hessian matrix associated with the MaximumLikelihoodEVA model.

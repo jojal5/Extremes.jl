@@ -21,6 +21,30 @@
     fm = Extremes.MaximumLikelihoodEVA(model, θ)
 
 
+    @testset "aic" begin
+
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
+
+        deleteat!(df, 101:nrow(df))
+
+        fd = gevfit(df.y)
+
+        @test aic(fd) ≈ 2*3 - 2*Extremes.loglike(fd)
+        
+    end
+
+    @testset "bic" begin
+
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
+
+        deleteat!(df, 101:nrow(df))
+
+        fd = gevfit(df.y)
+
+        @test bic(fd) ≈ 3*log(100) - 2*Extremes.loglike(fd)
+        
+    end
+
     @testset "getdistribution(fittedmodel)" begin
         @test all(Extremes.getdistribution(fm) .== pd)
     end

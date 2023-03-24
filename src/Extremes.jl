@@ -57,6 +57,9 @@ export
 
 
     # Other functions
+    
+    aic,
+    bic,
     location,
     parametervar,
     params,
