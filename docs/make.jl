@@ -13,7 +13,8 @@ makedocs(sitename = "Extremes.jl",
             "Threshold exceedance" => "tutorial/ThresholdExceedance.md",
             "Declustering" => "tutorial/Declustering.md",
             "Non-stationary block maxima" => "tutorial/blockmaxima_ns.md",
-            "Non-stationary threshold exceedance" => "tutorial/thresholdexceedance_ns.md"],
+            "Non-stationary threshold exceedance" => "tutorial/thresholdexceedance_ns.md",
+            "Additional features" => "tutorial/additional.md"],
        "contributing.md",
        "functions.md"
        ]
