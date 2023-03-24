@@ -1,4 +1,5 @@
-using Documenter, Extremes, Cairo, Fontconfig
+using Documenter, Extremes
+# using Cairo, Fontconfig
 
 CI = get(ENV, "CI", nothing) == "true"
 

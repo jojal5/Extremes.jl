@@ -50,7 +50,7 @@
             θ̂ = [0., 0., 0.]
             s = MaximumLikelihoodEVA(model, θ̂)
             
-            @test all(params(s) .≈ θ̂)
+            @test all(params(s)[] .≈ (0.,1.,0.))
             
         end
         
@@ -60,7 +60,7 @@
             θ̂ = [0., 0., 0., 0.]
             s = MaximumLikelihoodEVA(model, θ̂)
             
-            @test all(params(s) .≈ θ̂)
+            @test all(params(s)[] .≈ (0.,1.,0.))
             
         end
         
@@ -70,7 +70,7 @@
             θ̂ = [0., 0.]
             s = MaximumLikelihoodEVA(model, θ̂)
             
-            @test all(params(s) .≈ θ̂)
+            @test all(params(s)[] .≈ (0.,1.,0.))
             
         end
         
@@ -80,7 +80,7 @@
             θ̂ = [0., 0., 0.]
             s = MaximumLikelihoodEVA(model, θ̂)
             
-            @test all(params(s) .≈ θ̂)
+            @test all(params(s)[] .≈ (0.,1.,0.))
             
         end
     end

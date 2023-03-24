@@ -31,11 +31,14 @@ end
 Return the parameters of the fitted model.
 """
 function params(fm::fittedEVA)
-    return fm.θ̂ 
+    fd = Extremes.getdistribution(fm)
+
+    return params.(fd)
+
  end
 
  """
-    scale(::fittedEVA)
+    scale(fm::fittedEVA)
 
 Return the scale parameters of the fitted model.
  """
@@ -48,7 +51,7 @@ Return the scale parameters of the fitted model.
 end
 
 """
-    shape(::fittedEVA)
+    shape(fm::fittedEVA)
 
 Return the shape parameters of the fitted model.
 """
