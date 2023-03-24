@@ -13,6 +13,54 @@ abstract type fittedEVA{T<:EVA} end
 Base.Broadcast.broadcastable(obj::fittedEVA) = Ref(obj)
 
 """
+    location(fm::fittedEVA)
+
+Return the location parameters of the fitted model.     
+"""
+function location(fm::fittedEVA)
+   
+    fd = Extremes.getdistribution(fm)
+    
+    return location.(fd)
+    
+end
+
+"""
+    params(fm::fittedEVA)
+
+Return the parameters of the fitted model.
+"""
+function params(fm::fittedEVA)
+    return fm.θ̂ 
+ end
+
+ """
+    scale(::fittedEVA)
+
+Return the scale parameters of the fitted model.
+ """
+ function scale(fm::fittedEVA)
+   
+    fd = Extremes.getdistribution(fm)
+    
+    return scale.(fd)
+    
+end
+
+"""
+    shape(::fittedEVA)
+
+Return the shape parameters of the fitted model.
+"""
+function shape(fm::fittedEVA)
+   
+    fd = Extremes.getdistribution(fm)
+    
+    return shape.(fd)
+    
+end
+
+"""
     Base.show(io::IO, obj::fittedEVA)
 
 Override of the show function for the objects of type fittedEVA.
