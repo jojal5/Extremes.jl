@@ -1,14 +1,14 @@
 """
-    AbstractFittedExtremeValueModel{T<:EVA}
+    AbstractFittedExtremeValueModel{T<:AbstractExtremeValueModel}
 
 Abstract type containing the fitted extreme value model types.
 
-- BayesianEVA
-- MaximumLikelihoodEVA
-- pwmEVA
+- BayesianAbstractExtremeValueModel
+- MaximumLikelihoodAbstractExtremeValueModel
+- pwmAbstractExtremeValueModel
 
 """
-abstract type AbstractFittedExtremeValueModel{T<:EVA} end
+abstract type AbstractFittedExtremeValueModel{T<:AbstractExtremeValueModel} end
 
 Base.Broadcast.broadcastable(obj::AbstractFittedExtremeValueModel) = Ref(obj)
 
@@ -98,6 +98,6 @@ boostrap procedure.
 function cint end
 
 include("returnlevel.jl")
-include(joinpath("AbstractFittedExtremeValueModel", "bayesianeva.jl"))
-include(joinpath("AbstractFittedExtremeValueModel", "maximumlikelihoodeva.jl"))
-include(joinpath("AbstractFittedExtremeValueModel", "pwmeva.jl"))
+include(joinpath("AbstractFittedExtremeValueModel", "bayesianAbstractExtremeValueModel.jl"))
+include(joinpath("AbstractFittedExtremeValueModel", "maximumlikelihoodAbstractExtremeValueModel.jl"))
+include(joinpath("AbstractFittedExtremeValueModel", "pwmAbstractExtremeValueModel.jl"))

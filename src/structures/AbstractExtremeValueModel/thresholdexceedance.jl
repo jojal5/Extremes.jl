@@ -1,4 +1,4 @@
-struct ThresholdExceedance <: EVA
+struct ThresholdExceedance <: AbstractExtremeValueModel
     data::Variable
     logscale::paramfun
     shape::paramfun
@@ -94,12 +94,12 @@ function getinitialvalue(model::ThresholdExceedance)::Vector{<:Real}
 end
 
 """
-    showEVA(io::IO, obj::ThresholdExceedance; prefix::String = "")
+    showAbstractExtremeValueModel(io::IO, obj::ThresholdExceedance; prefix::String = "")
 
 Displays a ThresholdExceedance with the prefix `prefix` before every line.
 
 """
-function showEVA(io::IO, obj::ThresholdExceedance; prefix::String = "")
+function showAbstractExtremeValueModel(io::IO, obj::ThresholdExceedance; prefix::String = "")
 
     println(io, prefix, "ThresholdExceedance")
     println(io, prefix, "data :\t\t",typeof(obj.data.value), "[", length(obj.data.value), "]")

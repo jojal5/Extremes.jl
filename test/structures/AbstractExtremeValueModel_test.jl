@@ -1,4 +1,4 @@
-@testset "eva.jl" begin
+@testset "AbstractExtremeValueModel.jl" begin
     @testset "computeparamfunction(covariates)" begin
         # function returned for empty covariates should not modify θ
         θ = [1.0]
@@ -151,7 +151,7 @@
 
     end
 
-    include(joinpath("eva", "blockmaxima_test.jl"))
-    include(joinpath("eva", "thresholdexceedance_test.jl"))
+    include(joinpath("AbstractExtremeValueModel", "blockmaxima_test.jl"))
+    include(joinpath("AbstractExtremeValueModel", "thresholdexceedance_test.jl"))
 
 end

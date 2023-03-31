@@ -28,7 +28,7 @@ export
     Cluster,
 
     # Generic types
-    EVA,
+    AbstractExtremeValueModel,
     AbstractFittedExtremeValueModel,
 
     # Extreme value analysis type
@@ -36,9 +36,9 @@ export
     ThresholdExceedance,
 
     # Fitted extreme value analysis model
-    pwmEVA,
-    MaximumLikelihoodEVA,
-    BayesianEVA,
+    pwmAbstractExtremeValueModel,
+    MaximumLikelihoodAbstractExtremeValueModel,
+    BayesianAbstractExtremeValueModel,
 
     # Data related functions
     getcluster,

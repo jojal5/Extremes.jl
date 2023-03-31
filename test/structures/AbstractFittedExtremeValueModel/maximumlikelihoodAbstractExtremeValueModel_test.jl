@@ -1,4 +1,4 @@
-@testset "maximumlikelihoodeva.jl" begin
+@testset "maximumlikelihoodAbstractExtremeValueModel.jl" begin
 
     n = 1000
 
@@ -18,7 +18,7 @@
 
     model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
 
-    fm = Extremes.MaximumLikelihoodEVA(model, θ)
+    fm = Extremes.MaximumLikelihoodAbstractExtremeValueModel(model, θ)
 
 
     @testset "aic" begin
@@ -105,7 +105,7 @@
     end
 
 
-    @testset "quantilevar(rl, level)" begin
+    @testset "quantilAbstractExtremeValueModelr(rl, level)" begin
         # Tested in cint(rl)
     end
 
@@ -156,7 +156,7 @@
 
     model = ThresholdExceedance(Variable("y", y), logscalecov = [x])
 
-    fm = Extremes.MaximumLikelihoodEVA(model, θ)
+    fm = Extremes.MaximumLikelihoodAbstractExtremeValueModel(model, θ)
 
     @testset "getdistribution(fittedmodel)" begin
         @test all(Extremes.getdistribution(fm) .== pd)
@@ -220,7 +220,7 @@
     end
 
 
-    @testset "quantilevar(rl, level)" begin
+    @testset "quantilAbstractExtremeValueModelr(rl, level)" begin
         # Tested in cint(rl)
     end
 

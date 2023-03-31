@@ -93,12 +93,12 @@ end
 
 
 """
-    showEVA(io::IO, obj::BlockMaxima{Gumbel}; prefix::String = "")
+    showAbstractExtremeValueModel(io::IO, obj::BlockMaxima{Gumbel}; prefix::String = "")
 
 Displays a BlockMaxima{Gumbel} with the prefix `prefix` before every line.
 
 """
-function showEVA(io::IO, obj::BlockMaxima{Gumbel}; prefix::String = "")
+function showAbstractExtremeValueModel(io::IO, obj::BlockMaxima{Gumbel}; prefix::String = "")
 
     println(io, prefix, "BlockMaxima{Gumbel}")
     println(io, prefix, "data :\t\t", typeof(obj.data.value), "[", length(obj.data.value), "]")

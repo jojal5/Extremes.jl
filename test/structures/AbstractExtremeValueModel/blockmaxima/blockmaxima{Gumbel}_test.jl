@@ -97,10 +97,10 @@
 
     end
 
-    @testset "showEVA(io, obj; prefix)" begin
+    @testset "showAbstractExtremeValueModel(io, obj; prefix)" begin
         # print does not throw
         buffer = IOBuffer()
-        @test_logs Extremes.showEVA(buffer, smodel, prefix = "\t")
+        @test_logs Extremes.showAbstractExtremeValueModel(buffer, smodel, prefix = "\t")
     end
 
 end

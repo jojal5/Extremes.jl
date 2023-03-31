@@ -1,10 +1,10 @@
 """
-    fit(model::EVA; initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
+    fit(model::AbstractExtremeValueModel; initialvalues::Vector{<:Real})::MaximumLikelihoodAbstractExtremeValueModel
 
 Fit the extreme value model by maximum likelihood.
 
 """
-function fit(model::EVA, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
+function fit(model::AbstractExtremeValueModel, initialvalues::Vector{<:Real})::MaximumLikelihoodAbstractExtremeValueModel
 
     # Initial values validation
     fd = getdistribution(model, initialvalues)
@@ -21,19 +21,19 @@ function fit(model::EVA, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
         θ̂ = initialvalues
     end
 
-    fittedmodel = MaximumLikelihoodEVA(model, θ̂)
+    fittedmodel = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
 
     return fittedmodel
 
 end
 
 """
-    fit(model::EVA)::MaximumLikelihoodEVA
+    fit(model::AbstractExtremeValueModel)::MaximumLikelihoodAbstractExtremeValueModel
 
 Fit the extreme value model by maximum likelihood.
 
 """
-function fit(model::EVA)::MaximumLikelihoodEVA
+function fit(model::AbstractExtremeValueModel)::MaximumLikelihoodAbstractExtremeValueModel
 
     initialvalues = getinitialvalue(model)
 

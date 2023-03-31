@@ -6,7 +6,7 @@
 
        fm =  Extremes.gumbelfitpwm(df.y)
 
-       @test typeof(fm) == pwmEVA{BlockMaxima{Gumbel}}
+       @test typeof(fm) == pwmAbstractExtremeValueModel{BlockMaxima{Gumbel}}
 
     end
 
@@ -14,7 +14,7 @@
     
         fm = Extremes.gumbelfitpwm(df, :y)
 
-        @test typeof(fm) == pwmEVA{BlockMaxima{Gumbel}}
+        @test typeof(fm) == pwmAbstractExtremeValueModel{BlockMaxima{Gumbel}}
 
     end
 
@@ -31,7 +31,7 @@
 
         fm = Extremes.gumbelfitpwm(model)
 
-        @test typeof(fm) == pwmEVA{BlockMaxima{Gumbel}}
+        @test typeof(fm) == pwmAbstractExtremeValueModel{BlockMaxima{Gumbel}}
 
         @test fm.θ̂[1] ≈ -0.0020 atol=0.0001
         @test fm.θ̂[2] ≈ 0.0095 atol=0.0001

@@ -46,7 +46,7 @@
 
         θ̃ = collect(1.0:6.0)
 
-        fm_std = MaximumLikelihoodEVA(model, θ̃)
+        fm_std = MaximumLikelihoodAbstractExtremeValueModel(model, θ̃)
 
         fm = Extremes.transform(fm_std)
 

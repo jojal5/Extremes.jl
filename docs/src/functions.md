@@ -31,16 +31,16 @@ Order = [:function]
 Pages = [
     "src/structures/cluster.jl",
     "src/structures/dataitem.jl",
-    "src/structures/eva.jl",
+    "src/structures/AbstractExtremeValueModel.jl",
     "src/structures/AbstractFittedExtremeValueModel.jl",
     "src/structures/returnlevel.jl",
     "src/structures/dataitem/variable.jl",
     "src/structures/dataitem/variablestd.jl",
-    "src/structures/eva/blockmaxima.jl",
-    "src/structures/eva/thresholdexceedance.jl",
-    "src/structures/AbstractFittedExtremeValueModel/bayesianeva.jl",
-    "src/structures/AbstractFittedExtremeValueModel/maximumlikelihoodeva.jl",
-    "src/structures/AbstractFittedExtremeValueModel/pwmeva.jl"
+    "src/structures/AbstractExtremeValueModel/blockmaxima.jl",
+    "src/structures/AbstractExtremeValueModel/thresholdexceedance.jl",
+    "src/structures/AbstractFittedExtremeValueModel/bayesianAbstractExtremeValueModel.jl",
+    "src/structures/AbstractFittedExtremeValueModel/maximumlikelihoodAbstractExtremeValueModel.jl",
+    "src/structures/AbstractFittedExtremeValueModel/pwmAbstractExtremeValueModel.jl"
     ]
 ```
 

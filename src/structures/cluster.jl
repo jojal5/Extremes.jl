@@ -175,7 +175,7 @@ end
 """
     Base.show(io::IO, obj::Cluster)
 
-Override of the show function for the objects of type EVA.
+Override of the show function for the objects of type AbstractExtremeValueModel.
 
 """
 function Base.show(io::IO, obj::Cluster)

@@ -63,7 +63,7 @@ Generate a sample from the Gumbel parameters' posterior distribution.
 function gumbelfitbayes(y::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-    niter::Int=5000, warmup::Int=2000)::BayesianEVA
+    niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     locationcovstd = standardize.(locationcov)
     logscalecovstd = standardize.(logscalecov)
@@ -95,7 +95,7 @@ Generate a sample from the Gumbel parameters' posterior distribution.
 function gumbelfitbayes(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
     logscalecovid::Vector{Symbol}=Symbol[],
-    niter::Int=5000, warmup::Int=2000)::BayesianEVA
+    niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     locationcovstd = standardize.(buildVariables(df, locationcovid))
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
@@ -115,7 +115,7 @@ end
 
 Generate a sample from the `BlockMaxima` model parameters' posterior distribution.
 """
-function gumbelfitbayes(model::BlockMaxima{Gumbel}; niter::Int=5000, warmup::Int=2000)::BayesianEVA
+function gumbelfitbayes(model::BlockMaxima{Gumbel}; niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     return fitbayes(model, niter=niter, warmup=warmup)
 

@@ -12,7 +12,7 @@ function standardize(y::Real, μ::Real, σ::Real, ξ::Real)::Real
 end
 
 
-function standardize(fm::MaximumLikelihoodEVA)::Vector{<:Real}
+function standardize(fm::MaximumLikelihoodAbstractExtremeValueModel)::Vector{<:Real}
 
     y = fm.model.data.value
     d = getdistribution(fm)
@@ -22,7 +22,7 @@ function standardize(fm::MaximumLikelihoodEVA)::Vector{<:Real}
 end
 
 
-function standardize(fm::BayesianEVA)::Vector{<:Real}
+function standardize(fm::BayesianAbstractExtremeValueModel)::Vector{<:Real}
 
     θ̂ = findposteriormode(fm)
     dist = getdistribution(fm.model, θ̂)

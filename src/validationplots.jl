@@ -24,11 +24,11 @@ function ecdf(y::Vector{<:Real})::Tuple{Vector{<:Real}, Vector{<:Real}}
 end
 
 """
-    checkstationarity(model::EVA)
+    checkstationarity(model::AbstractExtremeValueModel)
 
 Check if the extreme value model `model` is stationary.
 """
-function checkstationarity(m::EVA)
+function checkstationarity(m::AbstractExtremeValueModel)
 
     if getcovariatenumber(m) > 0
         @info "The graph is optimized for stationary models and the model provided is not."
@@ -37,11 +37,11 @@ function checkstationarity(m::EVA)
 end
 
 """
-    checknonstationarity(model::EVA)
+    checknonstationarity(model::AbstractExtremeValueModel)
 
 Check if the extreme value model `model` is nonstationary.
 """
-function checknonstationarity(m::EVA)
+function checknonstationarity(m::AbstractExtremeValueModel)
 
     if getcovariatenumber(m) == 0
         @info "The graph is optimized for non-stationary models and the model provided is not."

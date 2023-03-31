@@ -1,10 +1,10 @@
 """
-    fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
+    fitbayes(model::AbstractExtremeValueModel; niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
 Fit the extreme value model under the Bayesian paradigm.
 
 """
-function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
+function fitbayes(model::AbstractExtremeValueModel; niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     # Set initial values to the maximum likelihood estimates
     ml = fit(model)
@@ -28,7 +28,7 @@ function fitbayes(model::EVA; niter::Int=5000, warmup::Int=2000)::BayesianEVA
         end
     end
 
-    fittedmodel = BayesianEVA(model, sim)
+    fittedmodel = BayesianAbstractExtremeValueModel(model, sim)
 
     return fittedmodel
 

@@ -5,7 +5,7 @@
             
             model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1]))
             θ̂ = [0., 0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(location(s) .≈ θ̂[1])
             
@@ -15,7 +15,7 @@
             
             model  = BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1, 2]), locationcov = [Variable("x", [0,1])])
             θ̂ = [0., 1., 0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(location(s) .≈ [0., 1.])
             
@@ -25,7 +25,7 @@
             
             model = Extremes.ThresholdExceedance(Variable("y", [1]))
             θ̂ = [0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(location(s) .≈ 0.)
             
@@ -35,7 +35,7 @@
             
             model = Extremes.ThresholdExceedance(Variable("y", [1, 2]), logscalecov = [Variable("x", [0, 1])])
             θ̂ = [0., 0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(location(s) .≈ 0.)
             
@@ -48,7 +48,7 @@
         
             model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1]))
             θ̂ = [0., 0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(params(s)[] .≈ (0.,1.,0.))
             
@@ -58,7 +58,7 @@
             
             model = model  = BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1]), locationcov = [Variable("x", [1])])
             θ̂ = [0., 0., 0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(params(s)[] .≈ (0.,1.,0.))
             
@@ -68,7 +68,7 @@
             
             model = Extremes.ThresholdExceedance(Variable("y", [1]))
             θ̂ = [0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(params(s)[] .≈ (0.,1.,0.))
             
@@ -78,7 +78,7 @@
             
             model = Extremes.ThresholdExceedance(Variable("y", [1]), logscalecov = [Variable("x", [1])])
             θ̂ = [0., 0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(params(s)[] .≈ (0.,1.,0.))
             
@@ -91,7 +91,7 @@
             
             model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1]))
             θ̂ = [0., 0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(scale(s) .≈ 1.)
             
@@ -101,7 +101,7 @@
             
             model  = BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1, 2]), logscalecov = [Variable("x", [0,1])])
             θ̂ = [0., 0, 1., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(scale(s) .≈ exp.([0., 1.]))
             
@@ -111,7 +111,7 @@
             
             model = Extremes.ThresholdExceedance(Variable("y", [1]))
             θ̂ = [0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(scale(s) .≈ 1.)
             
@@ -121,7 +121,7 @@
             
             model = Extremes.ThresholdExceedance(Variable("y", [1, 2]), logscalecov = [Variable("x", [0, 1])])
             θ̂ = [0., 1., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(scale(s) .≈ exp.([0., 1.]))
             
@@ -135,7 +135,7 @@
             
             model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1]))
             θ̂ = [0., 0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(shape(s) .≈ 0.)
             
@@ -145,7 +145,7 @@
             
             model  = BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1, 2]), shapecov = [Variable("x", [0,1])])
             θ̂ = [0., 0, 0., 1.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(shape(s) .≈ [0., 1.])
             
@@ -155,7 +155,7 @@
             
             model = Extremes.ThresholdExceedance(Variable("y", [1]))
             θ̂ = [0., 0.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(shape(s) .≈ 0.)
             
@@ -165,7 +165,7 @@
             
             model = Extremes.ThresholdExceedance(Variable("y", [1, 2]), shapecov = [Variable("x", [0, 1])])
             θ̂ = [0., 0., 1.]
-            s = MaximumLikelihoodEVA(model, θ̂)
+            s = MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
             
             @test all(shape(s) .≈ [0., 1.])
             
@@ -174,23 +174,23 @@
     end
 
     @testset "Base.show(io, obj)" begin
-        # Print BayesianEVA does not throw
-        fm = Extremes.BayesianEVA(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [100.0])), MambaLite.Chains([100.0 log(5.0) .1]))
+        # Print BayesianAbstractExtremeValueModel does not throw
+        fm = Extremes.BayesianAbstractExtremeValueModel(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [100.0])), MambaLite.Chains([100.0 log(5.0) .1]))
         buffer = IOBuffer()
         @test_logs Base.show(buffer, fm)
 
-        # Print MaximumLikelihoodEVA does not throw
-        fm = Extremes.MaximumLikelihoodEVA(BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1])), [1.0, 1.0, 0.1])
+        # Print MaximumLikelihoodAbstractExtremeValueModel does not throw
+        fm = Extremes.MaximumLikelihoodAbstractExtremeValueModel(BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1])), [1.0, 1.0, 0.1])
         @test_logs Base.show(buffer, fm)
 
-        # Print PwmEVA does not throw
-        fm = Extremes.pwmEVA{BlockMaxima{GeneralizedExtremeValue}}(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [0])), [1.0; 0.0; 0.1])
+        # Print PwmAbstractExtremeValueModel does not throw
+        fm = Extremes.pwmAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}}(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [0])), [1.0; 0.0; 0.1])
         @test_logs Base.show(buffer, fm)
 
     end
 
-    include(joinpath("AbstractFittedExtremeValueModel", "bayesianeva_test.jl"))
-    include(joinpath("AbstractFittedExtremeValueModel", "maximumlikelihoodeva_test.jl"))
-    include(joinpath("AbstractFittedExtremeValueModel", "pwmeva_test.jl"))
+    include(joinpath("AbstractFittedExtremeValueModel", "bayesianAbstractExtremeValueModel_test.jl"))
+    include(joinpath("AbstractFittedExtremeValueModel", "maximumlikelihoodAbstractExtremeValueModel_test.jl"))
+    include(joinpath("AbstractFittedExtremeValueModel", "pwmAbstractExtremeValueModel_test.jl"))
 
 end

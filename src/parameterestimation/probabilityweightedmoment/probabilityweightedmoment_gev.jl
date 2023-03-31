@@ -24,7 +24,7 @@ function gevfitpwm end
 Estimate the GEV parameters with the probability weighted moments.
 
 """
-function gevfitpwm(y::Vector{<:Real})::pwmEVA
+function gevfitpwm(y::Vector{<:Real})::pwmAbstractExtremeValueModel
 
     model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
 
@@ -42,7 +42,7 @@ Estimate the GEV parameters with the probability weighted moments.
 Block maxima data are in the column `datacol` of the dataframe `df`.
 
 """
-function gevfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+function gevfitpwm(df::DataFrame, datacol::Symbol)::pwmAbstractExtremeValueModel
 
     model = BlockMaxima{GeneralizedExtremeValue}(Variable(string(datacol), df[:, datacol]))
 
@@ -58,7 +58,7 @@ end
 Estimate the GEV parameters with the probability weighted moments.
 
 """
-function gevfitpwm(model::BlockMaxima{GeneralizedExtremeValue})::pwmEVA
+function gevfitpwm(model::BlockMaxima{GeneralizedExtremeValue})::pwmAbstractExtremeValueModel
 
     model = validatestationarity(model)
 
@@ -80,7 +80,7 @@ function gevfitpwm(model::BlockMaxima{GeneralizedExtremeValue})::pwmEVA
 
     θ̂ = [μ̂; ϕ̂; ξ̂]
 
-    fm = pwmEVA{BlockMaxima{GeneralizedExtremeValue}}(model, θ̂)
+    fm = pwmAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}}(model, θ̂)
 
     return fm
 

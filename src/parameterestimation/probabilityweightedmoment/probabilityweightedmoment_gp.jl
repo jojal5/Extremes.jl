@@ -25,7 +25,7 @@ function gpfitpwm end
 Estimate the GP parameters with the probability weighted moments.
 
 """
-function gpfitpwm(y::Vector{<:Real})::pwmEVA
+function gpfitpwm(y::Vector{<:Real})::pwmAbstractExtremeValueModel
 
     model = ThresholdExceedance(Variable("y", y))
 
@@ -43,7 +43,7 @@ Estimate the GP parameters with the probability weighted moments.
 Block maxima data are in the column `datacol` of the dataframe `df`.
 
 """
-function gpfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+function gpfitpwm(df::DataFrame, datacol::Symbol)::pwmAbstractExtremeValueModel
 
     model = ThresholdExceedance(Variable(string(datacol), df[:, datacol]))
 
@@ -59,7 +59,7 @@ end
 Estimate the GP parameters with the probability weighted moments.
 
 """
-function gpfitpwm(model::ThresholdExceedance)::pwmEVA
+function gpfitpwm(model::ThresholdExceedance)::pwmAbstractExtremeValueModel
 
     model = validatestationarity(model)
 
@@ -77,7 +77,7 @@ function gpfitpwm(model::ThresholdExceedance)::pwmEVA
 
     θ̂ = [ϕ̂; ξ̂]
 
-    fm = pwmEVA{ThresholdExceedance}(model, θ̂)
+    fm = pwmAbstractExtremeValueModel{ThresholdExceedance}(model, θ̂)
 
     return fm
 

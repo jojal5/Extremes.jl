@@ -55,7 +55,7 @@ Estimate the Gumbel parameters.
 """
 function gumbelfit(y::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
-    logscalecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+    logscalecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodAbstractExtremeValueModel
 
     locationcovstd = standardize.(locationcov)
     logscalecovstd = standardize.(logscalecov)
@@ -86,7 +86,7 @@ Estimate the Gumbel parameters.
 """
 function gumbelfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
-    logscalecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+    logscalecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodAbstractExtremeValueModel
 
     model = BlockMaxima{Gumbel}(Variable("y", y), locationcov = locationcov, logscalecov = logscalecov)
 
@@ -112,7 +112,7 @@ Estimate the Gumbel parameters.
 """
 function gumbelfit(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
-    logscalecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    logscalecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodAbstractExtremeValueModel
 
     locationcovstd = standardize.(buildVariables(df, locationcovid))
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
@@ -143,7 +143,7 @@ Estimate the Gumbel parameters.
 """
 function gumbelfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
     locationcovid::Vector{Symbol}=Symbol[],
-    logscalecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    logscalecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodAbstractExtremeValueModel
 
     locationcov = buildVariables(df, locationcovid)
     logscalecov = buildVariables(df, logscalecovid)
@@ -159,7 +159,7 @@ end
 
 Estimate the parameters of the `BlockMaxima` model using the given initialvalues.
 """
-function gumbelfit(model::BlockMaxima{Gumbel}, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
+function gumbelfit(model::BlockMaxima{Gumbel}, initialvalues::Vector{<:Real})::MaximumLikelihoodAbstractExtremeValueModel
 
     fit(model, initialvalues)
 

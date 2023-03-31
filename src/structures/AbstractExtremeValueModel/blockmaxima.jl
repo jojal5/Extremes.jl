@@ -1,4 +1,4 @@
-struct BlockMaxima{T} <: EVA
+struct BlockMaxima{T} <: AbstractExtremeValueModel
     data::Variable
     location::paramfun
     logscale::paramfun
