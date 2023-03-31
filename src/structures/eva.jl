@@ -54,7 +54,7 @@ function getcovariatenumber end
 
 """
     getdistribution(model::EVA, θ::Vector{<:Real})
-    getdistribution(fm::fittedEVA)
+    getdistribution(fm::AbstractFittedExtremeValueModel)
 
 Return the distributions corresponding to the model or the fitted model.
 

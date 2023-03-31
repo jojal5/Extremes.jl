@@ -117,10 +117,10 @@
 
 
 
-    @testset "showfittedEVA(io, obj, prefix)" begin
+    @testset "showAbstractFittedExtremeValueModel(io, obj, prefix)" begin
         # print does not throw
         buffer = IOBuffer()
-        @test_logs Extremes.showfittedEVA(buffer, fm, prefix = "\t")
+        @test_logs Extremes.showAbstractFittedExtremeValueModel(buffer, fm, prefix = "\t")
     end
 
     @testset "showChain(io, chain, prefix)" begin

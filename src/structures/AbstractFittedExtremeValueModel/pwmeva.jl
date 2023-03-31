@@ -1,4 +1,4 @@
-struct pwmEVA{T} <: fittedEVA{T}
+struct pwmEVA{T} <: AbstractFittedExtremeValueModel{T}
     "Extreme value model definition"
     model::T
     "Maximum likelihood estimate"
@@ -260,12 +260,12 @@ function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance}}, confidencelevel::Rea
 end
 
 """
-    showfittedEVA(io::IO, obj::pwmEVA; prefix::String = "")
+    showAbstractFittedExtremeValueModel(io::IO, obj::pwmEVA; prefix::String = "")
 
 Displays a pwmEVA with the prefix `prefix` before every line.
 
 """
-function showfittedEVA(io::IO, obj::pwmEVA; prefix::String = "")
+function showAbstractFittedExtremeValueModel(io::IO, obj::pwmEVA; prefix::String = "")
 
     println(io, prefix, "pwmEVA")
     println(io, prefix, "model :")

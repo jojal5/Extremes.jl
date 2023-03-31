@@ -50,7 +50,7 @@ function standarddist(::ThresholdExceedance)::Distribution
 end
 
 
-function probplot_std_data(fm::fittedEVA)::DataFrame
+function probplot_std_data(fm::AbstractFittedExtremeValueModel)::DataFrame
 
     z = standardize(fm)
 
@@ -61,7 +61,7 @@ function probplot_std_data(fm::fittedEVA)::DataFrame
 end
 
 
-function qqplot_std_data(fm::fittedEVA)::DataFrame
+function qqplot_std_data(fm::AbstractFittedExtremeValueModel)::DataFrame
 
     z = standardize(fm)
 
@@ -73,7 +73,7 @@ end
 
 
 
-function histplot_std_data(fm::fittedEVA)::Dict
+function histplot_std_data(fm::AbstractFittedExtremeValueModel)::Dict
 
     dist = standarddist(fm.model)
 

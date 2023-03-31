@@ -29,7 +29,7 @@ export
 
     # Generic types
     EVA,
-    fittedEVA,
+    AbstractFittedExtremeValueModel,
 
     # Extreme value analysis type
     BlockMaxima,

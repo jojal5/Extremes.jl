@@ -1,9 +1,9 @@
 """
-    probplot(fm::fittedEVA)
+    probplot(fm::AbstractFittedExtremeValueModel)
 
 Probability plot
 """
-function probplot(fm::fittedEVA)::Plot
+function probplot(fm::AbstractFittedExtremeValueModel)::Plot
 
     if getcovariatenumber(fm.model) > 0
         df = probplot_std_data(fm)
@@ -21,11 +21,11 @@ end
 
 
 """
-    qqplot(fm::fittedEVA)
+    qqplot(fm::AbstractFittedExtremeValueModel)
 
 Quantile-Quantile plot
 """
-function qqplot(fm::fittedEVA)::Plot
+function qqplot(fm::AbstractFittedExtremeValueModel)::Plot
 
     if getcovariatenumber(fm.model) > 0
         df = qqplot_std_data(fm)
@@ -43,11 +43,11 @@ end
 
 
 """
-    returnlevelplot(fm::fittedEVA)
+    returnlevelplot(fm::AbstractFittedExtremeValueModel)
 
 Return level plot
 """
-function returnlevelplot(fm::fittedEVA)::Plot
+function returnlevelplot(fm::AbstractFittedExtremeValueModel)::Plot
 
     if getcovariatenumber(fm.model) > 0
         @warn "this graphic is not optimized for non-stationary model; plot ignored."
@@ -63,11 +63,11 @@ end
 
 
 """
-    histplot(fm::fittedEVA)
+    histplot(fm::AbstractFittedExtremeValueModel)
 
 Histogram plot
 """
-function histplot(fm::fittedEVA)::Plot
+function histplot(fm::AbstractFittedExtremeValueModel)::Plot
 
     if getcovariatenumber(fm.model) > 0
         df = histplot_std_data(fm)
@@ -86,11 +86,11 @@ end
 
 
 """
-    diagnosticplots(fm::fittedEVA)
+    diagnosticplots(fm::AbstractFittedExtremeValueModel)
 
 Diagnostic plots
 """
-function diagnosticplots(fm::fittedEVA)::Gadfly.Compose.Context
+function diagnosticplots(fm::AbstractFittedExtremeValueModel)::Gadfly.Compose.Context
 
     f1 = probplot(fm)
     f2 = qqplot(fm)

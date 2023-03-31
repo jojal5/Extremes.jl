@@ -32,15 +32,15 @@ Pages = [
     "src/structures/cluster.jl",
     "src/structures/dataitem.jl",
     "src/structures/eva.jl",
-    "src/structures/fittedeva.jl",
+    "src/structures/AbstractFittedExtremeValueModel.jl",
     "src/structures/returnlevel.jl",
     "src/structures/dataitem/variable.jl",
     "src/structures/dataitem/variablestd.jl",
     "src/structures/eva/blockmaxima.jl",
     "src/structures/eva/thresholdexceedance.jl",
-    "src/structures/fittedeva/bayesianeva.jl",
-    "src/structures/fittedeva/maximumlikelihoodeva.jl",
-    "src/structures/fittedeva/pwmeva.jl"
+    "src/structures/AbstractFittedExtremeValueModel/bayesianeva.jl",
+    "src/structures/AbstractFittedExtremeValueModel/maximumlikelihoodeva.jl",
+    "src/structures/AbstractFittedExtremeValueModel/pwmeva.jl"
     ]
 ```
 

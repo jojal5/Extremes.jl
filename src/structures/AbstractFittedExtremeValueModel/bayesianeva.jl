@@ -1,4 +1,4 @@
-struct BayesianEVA{T} <: fittedEVA{T}
+struct BayesianEVA{T} <: AbstractFittedExtremeValueModel{T}
     "Extreme value model definition"
     model::T
     "MCMC outputs"
@@ -129,11 +129,11 @@ function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel
 end
 
 """
-    showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
+    showAbstractFittedExtremeValueModel(io::IO, obj::BayesianEVA; prefix::String = "")
 
 Displays a BayesianEVA with the prefix `prefix` before every line.
 """
-function showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
+function showAbstractFittedExtremeValueModel(io::IO, obj::BayesianEVA; prefix::String = "")
 
     println(io, prefix, "BayesianEVA")
     println(io, prefix, "model :")
@@ -200,7 +200,7 @@ function transform(fm::BayesianEVA{BlockMaxima{GeneralizedExtremeValue}})::Bayes
     sim = fm.sim
     sim.value[:,:,1] = x
 
-    # Contruction of the fittedEVA structure
+    # Contruction of the AbstractFittedExtremeValueModel structure
     return BayesianEVA(model, sim)
 
 end
@@ -242,7 +242,7 @@ function transform(fm::BayesianEVA{BlockMaxima{Gumbel}})::BayesianEVA
     sim = fm.sim
     sim.value[:,:,1] = x
 
-    # Contruction of the fittedEVA structure
+    # Contruction of the AbstractFittedExtremeValueModel structure
     return BayesianEVA(model, sim)
 
 end
@@ -286,7 +286,7 @@ function transform(fm::BayesianEVA{ThresholdExceedance})
     sim = fm.sim
     sim.value[:,:,1] = x
 
-    # Contruction of the fittedEVA structure
+    # Contruction of the AbstractFittedExtremeValueModel structure
     return BayesianEVA(model, sim)
 
 end

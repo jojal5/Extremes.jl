@@ -1,5 +1,5 @@
 """
-    fittedEVA{T<:EVA}
+    AbstractFittedExtremeValueModel{T<:EVA}
 
 Abstract type containing the fitted extreme value model types.
 
@@ -8,16 +8,16 @@ Abstract type containing the fitted extreme value model types.
 - pwmEVA
 
 """
-abstract type fittedEVA{T<:EVA} end
+abstract type AbstractFittedExtremeValueModel{T<:EVA} end
 
-Base.Broadcast.broadcastable(obj::fittedEVA) = Ref(obj)
+Base.Broadcast.broadcastable(obj::AbstractFittedExtremeValueModel) = Ref(obj)
 
 """
-    location(fm::fittedEVA)
+    location(fm::AbstractFittedExtremeValueModel)
 
 Return the location parameters of the fitted model.     
 """
-function location(fm::fittedEVA)
+function location(fm::AbstractFittedExtremeValueModel)
    
     fd = Extremes.getdistribution(fm)
     
@@ -26,11 +26,11 @@ function location(fm::fittedEVA)
 end
 
 """
-    params(fm::fittedEVA)
+    params(fm::AbstractFittedExtremeValueModel)
 
 Return the parameters of the fitted model.
 """
-function params(fm::fittedEVA)
+function params(fm::AbstractFittedExtremeValueModel)
     fd = Extremes.getdistribution(fm)
 
     return params.(fd)
@@ -38,11 +38,11 @@ function params(fm::fittedEVA)
  end
 
  """
-    scale(fm::fittedEVA)
+    scale(fm::AbstractFittedExtremeValueModel)
 
 Return the scale parameters of the fitted model.
  """
- function scale(fm::fittedEVA)
+ function scale(fm::AbstractFittedExtremeValueModel)
    
     fd = Extremes.getdistribution(fm)
     
@@ -51,11 +51,11 @@ Return the scale parameters of the fitted model.
 end
 
 """
-    shape(fm::fittedEVA)
+    shape(fm::AbstractFittedExtremeValueModel)
 
 Return the shape parameters of the fitted model.
 """
-function shape(fm::fittedEVA)
+function shape(fm::AbstractFittedExtremeValueModel)
    
     fd = Extremes.getdistribution(fm)
     
@@ -64,14 +64,14 @@ function shape(fm::fittedEVA)
 end
 
 """
-    Base.show(io::IO, obj::fittedEVA)
+    Base.show(io::IO, obj::AbstractFittedExtremeValueModel)
 
-Override of the show function for the objects of type fittedEVA.
+Override of the show function for the objects of type AbstractFittedExtremeValueModel.
 
 """
-function Base.show(io::IO, obj::fittedEVA)
+function Base.show(io::IO, obj::AbstractFittedExtremeValueModel)
 
-    showfittedEVA(io, obj)
+    showAbstractFittedExtremeValueModel(io, obj)
 
 end
 
@@ -80,7 +80,7 @@ end
 
 Compute confidence interval or credible interval in the case of Bayesian estimation.
 
-The function can be applied on any [`fittedEVA`](@ref) subtype to obtain a
+The function can be applied on any [`AbstractFittedExtremeValueModel`](@ref) subtype to obtain a
 confidence interval on the model parameters. It can also be applied on
 [`ReturnLevel`](@ref) type to obtain a confidence interval on the return level.
 
@@ -98,6 +98,6 @@ boostrap procedure.
 function cint end
 
 include("returnlevel.jl")
-include(joinpath("fittedeva", "bayesianeva.jl"))
-include(joinpath("fittedeva", "maximumlikelihoodeva.jl"))
-include(joinpath("fittedeva", "pwmeva.jl"))
+include(joinpath("AbstractFittedExtremeValueModel", "bayesianeva.jl"))
+include(joinpath("AbstractFittedExtremeValueModel", "maximumlikelihoodeva.jl"))
+include(joinpath("AbstractFittedExtremeValueModel", "pwmeva.jl"))

@@ -1,6 +1,6 @@
-@testset "fittedeva.jl" begin
+@testset "AbstractFittedExtremeValueModel.jl" begin
 
-    @testset "location(::fittedEVA)" begin
+    @testset "location(::AbstractFittedExtremeValueModel)" begin
         @testset "stationary block maxima" begin
             
             model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1]))
@@ -43,7 +43,7 @@
         
     end
 
-    @testset "params(fittedEVA)" begin
+    @testset "params(AbstractFittedExtremeValueModel)" begin
         @testset "stationary block maxima" begin
         
             model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1]))
@@ -85,7 +85,7 @@
         end
     end
 
-    @testset "scale(::fittedEVA)" begin
+    @testset "scale(::AbstractFittedExtremeValueModel)" begin
 
         @testset "stationary block maxima" begin
             
@@ -129,7 +129,7 @@
         
     end
 
-    @testset "shape(::fittedEVA)" begin
+    @testset "shape(::AbstractFittedExtremeValueModel)" begin
 
         @testset "stationary block maxima" begin
             
@@ -189,8 +189,8 @@
 
     end
 
-    include(joinpath("fittedeva", "bayesianeva_test.jl"))
-    include(joinpath("fittedeva", "maximumlikelihoodeva_test.jl"))
-    include(joinpath("fittedeva", "pwmeva_test.jl"))
+    include(joinpath("AbstractFittedExtremeValueModel", "bayesianeva_test.jl"))
+    include(joinpath("AbstractFittedExtremeValueModel", "maximumlikelihoodeva_test.jl"))
+    include(joinpath("AbstractFittedExtremeValueModel", "pwmeva_test.jl"))
 
 end

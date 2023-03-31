@@ -1,4 +1,4 @@
-struct MaximumLikelihoodEVA{T} <: fittedEVA{T}
+struct MaximumLikelihoodEVA{T} <: AbstractFittedExtremeValueModel{T}
     "Extreme value model definition"
     model::T
     "Maximum likelihood estimate"
@@ -255,12 +255,12 @@ function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confid
 end
 
 """
-    showfittedEVA(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
+    showAbstractFittedExtremeValueModel(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
 
 Displays a MaximumLikelihoodEVA with the prefix `prefix` before every line.
 
 """
-function showfittedEVA(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
+function showAbstractFittedExtremeValueModel(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
 
     println(io, prefix, "MaximumLikelihoodEVA")
     println(io, prefix, "model :")
@@ -306,7 +306,7 @@ function transform(fm::MaximumLikelihoodEVA{BlockMaxima{GeneralizedExtremeValue}
         end
     end
 
-    # Contruction of the fittedEVA structure
+    # Contruction of the AbstractFittedExtremeValueModel structure
     return MaximumLikelihoodEVA(model, θ̂)
 
 end
@@ -343,7 +343,7 @@ function transform(fm::MaximumLikelihoodEVA{BlockMaxima{Gumbel}})::MaximumLikeli
         end
     end
 
-    # Contruction of the fittedEVA structure
+    # Contruction of the AbstractFittedExtremeValueModel structure
     return MaximumLikelihoodEVA(model, θ̂)
 
 end
@@ -384,7 +384,7 @@ function transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
         end
     end
 
-    # Contruction of the fittedEVA structure
+    # Contruction of the AbstractFittedExtremeValueModel structure
     return MaximumLikelihoodEVA(model, θ̂)
 
 end
