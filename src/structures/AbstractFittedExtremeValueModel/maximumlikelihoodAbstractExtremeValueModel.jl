@@ -1,4 +1,4 @@
-struct MaximumLikelihoodEVA{T} <: fittedEVA{T}
+struct MaximumLikelihoodAbstractExtremeValueModel{T} <: AbstractFittedExtremeValueModel{T}
     "Extreme value model definition"
     model::T
     "Maximum likelihood estimate"
@@ -6,11 +6,50 @@ struct MaximumLikelihoodEVA{T} <: fittedEVA{T}
 end
 
 """
-    hessian(model::MaximumLikelihoodEVA)::Array{Float64, 2}
+    aic(fm:::MaximumLikelihoodAbstractExtremeValueModel)
 
-Calculates the Hessian matrix associated with the MaximumLikelihoodEVA model.
+Compute the Akaike information criterion (AIC) of the fitted model by maximum likelihood method.
+
+## Details
+
+The AIC is defined as follows:
+
+```math
+AIC = 2k - 2 log L;
+```
+where ``k`` is the number of estimated parameters and ``L`` is the maximized value of the likelihood function for the model. 
+
 """
-function hessian(model::MaximumLikelihoodEVA)::Array{Float64, 2}
+function aic(fm::MaximumLikelihoodAbstractExtremeValueModel)
+    return 2*nparameter(fm.model)-2*loglike(fm)
+end
+
+"""
+    bic(fm:::MaximumLikelihoodAbstractExtremeValueModel)
+
+Compute the Bayesian information criterion (BIC) of the fitted model by maximum likelihood method.
+
+## Details
+
+The BIC is defined as follows:
+
+```math
+BIC = k log n - 2 log L;
+```
+where ``k`` is the number of estimated parameters, ``n`` is the number of data and ``L`` is the maximized value of the likelihood function for the model. 
+
+"""
+function bic(fm::MaximumLikelihoodAbstractExtremeValueModel)
+    n = length(fm.model.data.value)
+    return nparameter(fm.model)*log(n)-2*loglike(fm)
+end
+
+"""
+    hessian(model::MaximumLikelihoodAbstractExtremeValueModel)::Array{Float64, 2}
+
+Calculates the Hessian matrix associated with the MaximumLikelihoodAbstractExtremeValueModel model.
+"""
+function hessian(model::MaximumLikelihoodAbstractExtremeValueModel)::Array{Float64, 2}
 
     fobj(θ) = -loglike(model.model, θ)
     return ForwardDiff.hessian(fobj, model.θ̂)
@@ -18,12 +57,12 @@ function hessian(model::MaximumLikelihoodEVA)::Array{Float64, 2}
 end
 
 """
-    parametervar(fm::MaximumLikelihoodEVA)::Array{Float64, 2}
+    parametervar(fm::MaximumLikelihoodAbstractExtremeValueModel)::Array{Float64, 2}
 
 Compute the covariance parameters estimate of the fitted model `fm`.
 
 """
-function parametervar(fm::MaximumLikelihoodEVA)::Array{Float64, 2}
+function parametervar(fm::MaximumLikelihoodAbstractExtremeValueModel)::Array{Float64, 2}
 
     # Compute the parameters covariance matrix
     V = inv(hessian(fm))
@@ -32,12 +71,12 @@ function parametervar(fm::MaximumLikelihoodEVA)::Array{Float64, 2}
 end
 
 """
-    loglike(fd::MaximumLikelihoodEVA)::Real
+    loglike(fd::MaximumLikelihoodAbstractExtremeValueModel)::Real
 
-Compute the model loglikelihood evaluated at θ̂ if the maximum likelihood method has been used.
+Compute the model loglikelihood AbstractExtremeValueModelluated at θ̂ if the maximum likelihood method has been used.
 
 """
-function loglike(fm::MaximumLikelihoodEVA)::Real
+function loglike(fm::MaximumLikelihoodAbstractExtremeValueModel)::Real
 
     ll = loglike(fm.model, fm.θ̂)
 
@@ -46,12 +85,12 @@ function loglike(fm::MaximumLikelihoodEVA)::Real
 end
 
 """
-    getdistribution(fittedmodel::MaximumLikelihoodEVA)::Vector{<:Distribution}
+    getdistribution(fittedmodel::MaximumLikelihoodAbstractExtremeValueModel)::Vector{<:Distribution}
 
 Return the fitted distribution in case of stationarity or the vector of fitted distribution in case of non-stationarity.
 
 """
-function getdistribution(fittedmodel::MaximumLikelihoodEVA)::Vector{<:Distribution}
+function getdistribution(fittedmodel::MaximumLikelihoodAbstractExtremeValueModel)::Vector{<:Distribution}
 
     model = fittedmodel.model
     θ̂ = fittedmodel.θ̂
@@ -63,12 +102,12 @@ function getdistribution(fittedmodel::MaximumLikelihoodEVA)::Vector{<:Distributi
 end
 
 """
-    quantile(fm::MaximumLikelihoodEVA, p::Real)::Vector{<:Real}
+    quantile(fm::MaximumLikelihoodAbstractExtremeValueModel, p::Real)::Vector{<:Real}
 
 Compute the quantile of level `p` from the fitted model by maximum likelihood. In the case of non-stationarity, the effective quantiles are returned.
 
 """
-function quantile(fm::MaximumLikelihoodEVA, p::Real)::Vector{<:Real}
+function quantile(fm::MaximumLikelihoodAbstractExtremeValueModel, p::Real)::Vector{<:Real}
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
@@ -79,12 +118,12 @@ function quantile(fm::MaximumLikelihoodEVA, p::Real)::Vector{<:Real}
 end
 
 """
-    quantilevar(fd::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
+    quantilAbstractExtremeValueModelr(fd::MaximumLikelihoodAbstractExtremeValueModel, level::Real)::Vector{<:Real}
 
 Compute the variance of the quantile of level `level` from the fitted model `fm`.
 
 """
-function quantilevar(fm::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
+function quantilAbstractExtremeValueModelr(fm::MaximumLikelihoodAbstractExtremeValueModel, level::Real)::Vector{<:Real}
 
     θ̂ = fm.θ̂
     H = hessian(fm)
@@ -108,12 +147,12 @@ function quantilevar(fm::MaximumLikelihoodEVA, level::Real)::Vector{<:Real}
 end
 
 """
-    returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
+    returnlevel(fm::MaximumLikelihoodAbstractExtremeValueModel{BlockMaxima}, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
+function returnlevel(fm::MaximumLikelihoodAbstractExtremeValueModel{BlockMaxima{T}}, returnPeriod::Real)::ReturnLevel where T
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -125,7 +164,7 @@ function returnlevel(fm::MaximumLikelihoodEVA{BlockMaxima}, returnPeriod::Real):
 end
 
 
-function cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{MaximumLikelihoodAbstractExtremeValueModel{BlockMaxima{T}}}, confidencelevel::Real=.95)::Vector{Vector{Real}} where T
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -139,7 +178,7 @@ function cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima}}, confidenceleve
 
       α = (1 - confidencelevel)
 
-      v = quantilevar(rl.model.fm,p)
+      v = quantilAbstractExtremeValueModelr(rl.model.fm,p)
 
       qdist = Normal.(q,sqrt.(v))
 
@@ -151,7 +190,7 @@ function cint(rl::ReturnLevel{MaximumLikelihoodEVA{BlockMaxima}}, confidenceleve
 end
 
 """
-    returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+    returnlevel(fm::MaximumLikelihoodAbstractExtremeValueModel{ThresholdExceedance}, threshold::Real, nobservation::Int,
         nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
@@ -159,7 +198,7 @@ Compute the return level corresponding to the return period `returnPeriod` from 
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+function returnlevel(fm::MaximumLikelihoodAbstractExtremeValueModel{ThresholdExceedance}, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
@@ -176,7 +215,7 @@ function returnlevel(fm::MaximumLikelihoodEVA{ThresholdExceedance}, threshold::R
 end
 
 
-function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{MaximumLikelihoodAbstractExtremeValueModel{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -202,7 +241,7 @@ function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confid
     # This component seems to be forgoten by Coles (2001) in Section 4.4.1
 
     # Computing the variance corresponding to the other parameters
-    v₂ = quantilevar(rl.model.fm, p)
+    v₂ = quantilAbstractExtremeValueModelr(rl.model.fm, p)
 
     v = v₁ .+ v₂
 
@@ -216,27 +255,27 @@ function cint(rl::ReturnLevel{MaximumLikelihoodEVA{ThresholdExceedance}}, confid
 end
 
 """
-    showfittedEVA(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
+    showAbstractFittedExtremeValueModel(io::IO, obj::MaximumLikelihoodAbstractExtremeValueModel; prefix::String = "")
 
-Displays a MaximumLikelihoodEVA with the prefix `prefix` before every line.
+Displays a MaximumLikelihoodAbstractExtremeValueModel with the prefix `prefix` before every line.
 
 """
-function showfittedEVA(io::IO, obj::MaximumLikelihoodEVA; prefix::String = "")
+function showAbstractFittedExtremeValueModel(io::IO, obj::MaximumLikelihoodAbstractExtremeValueModel; prefix::String = "")
 
-    println(io, prefix, "MaximumLikelihoodEVA")
+    println(io, prefix, "MaximumLikelihoodAbstractExtremeValueModel")
     println(io, prefix, "model :")
-    showEVA(io, obj.model, prefix = prefix*"\t")
+    showAbstractExtremeValueModel(io, obj.model, prefix = prefix*"\t")
     println(io)
     println(io, prefix, "θ̂  :\t", obj.θ̂)
 
 end
 
 """
-    transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
+    transform(fm::MaximumLikelihoodAbstractExtremeValueModel{BlockMaxima})::MaximumLikelihoodAbstractExtremeValueModel
 
 Transform the fitted model for the original covariate scales.
 """
-function transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
+function transform(fm::MaximumLikelihoodAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}})::MaximumLikelihoodAbstractExtremeValueModel
 
     locationcovstd = fm.model.location.covariate
     logscalecovstd = fm.model.logscale.covariate
@@ -247,7 +286,7 @@ function transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
     shapecov = Extremes.reconstruct.(shapecovstd)
 
     # Model on the original covariate scale
-    model = BlockMaxima(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    model = BlockMaxima{GeneralizedExtremeValue}(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
     # Transformation of the parameter estimates
     θ̂ = deepcopy(fm.θ̂)
@@ -267,19 +306,56 @@ function transform(fm::MaximumLikelihoodEVA{BlockMaxima})::MaximumLikelihoodEVA
         end
     end
 
-    # Contruction of the fittedEVA structure
-    return MaximumLikelihoodEVA(model, θ̂)
+    # Contruction of the AbstractFittedExtremeValueModel structure
+    return MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
+
+end
+
+"""
+    transform(fm::MaximumLikelihoodAbstractExtremeValueModel{BlockMaxima})::MaximumLikelihoodAbstractExtremeValueModel
+
+Transform the fitted model for the original covariate scales.
+"""
+function transform(fm::MaximumLikelihoodAbstractExtremeValueModel{BlockMaxima{Gumbel}})::MaximumLikelihoodAbstractExtremeValueModel
+
+    locationcovstd = fm.model.location.covariate
+    logscalecovstd = fm.model.logscale.covariate
+
+    locationcov = Extremes.reconstruct.(locationcovstd)
+    logscalecov = Extremes.reconstruct.(logscalecovstd)
+
+    # Model on the original covariate scale
+    model = BlockMaxima{Gumbel}(fm.model.data, locationcov = locationcov, logscalecov = logscalecov)
+
+    # Transformation of the parameter estimates
+    θ̂ = deepcopy(fm.θ̂)
+    ind = Extremes.paramindex(fm.model)
+
+    for (var, par) in zip([locationcovstd, logscalecovstd],[:μ, :ϕ])
+        if !isempty(var)
+            a = getfield.(var, :scale)
+            b = getfield.(var, :offset)
+
+            for i=1:length(a)
+                θ̂[ind[par][1]] -= fm.θ̂[ind[par][1+i]]*b[i]/a[i]
+                θ̂[ind[par][1+i]] = fm.θ̂[ind[par][1+i]]/a[i]
+            end
+        end
+    end
+
+    # Contruction of the AbstractFittedExtremeValueModel structure
+    return MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
 
 end
 
 
 
 """
-    transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
+    transform(fm::MaximumLikelihoodAbstractExtremeValueModel{ThresholdExceedance})
 
 Transform the fitted model for the original covariate scales.
 """
-function transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
+function transform(fm::MaximumLikelihoodAbstractExtremeValueModel{ThresholdExceedance})
 
     logscalecovstd = fm.model.logscale.covariate
     shapecovstd = fm.model.shape.covariate
@@ -308,13 +384,13 @@ function transform(fm::MaximumLikelihoodEVA{ThresholdExceedance})
         end
     end
 
-    # Contruction of the fittedEVA structure
-    return MaximumLikelihoodEVA(model, θ̂)
+    # Contruction of the AbstractFittedExtremeValueModel structure
+    return MaximumLikelihoodAbstractExtremeValueModel(model, θ̂)
 
 end
 
 
-function cint(fm::MaximumLikelihoodEVA, clevel::Real=.95)::Array{Array{Float64,1},1}
+function cint(fm::MaximumLikelihoodAbstractExtremeValueModel, clevel::Real=.95)::Array{Array{Float64,1},1}
 
     @assert 0<clevel<1 "the confidence level should be between 0 and 1."
 

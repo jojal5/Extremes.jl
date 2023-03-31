@@ -1,50 +1,41 @@
 @testset "probabilityweightedmoment_gev.jl" begin
-    n = 5000
-    θ = [0.0;0.0;.2]
 
-    pd = GeneralizedExtremeValue(θ[1], exp(θ[2]), θ[3])
-    y = rand(pd, n)
+    df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
     @testset "gevfitpwm(y)" begin
-        # stationary model building
-        fm = Extremes.gevfitpwm(y)
 
-        cinterval = cint(fm)
+        fm = Extremes.gevfitpwm(df.y)
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        @test typeof(fm) == pwmAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}}
 
     end
 
     @testset "gevfitpwm(df, datacol)" begin
-        # stationary model building
-        df = DataFrame(y = y)
+
         fm = Extremes.gevfitpwm(df, :y)
 
-        cinterval = cint(fm)
-
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        @test typeof(fm) == pwmAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}}
 
     end
 
     @testset "gevfitpwm(model)" begin
         # non-stationary warn
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("t", collect(1:n))])
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y), locationcov = [Variable("t", collect(1:nrow(df)))])
 
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned.") Extremes.gevfitpwm(model)
 
         # stationary GEV fit by pwm
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y))
 
         fm = Extremes.gevfitpwm(model)
 
-        cinterval = cint(fm)
+        @test typeof(fm) == pwmAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}}
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        @test fm.θ̂[1] ≈ -0.0005 atol=0.0001
+        @test fm.θ̂[2] ≈ 0.0125 atol=0.0001
+        @test fm.θ̂[3] ≈ -0.0033 atol=0.0001
 
     end
 end

@@ -1,4 +1,4 @@
-@testset "eva.jl" begin
+@testset "AbstractExtremeValueModel.jl" begin
     @testset "computeparamfunction(covariates)" begin
         # function returned for empty covariates should not modify θ
         θ = [1.0]
@@ -29,14 +29,14 @@
 
     pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
 
-    model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
 
     @testset "loglike(model, θ)" begin
 
 
         # Test BlockMaxima with known values
         pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
-        model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
+        model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
         @test Extremes.loglike(model, [1; 1; 1; -.5; 1; .1]) ≈ logpdf(pd,y[])
 
         # Test ThresholdExceedance with known values
@@ -52,7 +52,7 @@
 
         # Test BlockMaxima with known values
         pd = GeneralizedExtremeValue(μ, exp(ϕ), ξ)
-        model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
+        model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
         @test Extremes.quantile(model, [1; 1; 1; -.5; 1; .1],.99)[] ≈ quantile(pd,.99)
 
         # Test ThresholdExceedance with known values
@@ -69,7 +69,7 @@
         smodel = nothing
 
         # non-stationary BlockMaxima model
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = ev, logscalecov = ev, shapecov = ev)
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = ev, logscalecov = ev, shapecov = ev)
         @test_logs (:warn, "covariates cannot be included in the model when estimating the
             paramters by the probability weighted moment parameter estimation.
             The estimates for the stationary model is returned.") smodel = Extremes.validatestationarity(model)
@@ -88,7 +88,7 @@
         @test length(smodel.shape.covariate) == 0
 
         # stationary BlockMaxima model
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
         @test_logs smodel = Extremes.validatestationarity(model)
 
         @test length(smodel.location.covariate) == 0
@@ -106,7 +106,7 @@
 
     @testset "Base.show(io, obj)" begin
         # print BlockMaxima does not throw
-        model = Extremes.BlockMaxima(Variable("y", collect(1:100)))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", collect(1:100)))
         buffer = IOBuffer()
         @test_logs Base.show(buffer, model)
 
@@ -151,7 +151,7 @@
 
     end
 
-    include(joinpath("eva", "blockmaxima_test.jl"))
-    include(joinpath("eva", "thresholdexceedance_test.jl"))
+    include(joinpath("AbstractExtremeValueModel", "blockmaxima_test.jl"))
+    include(joinpath("AbstractExtremeValueModel", "thresholdexceedance_test.jl"))
 
 end

@@ -93,7 +93,7 @@ The diagnostic plots consist in the residual probability plot (upper left panel)
 
 ### Return level estimation
 
-Since the model parameters vary in time, the quantiles also vary in time. Therefore, a *T*-year return level can be estimated for each year. This set of return levels are referred to as *effective return levels* as proposed by Katz *et al.* (2002)[^1].
+Since the model parameters vary in time, the quantiles also vary in time. Therefore, a *T*-year return level can be estimated for each year. This set of return levels are referred to as *effective return levels* as proposed by [Katz *et al.* (2002)](https://www.sciencedirect.com/science/article/pii/S0309170802000568?casa_token=VLKUdsDORdoAAAAA:EaD9J7vxHQeVD0KVZ5zfdCfOosWO8IlS0-CwsJQb7ihtEj3W1vbHryflMuwFIPJsrcz9B8uFjA).
 
 The 100-year effective return levels for the `fm₂` model can be computed using the [`returnlevel`](@ref) function:
 ```@repl fremantle
@@ -144,5 +144,58 @@ fm = gevfitbayes(data, :SeaLevel, locationcovid = [:Year, :SOI])
     Currently, only the improper uniform prior is implemented, *i.e.*
     \\[ f_{(β₁,β₂,β₃)}(β₁,β₂,β₃) ∝ 1. \\]
 
+## Inference for the non-stationary Gumbel distribution
 
-[^1]: Katz, R. W., M. B. Parlange, and P. Naveau (2002), Statistics of extremes in hydrology, Adv. Water Resour., 25, 1287–1304.
+The package aslo provides functions for the inference of the non-stationary Gumbel model. Documentation on the Gumbel model can be found here in the Block Maxima section.
+
+### Example on the annual maximum sea-levels recorded at Fremantle
+
+
+The location parameter varying as a linear function of the year and the SOI
+```@repl fremantle
+fm₂ = gumbelfit(data, :SeaLevel, locationcovid = [:Year, :SOI])
+```
+
+Confidence intervals for the parameters are obtained with the [`cint`](@ref) function:
+```@repl fremantle
+cint(fm₂)
+```
+
+The diagnostic plots for assessing the accuracy of the Gumbel model fitted to the Fremantle data can be shown with the [`diagnosticplots`](@ref) function:
+
+```@example fremantle
+set_default_plot_size(21cm ,16cm)
+diagnosticplots(fm₂)
+```
+
+The 100-year effective return levels for the `fm₂` model can be computed using the [`returnlevel`](@ref) function:
+```@repl fremantle
+r = returnlevel(fm₂, 100)
+```
+
+The effective return levels can be accessed as follows:
+```@repl fremantle
+r.value
+```
+
+The corresponding confidence interval can be computed with the [`cint`](@ref) function:
+```@repl fremantle
+c = cint(r)
+```
+
+The effective return levels along with their confidence intervals can be plotted as follows:
+
+```@example fremantle
+rmin = [c[i][1] for i in eachindex(c)]
+rmax = [c[i][2] for i in eachindex(c)]
+df = DataFrame(Year = data[:,:Year], r = r.value, rmin = rmin, rmax = rmax)
+nothing # hide
+```
+
+```@example fremantle
+set_default_plot_size(12cm, 9cm)
+plot(df, x=:Year, y=:r, ymin=:rmin, ymax=rmax, Geom.line, Geom.ribbon,
+    Coord.cartesian(xmin=1895, xmax=1990), Guide.xticks(ticks=1895:10:1990),
+    Guide.ylabel("100-year Effective Return Level"))
+
+```

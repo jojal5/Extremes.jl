@@ -1,4 +1,4 @@
-@testset "maximumlikelihoodeva.jl" begin
+@testset "maximumlikelihoodAbstractExtremeValueModel.jl" begin
 
     n = 1000
 
@@ -16,10 +16,34 @@
 
     y = rand.(pd)
 
-    model = BlockMaxima(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
 
-    fm = Extremes.MaximumLikelihoodEVA(model, θ)
+    fm = Extremes.MaximumLikelihoodAbstractExtremeValueModel(model, θ)
 
+
+    @testset "aic" begin
+
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
+
+        deleteat!(df, 101:nrow(df))
+
+        fd = gevfit(df.y)
+
+        @test aic(fd) ≈ 2*3 - 2*Extremes.loglike(fd)
+        
+    end
+
+    @testset "bic" begin
+
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
+
+        deleteat!(df, 101:nrow(df))
+
+        fd = gevfit(df.y)
+
+        @test bic(fd) ≈ 3*log(100) - 2*Extremes.loglike(fd)
+        
+    end
 
     @testset "getdistribution(fittedmodel)" begin
         @test all(Extremes.getdistribution(fm) .== pd)
@@ -68,7 +92,7 @@
 
         Threads.@threads  for i in 1:niter
             y = rand.(pd)
-            m = BlockMaxima(Variable("y",y), locationcov = [x₂, x₃], logscalecov=[x₁])
+            m = BlockMaxima{GeneralizedExtremeValue}(Variable("y",y), locationcov = [x₂, x₃], logscalecov=[x₁])
             fm = gevfit(m, θ)
             ci = cint(fm)
             for j in eachindex(θ)
@@ -81,7 +105,7 @@
     end
 
 
-    @testset "quantilevar(rl, level)" begin
+    @testset "quantilAbstractExtremeValueModelr(rl, level)" begin
         # Tested in cint(rl)
     end
 
@@ -103,7 +127,7 @@
 
         Threads.@threads  for i in 1:niter
             y = rand(pd, 300)
-            m = BlockMaxima(Variable("y",y))
+            m = BlockMaxima{GeneralizedExtremeValue}(Variable("y",y))
             fm = gevfit(m, θ)
             rl = returnlevel(fm, 100)
             ci = cint(rl)
@@ -132,7 +156,7 @@
 
     model = ThresholdExceedance(Variable("y", y), logscalecov = [x])
 
-    fm = Extremes.MaximumLikelihoodEVA(model, θ)
+    fm = Extremes.MaximumLikelihoodAbstractExtremeValueModel(model, θ)
 
     @testset "getdistribution(fittedmodel)" begin
         @test all(Extremes.getdistribution(fm) .== pd)
@@ -196,7 +220,7 @@
     end
 
 
-    @testset "quantilevar(rl, level)" begin
+    @testset "quantilAbstractExtremeValueModelr(rl, level)" begin
         # Tested in cint(rl)
     end
 
@@ -236,10 +260,10 @@
     end
 
 
-    @testset "showfittedEVA(io, obj, prefix)" begin
+    @testset "showAbstractFittedExtremeValueModel(io, obj, prefix)" begin
         # print does not throw
         buffer = IOBuffer()
-        @test_logs Extremes.showfittedEVA(buffer, fm, prefix = "\t")
+        @test_logs Extremes.showAbstractFittedExtremeValueModel(buffer, fm, prefix = "\t")
     end
 
 

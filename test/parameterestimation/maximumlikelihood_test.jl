@@ -1,18 +1,12 @@
 @testset "maximumlikelihood.jl" begin
-    @testset "fit(model, initialvalues)" begin
-        n = 5000
 
-        μ = 0.0
-        σ = 1.0
-        ξ = 0.1
+    @testset "fit(model, initialvalues) -- arguments control" begin
+        
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
-        ϕ = log(σ)
-        θ = [μ; ϕ; ξ]
+        deleteat!(df, 101:nrow(df))
 
-        pd = GeneralizedExtremeValue(μ, σ, ξ)
-        y = rand(pd, n)
-
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y))
 
         # Initial value vector length != nparameter throws
         @test_throws AssertionError Extremes.fit(model, [0.0, 0.0, 0.0, 0.0])
@@ -25,110 +19,96 @@
 
     end
 
-    @testset "fit(model)" begin
+    @testset "fit(model) no solution" begin
         # No solution warn test
 		y = [14.6, -0.5, 505.9]
 
-        model = Extremes.BlockMaxima(Variable("y", y))
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y))
 
         @test_logs (:warn,"The maximum likelihood algorithm did not find a solution. Maybe try with different initial values or with another method. The returned values are the initial values.") Extremes.fit(model)
 
-        # stationary GEV fit by ML
-        n = 5000
+    end
+       
+    @testset "fit(BlockMaxima{GeneralizedExtremeValue}, initialvalues) -- stationary" begin
 
-        μ = 0.0
-        σ = 1.0
-        ξ = 0.1
+        df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
-        ϕ = log(σ)
-        θ = [μ; ϕ; ξ]
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y))
 
-        pd = GeneralizedExtremeValue(μ, σ, ξ)
-        y = rand(pd, n)
+        fm = Extremes.fit(model, [0., 0., 0.])
 
-        model = Extremes.BlockMaxima(Variable("y", y))
+        @test all(isapprox.(fm.θ̂,[0.0009, 0.0142, -0.0060], atol=.0001))
 
-        fm = Extremes.fit(model)
+    end
 
-        cinterval = cint(fm)
+    @testset "fit(BlockMaxima{GeneralizedExtremeValue}, initialvalues) -- non-stationary" begin
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
-        # non-stationary GEV fit by ML
-        n = 5000
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y),
+            locationcov = [Variable("x₁", df.x₁)],
+            logscalecov = [Variable("x₂", df.x₂)],
+            shapecov = [Variable("x₃", df.x₃)])
 
-        x₁ = randn(n)
-        x₂ = randn(n)
-        x₃ = randn(n) / 10
+        fm = Extremes.fit(model, [0., 0., 0., 0., 0., 0.])
 
-        μ = 1.0 .+ x₁
-        ϕ = -0.5 .+ x₂
-        ξ = x₃
+        @test all(isapprox.(fm.θ̂, [1.0182, 1.0036, -0.4793, 0.9833, -0.0093, -0.0451], atol=.0001))
 
-        ϕ = log(σ)
-        θ = [1.0; 1.0; -0.5; 1.0; 0.0; 1.0]
+    end
 
-        pd = GeneralizedExtremeValue.(μ, σ, ξ)
-        y = rand.(pd)
+    @testset "fit(BlockMaxima{Gumbel}, initialvalues) -- stationary" begin
 
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
+        df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
-        fm = Extremes.fit(model)
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", df.y))
 
-        cinterval = cint(fm)
+        fm = Extremes.fit(model, [0., 0.])
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        @test all(isapprox.(fm.θ̂, [-0.0023, 0.0124], atol=.0001))
 
-        # stationary GP fit by ML
-        n = 5000
+    end
 
-        σ = 1.0
-        ξ = 0.1
+    @testset "fit(BlockMaxima{Gumbel}, initialvalues) -- non-stationary" begin
 
-        ϕ = log(σ)
-        θ = [ϕ; ξ]
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
-        pd = GeneralizedPareto(σ, ξ)
-        y = rand(pd, n)
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", df.y),
+            locationcov = [Variable("x₁", df.x₁)],
+            logscalecov = [Variable("x₂", df.x₂)])
 
-        model = Extremes.ThresholdExceedance(Variable("y", y))
+        fm = Extremes.fit(model, [0., 0., 0., 0.])
 
-        fm = Extremes.fit(model)
+        @test all(isapprox.(fm.θ̂, [1.0155, 1.0035, -0.4820, 0.9847], atol=.0001))
 
-        cinterval = cint(fm)
+    end
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+    @testset "fit(ThresholdExceedance, initialvalues) -- stationary" begin
 
-        # non-stationary GP fit by ML
-        n = 5000
+        df = CSV.read("dataset/gp_stationary.csv", DataFrame)
 
-        x₁ = randn(n) / 3
-        x₂ = randn(n) / 10
+        model = Extremes.ThresholdExceedance(Variable("y", df.y))
 
-        ϕ = -.5 .+ x₁
-        ξ = x₂
+        fm = Extremes.fit(model, [0., 0.])
 
-        σ = exp.(ϕ)
-        θ = [-.5; 1.0; 0.0; 1.0]
+        @test all(isapprox.(fm.θ̂, [-0.0135, 0.0059], atol=.0001))
 
-        pd = GeneralizedPareto.(σ, ξ)
-        y = rand.(pd)
+    end
 
-        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x₁", x₁)], shapecov = [Variable("x₂", x₂)])
+    @testset "fit(ThresholdExceedance, initialvalues) -- non-stationary" begin
 
-        fm = Extremes.fit(model)
+        df = CSV.read("dataset/gp_nonstationary.csv", DataFrame)
 
-        cinterval = cint(fm)
+        model = Extremes.ThresholdExceedance(Variable("y", df.y),
+            logscalecov = [Variable("x₁", df.x₁)])
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        fm = Extremes.fit(model, [0., 0., 0.])
+
+        @test all(isapprox.(fm.θ̂, [-0.4957, 1.0136, -0.0034], atol=.0001))
 
     end
 
     include(joinpath("maximumlikelihood", "maximumlikelihood_gev_test.jl"))
     include(joinpath("maximumlikelihood", "maximumlikelihood_gp_test.jl"))
+    include(joinpath("maximumlikelihood", "maximumlikelihood_gumbel_test.jl"))
 
 end

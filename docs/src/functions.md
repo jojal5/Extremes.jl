@@ -11,11 +11,13 @@ Pages = [
     "src/parameterestimation/probabilityweightedmoment.jl",
     "src/parameterestimation/bayesian.jl",
     "src/parameterestimation/maximumlikelihood/maximumlikelihood_gev.jl",
+    "src/parameterestimation/maximumlikelihood/maximumlikelihood_gumbel.jl",
     "src/parameterestimation/maximumlikelihood/maximumlikelihood_gp.jl",
     "src/parameterestimation/probabilityweightedmoment/probabilityweightedmoment_gev.jl",
     "src/parameterestimation/probabilityweightedmoment/probabilityweightedmoment_gumbel.jl",
     "src/parameterestimation/probabilityweightedmoment/probabilityweightedmoment_gp.jl",
     "src/parameterestimation/bayesian/bayesian_gev.jl",
+    "src/parameterestimation/bayesian/bayesian_gumbel.jl",
     "src/parameterestimation/bayesian/bayesian_gp.jl"
     ]
 ```
@@ -29,16 +31,16 @@ Order = [:function]
 Pages = [
     "src/structures/cluster.jl",
     "src/structures/dataitem.jl",
-    "src/structures/eva.jl",
-    "src/structures/fittedeva.jl",
+    "src/structures/AbstractExtremeValueModel.jl",
+    "src/structures/AbstractFittedExtremeValueModel.jl",
     "src/structures/returnlevel.jl",
     "src/structures/dataitem/variable.jl",
     "src/structures/dataitem/variablestd.jl",
-    "src/structures/eva/blockmaxima.jl",
-    "src/structures/eva/thresholdexceedance.jl",
-    "src/structures/fittedeva/bayesianeva.jl",
-    "src/structures/fittedeva/maximumlikelihoodeva.jl",
-    "src/structures/fittedeva/pwmeva.jl"
+    "src/structures/AbstractExtremeValueModel/blockmaxima.jl",
+    "src/structures/AbstractExtremeValueModel/thresholdexceedance.jl",
+    "src/structures/AbstractFittedExtremeValueModel/bayesianAbstractExtremeValueModel.jl",
+    "src/structures/AbstractFittedExtremeValueModel/maximumlikelihoodAbstractExtremeValueModel.jl",
+    "src/structures/AbstractFittedExtremeValueModel/pwmAbstractExtremeValueModel.jl"
     ]
 ```
 

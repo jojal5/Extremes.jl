@@ -1,4 +1,4 @@
-@testset "pwmeva.jl" begin
+@testset "pwmAbstractExtremeValueModel.jl" begin
 
     θ = [0.0, 0.0, 0.1]
 
@@ -6,7 +6,7 @@
 
     y = [0]
 
-    fm = Extremes.pwmEVA{BlockMaxima, GeneralizedExtremeValue}(Extremes.BlockMaxima(Variable("y", y)), θ)
+    fm = Extremes.pwmAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}}(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y)), θ)
 
     @testset "getdistribution(fittedmodel)" begin
         @test Extremes.getdistribution(fm)[] == pd
@@ -37,7 +37,7 @@
         # Tested in cint(fm)
     end
 
-    @testset "quantilevar(fm, level, nboot)" begin
+    @testset "quantilAbstractExtremeValueModelr(fm, level, nboot)" begin
         # Tested in cint(fm)
     end
 
@@ -96,10 +96,10 @@
     end
 
 
-    @testset "showfittedEVA(io, obj, prefix)" begin
+    @testset "showAbstractFittedExtremeValueModel(io, obj, prefix)" begin
         # print does not throw
         buffer = IOBuffer()
-        @test_logs Extremes.showfittedEVA(buffer, fm, prefix = "\t")
+        @test_logs Extremes.showAbstractFittedExtremeValueModel(buffer, fm, prefix = "\t")
 
     end
 

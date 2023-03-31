@@ -1,7 +1,7 @@
 """
-    gevfitbayes(..., niter::Int=5000, warmup::Int=2000)
+    gumbelfitbayes(..., niter::Int=5000, warmup::Int=2000)
 
-Generate a sample from the GEV parameters' posterior distribution.
+Generate a sample from the Gumbel parameters' posterior distribution.
 
 # Arguments
 - `niter::Int = 5000`: The total number of MCMC iterations.
@@ -24,9 +24,7 @@ where
 ```math
 ϕ = X₂ × β₂,
 ```
-```math
-ξ = X₃ × β₃.
-```
+
 In the stationary case, this improper prior yields to a proper posterior if the
 sample size is larger than 3 ([Northrop and Attalides, 2016](https://www.jstor.org/stable/24721296?seq=1)).
 
@@ -34,7 +32,7 @@ The covariates are standardized before estimating the parameters to help fit the
  model. They are transformed back on their original scales before returning the
  fitted model.
 
-See also [`gevfitbayes`](@ref) for the other methods, [`gevfitpwm`](@ref), [`gevfit`](@ref) and [`BlockMaxima`](@ref).
+See also [`gevfitbayes`](@ref) for the other methods and [`BlockMaxima`](@ref).
 
 # References
 
@@ -43,38 +41,34 @@ Hoffman M. D. and Gelman A. (2014). The No-U-Turn sampler: adaptively setting pa
 Paul J. Northrop P. J. and Attalides N. (2016). Posterior propriety in Bayesian extreme value analyses using reference priors. *Statistica Sinica*, 26:721-743.
 
 """
-function gevfitbayes end
+function gumbelfitbayes end
 
 """
-    gevfitbayes(y,
+    gumbelfitbayes(y,
         locationcov = Vector{Variable}(),
         logscalecov = Vector{Variable}(),
-        shapecov = Vector{Variable}(),
         niter::Int=5000,
         warmup::Int=2000
         )
 
-Generate a sample from the GEV parameters' posterior distribution.
+Generate a sample from the Gumbel parameters' posterior distribution.
 
 # Arguments
 
 - `y::Vector{<:Real}`: The vector of block maxima.
 - `locationcov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the location parameter.
 - `logscalecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the log-scale parameter.
-- `shapecov::Vector{<:DataItem} = Vector{Variable}()`: The covariates of the shape parameter.
 
 """
-function gevfitbayes(y::Vector{<:Real};
+function gumbelfitbayes(y::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-    shapecov::Vector{<:DataItem} = Vector{Variable}(),
     niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     locationcovstd = standardize.(locationcov)
     logscalecovstd = standardize.(logscalecov)
-    shapecovstd = standardize.(shapecov)
 
-    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = BlockMaxima{Gumbel}(Variable("y", y), locationcov = locationcovstd, logscalecov = logscalecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -83,34 +77,30 @@ function gevfitbayes(y::Vector{<:Real};
 end
 
 """
-    gevfitbayes(df::DataFrame,
+    gumbelfitbayes(df::DataFrame,
         datacol::Symbol,
         locationcovid = Vector{Symbol}(),
         logscalecovid = Vector{Symbol}(),
-        shapecovid = Vector{Symbol}(),
         niter::Int=5000,
         warmup::Int=2000)
 
-Generate a sample from the GEV parameters' posterior distribution.
+Generate a sample from the Gumbel parameters' posterior distribution.
 
 # Arguments
 - `df::DataFrame`: The dataframe containing the data.
 - `datacol::Symbol`: The symbol of the column of `df` containing the block maxima data.
 - `locationcovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the location parameter.
 - `logscalecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the log-scale parameter.
-- `shapecovid::Vector{Symbol} = Vector{Symbol}()`: The symbols of the columns of `df` containing the covariates of the shape parameter.
 """
-function gevfitbayes(df::DataFrame, datacol::Symbol;
+function gumbelfitbayes(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
     logscalecovid::Vector{Symbol}=Symbol[],
-    shapecovid::Vector{Symbol}=Symbol[],
     niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     locationcovstd = standardize.(buildVariables(df, locationcovid))
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
-    shapecovstd = standardize.(buildVariables(df, shapecovid))
 
-    model = BlockMaxima{GeneralizedExtremeValue}(Variable(string(datacol), df[:, datacol]), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = BlockMaxima{Gumbel}(Variable(string(datacol), df[:, datacol]), locationcov = locationcovstd, logscalecov = logscalecovstd)
 
     fittedmodel = fitbayes(model, niter=niter, warmup=warmup)
 
@@ -119,13 +109,13 @@ function gevfitbayes(df::DataFrame, datacol::Symbol;
 end
 
 """
-    gevfitbayes(model::BlockMaxima{GeneralizedExtremeValue};
+    gumbelfitbayes(model::BlockMaxima{Gumbel};
         niter::Int=5000,
         warmup::Int=2000)
 
 Generate a sample from the `BlockMaxima` model parameters' posterior distribution.
 """
-function gevfitbayes(model::BlockMaxima{GeneralizedExtremeValue}; niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
+function gumbelfitbayes(model::BlockMaxima{Gumbel}; niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     return fitbayes(model, niter=niter, warmup=warmup)
 

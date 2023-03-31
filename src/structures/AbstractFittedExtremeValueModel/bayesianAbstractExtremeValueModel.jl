@@ -1,4 +1,4 @@
-struct BayesianEVA{T} <: fittedEVA{T}
+struct BayesianAbstractExtremeValueModel{T} <: AbstractFittedExtremeValueModel{T}
     "Extreme value model definition"
     model::T
     "MCMC outputs"
@@ -6,7 +6,7 @@ struct BayesianEVA{T} <: fittedEVA{T}
 end
 
 
-function getdistribution(fm::BayesianEVA)::Array{<:ContinuousUnivariateDistribution,2}
+function getdistribution(fm::BayesianAbstractExtremeValueModel)::Array{<:ContinuousUnivariateDistribution,2}
 
     v = fm.sim.value[:,:,1]
 
@@ -21,7 +21,7 @@ function getdistribution(fm::BayesianEVA)::Array{<:ContinuousUnivariateDistribut
 end
 
 """
-    quantile(fm::BayesianEVA,p::Real)::Real
+    quantile(fm::BayesianAbstractExtremeValueModel,p::Real)::Real
 
 Compute the quantile of level `p` from the fitted Bayesian model `fm`.
 
@@ -31,7 +31,7 @@ If the model is non-stationary, a matrix of quantiles is returned, where each ro
 corresponds to a MCMC step and each column to a covariate.
 
 """
-function quantile(fm::BayesianEVA,p::Real)::Array{<:Real}
+function quantile(fm::BayesianAbstractExtremeValueModel,p::Real)::Array{<:Real}
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
@@ -48,12 +48,12 @@ function quantile(fm::BayesianEVA,p::Real)::Array{<:Real}
 end
 
 """
-    returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
+    returnlevel(fm::BayesianAbstractExtremeValueModel{BlockMaxima}, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
 
 """
-function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLevel
+function returnlevel(fm::BayesianAbstractExtremeValueModel{BlockMaxima{T}}, returnPeriod::Real)::ReturnLevel where T
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -67,7 +67,7 @@ function returnlevel(fm::BayesianEVA{BlockMaxima}, returnPeriod::Real)::ReturnLe
 end
 
 
-function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{BayesianAbstractExtremeValueModel{BlockMaxima{T}}}, confidencelevel::Real=.95)::Vector{Vector{Real}} where T
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -86,7 +86,7 @@ function cint(rl::ReturnLevel{BayesianEVA{BlockMaxima}}, confidencelevel::Real=.
 end
 
 """
-    returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+    returnlevel(fm::BayesianAbstractExtremeValueModel{ThresholdExceedance}, threshold::Real, nobservation::Int,
         nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
@@ -94,7 +94,7 @@ Compute the return level corresponding to the return period `returnPeriod` from 
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobservation::Int,
+function returnlevel(fm::BayesianAbstractExtremeValueModel{ThresholdExceedance}, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
@@ -113,7 +113,7 @@ function returnlevel(fm::BayesianEVA{ThresholdExceedance}, threshold::Real, nobs
 end
 
 
-function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{BayesianAbstractExtremeValueModel{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -129,15 +129,15 @@ function cint(rl::ReturnLevel{BayesianEVA{ThresholdExceedance}}, confidencelevel
 end
 
 """
-    showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
+    showAbstractFittedExtremeValueModel(io::IO, obj::BayesianAbstractExtremeValueModel; prefix::String = "")
 
-Displays a BayesianEVA with the prefix `prefix` before every line.
+Displays a BayesianAbstractExtremeValueModel with the prefix `prefix` before every line.
 """
-function showfittedEVA(io::IO, obj::BayesianEVA; prefix::String = "")
+function showAbstractFittedExtremeValueModel(io::IO, obj::BayesianAbstractExtremeValueModel; prefix::String = "")
 
-    println(io, prefix, "BayesianEVA")
+    println(io, prefix, "BayesianAbstractExtremeValueModel")
     println(io, prefix, "model :")
-    showEVA(io, obj.model, prefix = prefix*"\t")
+    showAbstractExtremeValueModel(io, obj.model, prefix = prefix*"\t")
     println(io)
     println(io, prefix, "sim :")
     showChain(io, obj.sim, prefix = prefix*"\t")
@@ -162,11 +162,11 @@ function showChain(io::IO, chain::MambaLite.Chains; prefix::String = "")
 end
 
 """
-    transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
+    transform(fm::BayesianAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}})::BayesianAbstractExtremeValueModel
 
 Transform the fitted model for the original covariate scales.
 """
-function transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
+function transform(fm::BayesianAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}})::BayesianAbstractExtremeValueModel
 
     locationcovstd = fm.model.location.covariate
     logscalecovstd = fm.model.logscale.covariate
@@ -177,7 +177,7 @@ function transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
     shapecov = Extremes.reconstruct.(shapecovstd)
 
     # Model on the original covariate scale
-    model = BlockMaxima(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    model = BlockMaxima{GeneralizedExtremeValue}(fm.model.data, locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
     # Transformation of the parameter estimates
     z = fm.sim.value[:,:,1]
@@ -200,19 +200,61 @@ function transform(fm::BayesianEVA{BlockMaxima})::BayesianEVA
     sim = fm.sim
     sim.value[:,:,1] = x
 
-    # Contruction of the fittedEVA structure
-    return BayesianEVA(model, sim)
+    # Contruction of the AbstractFittedExtremeValueModel structure
+    return BayesianAbstractExtremeValueModel(model, sim)
+
+end
+
+"""
+    transform(fm::BayesianAbstractExtremeValueModel{BlockMaxima{Gumbel}})::BayesianAbstractExtremeValueModel
+
+Transform the fitted model for the original covariate scales.
+"""
+function transform(fm::BayesianAbstractExtremeValueModel{BlockMaxima{Gumbel}})::BayesianAbstractExtremeValueModel
+
+    locationcovstd = fm.model.location.covariate
+    logscalecovstd = fm.model.logscale.covariate
+
+    locationcov = Extremes.reconstruct.(locationcovstd)
+    logscalecov = Extremes.reconstruct.(logscalecovstd)
+
+    # Model on the original covariate scale
+    model = BlockMaxima{Gumbel}(fm.model.data, locationcov = locationcov, logscalecov = logscalecov)
+
+    # Transformation of the parameter estimates
+    z = fm.sim.value[:,:,1]
+
+    x = deepcopy(z)
+    ind = Extremes.paramindex(fm.model)
+
+    for (var, par) in zip([locationcovstd, logscalecovstd],[:μ, :ϕ])
+        if !isempty(var)
+            a = getfield.(var, :scale)
+            b = getfield.(var, :offset)
+
+            for i=1:length(a)
+                x[:,ind[par][1]] = x[:,ind[par][1]] - z[:,ind[par][1+i]] * b[i]/a[i]
+                x[:,ind[par][1+i]] = z[:,ind[par][1+i]]/a[i]
+            end
+        end
+    end
+
+    sim = fm.sim
+    sim.value[:,:,1] = x
+
+    # Contruction of the AbstractFittedExtremeValueModel structure
+    return BayesianAbstractExtremeValueModel(model, sim)
 
 end
 
 
 
 """
-    transform(fm::BayesianEVA{ThresholdExceedance})
+    transform(fm::BayesianAbstractExtremeValueModel{ThresholdExceedance})
 
 Transform the fitted model for the original covariate scales.
 """
-function transform(fm::BayesianEVA{ThresholdExceedance})
+function transform(fm::BayesianAbstractExtremeValueModel{ThresholdExceedance})
 
     logscalecovstd = fm.model.logscale.covariate
     shapecovstd = fm.model.shape.covariate
@@ -244,19 +286,19 @@ function transform(fm::BayesianEVA{ThresholdExceedance})
     sim = fm.sim
     sim.value[:,:,1] = x
 
-    # Contruction of the fittedEVA structure
-    return BayesianEVA(model, sim)
+    # Contruction of the AbstractFittedExtremeValueModel structure
+    return BayesianAbstractExtremeValueModel(model, sim)
 
 end
 
 
 """
-    parametervar(fm::BayesianEVA)::Array{Float64, 2}
+    parametervar(fm::BayesianAbstractExtremeValueModel)::Array{Float64, 2}
 
 Compute the covariance parameters estimate of the fitted model `fm`.
 
 """
-function parametervar(fm::BayesianEVA)::Array{Float64, 2}
+function parametervar(fm::BayesianAbstractExtremeValueModel)::Array{Float64, 2}
 
     x = fm.sim.value[:,:,1]
 
@@ -267,7 +309,7 @@ function parametervar(fm::BayesianEVA)::Array{Float64, 2}
 end
 
 
-function cint(fm::BayesianEVA, confidencelevel::Real=.95)::Array{Array{Float64,1},1}
+function cint(fm::BayesianAbstractExtremeValueModel, confidencelevel::Real=.95)::Array{Array{Float64,1},1}
 
     @assert 0<confidencelevel<1 "the confidence level should be between 0 and 1."
 
@@ -281,11 +323,11 @@ function cint(fm::BayesianEVA, confidencelevel::Real=.95)::Array{Array{Float64,1
 end
 
 """
-    findposteriormode(fm::BayesianEVA)::Vector{<:Real}
+    findposteriormode(fm::BayesianAbstractExtremeValueModel)::Vector{<:Real}
 
 Find the maximum a posteriori probability (MAP) estimate.
 """
-function findposteriormode(fm::BayesianEVA)::Vector{<:Real}
+function findposteriormode(fm::BayesianAbstractExtremeValueModel)::Vector{<:Real}
 
     θ = Extremes.slicematrix(fm.sim.value[:,:,1], dims=2)
 
