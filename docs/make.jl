@@ -22,14 +22,14 @@ makedocs(sitename = "Extremes.jl",
 
 )
 
-# if CI
-#     deploydocs(
-#     repo   = "github.com/jojal5/Extremes.jl.git",
-#     devbranch = "dev",
-#     versions = ["stable" => "v^", "v#.#"],
-#     push_preview = false,
-#     target = "build"
-#     )
-# end
+if CI
+    deploydocs(
+    repo   = "github.com/jojal5/Extremes.jl.git",
+    devbranch = "dev",
+    versions = ["stable" => "v^", "v#.#"],
+    push_preview = false,
+    target = "build"
+    )
+end
 
-deploydocs(repo = "github.com/jojal5/Extremes.jl.git")
+# deploydocs(repo = "github.com/jojal5/Extremes.jl.git")
