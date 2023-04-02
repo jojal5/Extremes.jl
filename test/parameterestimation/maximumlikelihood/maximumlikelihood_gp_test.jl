@@ -1,7 +1,6 @@
 @testset "maximumlikelihood_gp.jl" begin
     
-    # df = CSV.read("dataset/gp_nonstationary.csv", DataFrame)
-    df = CSV.read("test/dataset/gp_nonstationary.csv", DataFrame)
+    df = CSV.read("dataset/gp_nonstationary.csv", DataFrame)
 
     deleteat!(df, 101:nrow(df))
 
