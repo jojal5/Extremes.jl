@@ -64,7 +64,29 @@ fm₂ = gevfit(data, :SeaLevel, locationcovid = [:Year, :SOI])
 fm₃ = gevfit(data, :SeaLevel, locationcovid = [:Year, :SOI], logscalecovid = [:Year, :SOI])
 ```
 
-As show by Coles (2001), the best model is the one where the location parameter varies as a linear function of the year and the SOI, the `fm₂` in the present section. The approximate covariance matrix of the parameter estimates for this model can be obtained with the [`parametervar`](@ref) function:
+As show by Coles (2001), the best model is the one where the location parameter varies as a linear function of the year and the SOI, the `fm₂` in the present section. 
+
+The vector of the parameter estimates (location scale and shape) can be extracted with the function [`params`](@ref):
+```@repl fremantle
+params(fm₂)
+```
+
+The location parameter with the function [`location`](@ref):
+```@repl fremantle
+location(fm₂)
+```
+
+The scale parameter with the function [`Extremes.scale`](@ref):
+```@repl fremantle
+scale(fm₂)
+```
+
+The shape parameter with the function [`shape`](@ref):
+```@repl fremantle
+shape(fm₂)
+```
+
+The approximate covariance matrix of the parameter estimates for this model can be obtained with the [`parametervar`](@ref) function:
 ```@repl fremantle
 parametervar(fm₂)
 ```

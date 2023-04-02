@@ -51,16 +51,18 @@ The vector of the parameter estimates (location scale and shape) can be extracte
 ```@repl portpirie
 params(fm)
 ```
-, the location parameter with the function [`location`](@ref):
+
+The location parameter with the function [`location`](@ref):
 ```@repl portpirie
 location(fm)
 ```
 
-the scale parameter with the function [`Extremes.scale`](@ref):
+The scale parameter with the function [`Extremes.scale`](@ref):
 ```@repl portpirie
 scale(fm)
 ```
-and the shape parameter with the function [`shape`](@ref):
+
+The shape parameter with the function [`shape`](@ref):
 ```@repl portpirie
 shape(fm)
 ```

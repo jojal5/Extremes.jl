@@ -14,10 +14,11 @@ Compute the Akaike information criterion (AIC) of the fitted model by maximum li
 
 The AIC is defined as follows:
 
-```math
-AIC = 2k - 2 log L;
-```
-where ``k`` is the number of estimated parameters and ``L`` is the maximized value of the likelihood function for the model. 
+``AIC = 2 k - 2 \\log \\hat{L};``
+
+where ``k`` is the number of estimated parameters and ``\\hat{L}`` is the maximized value of the likelihood function for the model. 
+
+
 
 """
 function aic(fm::MaximumLikelihoodAbstractExtremeValueModel)
@@ -33,10 +34,9 @@ Compute the Bayesian information criterion (BIC) of the fitted model by maximum 
 
 The BIC is defined as follows:
 
-```math
-BIC = k log n - 2 log L;
-```
-where ``k`` is the number of estimated parameters, ``n`` is the number of data and ``L`` is the maximized value of the likelihood function for the model. 
+``BIC = k \\log n - 2 \\log \\hat{L};``
+
+where ``k`` is the number of estimated parameters, ``n`` is the number of data and ``\\hat{L}`` is the maximized value of the likelihood function for the model. 
 
 """
 function bic(fm::MaximumLikelihoodAbstractExtremeValueModel)
