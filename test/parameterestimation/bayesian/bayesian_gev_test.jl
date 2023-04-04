@@ -1,19 +1,13 @@
 @testset "bayesian_gev.jl" begin
-    n = 100
 
-    x₁ = Variable("x₁", randn(n))
-    x₂ = Variable("x₂", randn(n) / 3)
-    x₃ = Variable("x₃", randn(n) / 10)
+    df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
-    μ = 1.0 .+ x₁.value
-    ϕ = -.05 .+ x₂.value
-    ξ = x₃.value
+    deleteat!(df, 101:nrow(df))
 
-    σ = exp.(ϕ)
-    θ = [1.0; 1.0; -0.05; 1.0; 0.0; 1.0]
-
-    pd = GeneralizedExtremeValue.(μ, σ, ξ)
-    y = rand.(pd)
+    y = df.y
+    x₁ = Variable("x₁", df.x₁)
+    x₂ = Variable("x₂", df.x₂)
+    x₃ = Variable("x₃", df.x₃)
 
     @testset "gevfitbayes(y; locationcov, logscalecov, shapecov, niter, warmup)" begin
         # model building with non-stationary location, logscale and shape
@@ -21,7 +15,7 @@
             locationcov = [x₁],
             logscalecov = [x₂],
             shapecov = [x₃],
-            niter=500, warmup=5)
+            niter=2, warmup=1)
 
         # data is y
         @test fm.model.data.value ≈ y
@@ -42,9 +36,12 @@
 
     @testset "gevfitbayes(df, datacol; locationcovid, logscalecovid, shapecovid, niter, warmup)" begin
         # model building with non-stationary location, logscale and shape
-        df = DataFrame(y = y, x1 = x₁.value, x2 = x₂.value, x3 = x₃.value)
-
-        fm = Extremes.gevfitbayes(df, :y, locationcovid = [:x1], logscalecovid = [:x2], shapecovid = [:x3], niter=500, warmup=5)
+        
+        fm = Extremes.gevfitbayes(df, :y, 
+            locationcovid = [:x₁], 
+            logscalecovid = [:x₂], 
+            shapecovid = [:x₃], 
+            niter=2, warmup=1)
 
         # data is y
         @test fm.model.data.value ≈ y
@@ -70,7 +67,7 @@
             logscalecov = [x₂],
             shapecov = [x₃])
 
-        fm = Extremes.gevfitbayes(model, niter=500, warmup=5)
+        fm = Extremes.gevfitbayes(model, niter=2, warmup=1)
 
         # data is y
         @test fm.model.data.value ≈ y

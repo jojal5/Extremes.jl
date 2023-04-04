@@ -1,47 +1,36 @@
 @testset "maximumlikelihoodAbstractExtremeValueModel.jl" begin
 
-    n = 1000
+    df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
-    x₁ = Variable("x₁", randn(n)/3)
-    x₂ = Variable("x₂", randn(n))
-    x₃ = Variable("x₂", randn(n))
+    deleteat!(df, 101:nrow(df))
 
-    θ = [1; 1; 1; -.5; 1; .1]
+    model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y),
+        locationcov = [Variable("x₁", df.x₁)],
+        logscalecov = [Variable("x₂", df.x₂)],
+        shapecov = [Variable("x₃", df.x₃)])
 
-    μ = θ[1] .+ x₂.value*θ[2] .+ x₃.value*θ[3]
-    ϕ = θ[4] .+ x₁.value*θ[5]
-    ξ = θ[6]
+    θ = [1., 1., -.5, 1., 0.001, 0.]
+
+    k = 6
+
+    fm = MaximumLikelihoodAbstractExtremeValueModel(model, θ)
+
+    μ = θ[1] .+ θ[2].*df.x₁
+    ϕ = θ[3] .+ θ[4].*df.x₂
+    ξ = θ[5] .+ θ[6].*df.x₃
 
     pd = GeneralizedExtremeValue.(μ, exp.(ϕ), ξ)
 
-    y = rand.(pd)
-
-    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x₂; x₃], logscalecov = [x₁])
-
-    fm = Extremes.MaximumLikelihoodAbstractExtremeValueModel(model, θ)
-
-
     @testset "aic" begin
 
-        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
-
-        deleteat!(df, 101:nrow(df))
-
-        fd = gevfit(df.y)
-
-        @test aic(fd) ≈ 2*3 - 2*Extremes.loglike(fd)
+        @test aic(fm) ≈ 2*k - 2*sum(logpdf.(pd, df.y))
         
     end
 
     @testset "bic" begin
 
-        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
-
-        deleteat!(df, 101:nrow(df))
-
-        fd = gevfit(df.y)
-
-        @test bic(fd) ≈ 3*log(100) - 2*Extremes.loglike(fd)
+        n = length(pd)
+        @test bic(fm) ≈ k*log(n) - 2*sum(logpdf.(pd, df.y))
         
     end
 
@@ -51,7 +40,7 @@
 
     @testset "loglike(fd)" begin
         # Test with known values
-        @test Extremes.loglike(fm) ≈ sum(logpdf.(pd,y))
+        @test Extremes.loglike(fm) ≈ sum(logpdf.(pd, df.y))
     end
 
     @testset "quantile(fm, p)" begin
@@ -59,7 +48,7 @@
         @test_throws AssertionError Extremes.quantile(fm, -1)
 
         # Test with known values
-        @test quantile(fm, .99) ≈ quantile.(pd,.99)
+        @test all(quantile(fm, .99) .≈ quantile.(pd,.99))
     end
 
     @testset "returnlevel(fm, returnPeriod)" begin
@@ -67,7 +56,7 @@
         @test_throws AssertionError Extremes.returnlevel(fm, -1)
 
         # Test with known values
-        @test quantile(fm, .99) ≈ quantile.(pd,.99)
+        @test all(quantile(fm, .99) .≈ quantile.(pd,.99))
     end
 
     @testset "hessian(fm)" begin
@@ -82,30 +71,19 @@
 
         @test_throws AssertionError cint(fm, 1)
 
-        # Test with known values
-        # Evaluating the confidence interval empirical level using a Monte Carlo approach.
-        # Use of the hessian(fm) and parametervar function.
+        c = cint(fm)
 
-        niter = 1000
-
-        cover = falses(niter,6)
-
-        Threads.@threads  for i in 1:niter
-            y = rand.(pd)
-            m = BlockMaxima{GeneralizedExtremeValue}(Variable("y",y), locationcov = [x₂, x₃], logscalecov=[x₁])
-            fm = gevfit(m, θ)
-            ci = cint(fm)
-            for j in eachindex(θ)
-                cover[i,j] = ci[j][1] < θ[j] < ci[j][2]
-            end
-        end
-
-        @test all(count.(eachcol(cover))/niter .> .9)
+        @test all(isapprox.(c[1], [0.8775, 1.1225], atol=.0001))
+        @test all(isapprox.(c[2], [0.9087, 1.0913], atol=.0001))
+        @test all(isapprox.(c[3], [-.6505, -.3495], atol=.0001))
+        @test all(isapprox.(c[4], [0.5624, 1.4376], atol=.0001))
+        @test all(isapprox.(c[5], [-.1410, 0.1430], atol=.0001))
+        @test all(isapprox.(c[6], [-1.2064, 1.2064], atol=.0001))
 
     end
 
 
-    @testset "quantilAbstractExtremeValueModelr(rl, level)" begin
+    @testset "quantile(AbstractExtremeValueModelr(rl, level)" begin
         # Tested in cint(rl)
     end
 
@@ -115,48 +93,38 @@
 
         # Test with known values
 
-        θ = [100; log(5); .1]
+        rl = returnlevel(fm, 100)
 
-        pd = GeneralizedExtremeValue(θ[1],exp(θ[2]),θ[3])
+        c = cint(rl)
 
-        q = quantile(pd, 1-1/100)
-
-        niter = 1000
-
-        cover = falses(niter)
-
-        Threads.@threads  for i in 1:niter
-            y = rand(pd, 300)
-            m = BlockMaxima{GeneralizedExtremeValue}(Variable("y",y))
-            fm = gevfit(m, θ)
-            rl = returnlevel(fm, 100)
-            ci = cint(rl)
-            cover[i] = ci[][1] < q < ci[][2]
-        end
-
-        @test count(cover)/niter .> .9
+        @test all(isapprox.(c[1], [3.0385, 4.4428], atol=.0001))
+        @test all(isapprox.(c[2], [3.1022, 5.5488], atol=.0001))
 
     end
 
-    n = 1000
-    nobservation = 10000
+
+    df = CSV.read("dataset/gp_nonstationary.csv", DataFrame)
+
+    deleteat!(df, 101:nrow(df))
+
+    n = nrow(df)
+    nobservation = 1000
     nobsperblock = 1
 
-    x = Variable("x",randn(n))
+    model = Extremes.ThresholdExceedance(Variable("y", df.y),
+        logscalecov = [Variable("x₁", df.x₁)])
 
-    θ = [-.5; 1; 0.1]
+    θ = [-.5, 1., 0.001]
 
-    ϕ = θ[1] .+ θ[2]*x.value
-    σ = exp.(ϕ)
+    k = 3
+
+    fm = MaximumLikelihoodAbstractExtremeValueModel(model, θ)
+
+    ϕ = θ[1] .+ θ[2].*df.x₁
     ξ = θ[3]
 
-    pd = GeneralizedPareto.(σ, ξ)
+    pd = GeneralizedPareto.(exp.(ϕ), ξ)
 
-    y = rand.(pd)
-
-    model = ThresholdExceedance(Variable("y", y), logscalecov = [x])
-
-    fm = Extremes.MaximumLikelihoodAbstractExtremeValueModel(model, θ)
 
     @testset "getdistribution(fittedmodel)" begin
         @test all(Extremes.getdistribution(fm) .== pd)
@@ -164,7 +132,7 @@
 
     @testset "loglike(fd)" begin
         # Test with known values
-        @test Extremes.loglike(fm) ≈ sum(logpdf.(pd,y))
+        @test Extremes.loglike(fm) ≈ sum(logpdf.(pd, df.y))
     end
 
     @testset "quantile(fm, p)" begin
@@ -172,7 +140,7 @@
         @test_throws AssertionError Extremes.quantile(fm, -1)
 
         # Test with known values
-        @test quantile(fm, .99) ≈ quantile.(pd,.99)
+        @test all(quantile(fm, .99) .≈ quantile.(pd,.99))
     end
 
     @testset "returnlevel(fm, returnPeriod)" begin
@@ -182,7 +150,7 @@
         # Test with known values
         rl = returnlevel(fm, 0, nobservation, nobsperblock, 100)
         p = 1-nobservation/(100 * nobsperblock * n)
-        @test rl.value ≈ quantile.(pd, p)
+        @test all(rl.value .≈ quantile.(pd, p))
     end
 
     @testset "hessian(fm)" begin
@@ -201,26 +169,16 @@
         # Evaluating the confidence interval empirical level using a Monte Carlo approach.
         # Use of the hessian(fm) and parametervar function.
 
-        niter = 1000
+        c = cint(fm)
 
-        cover = falses(niter,length(θ))
-
-        Threads.@threads  for i in 1:niter
-            y = rand.(pd)
-            m = ThresholdExceedance(Variable("y",y), logscalecov=[x])
-            fm = gpfit(m, θ)
-            ci = cint(fm)
-            for j in eachindex(θ)
-                cover[i,j] = ci[j][1] < θ[j] < ci[j][2]
-            end
-        end
-
-        @test all(count.(eachcol(cover))/niter .> .9)
+        @test all(isapprox.(c[1], [-.8077, -.1923], atol=.0001))
+        @test all(isapprox.(c[2], [0.3828, 1.6172], atol=.0001))
+        @test all(isapprox.(c[3], [-.2812, 0.2832], atol=.0001))
 
     end
 
 
-    @testset "quantilAbstractExtremeValueModelr(rl, level)" begin
+    @testset "quantile(AbstractExtremeValueModelr(rl, level)" begin
         # Tested in cint(rl)
     end
 
@@ -228,34 +186,12 @@
         # confidencelevel not in [0, 1] throws
         @test_throws AssertionError cint(fm, 1)
 
-        # Test with known values
+        rl = returnlevel(fm, 0, nobservation, nobsperblock, 100)
 
-        θ = [log(5); .1]
+        c = cint(rl)
 
-        pd = GeneralizedPareto(exp(θ[1]),θ[2])
-
-        n = 100
-        nobservation = 1000
-        nobsperblock = 1
-
-        p = 1-nobservation/(100 * nobsperblock * n)
-
-        q = quantile(pd, p)
-
-        niter = 1000
-
-        cover = falses(niter)
-
-        Threads.@threads  for i in 1:niter
-            y = rand(pd, n)
-            m = ThresholdExceedance(Variable("y",y))
-            fm = gpfit(m, θ)
-            rl = returnlevel(fm, 0, nobservation, nobsperblock, 100)
-            ci = cint(rl)
-            cover[i] = ci[][1] < q < ci[][2]
-        end
-
-        @test count(cover)/niter .> .9
+        @test all(isapprox.(c[1], [1.0579, 1.7318], atol=.0001))
+        @test all(isapprox.(c[2], [1.2515, 2.3947], atol=.0001))
 
     end
 

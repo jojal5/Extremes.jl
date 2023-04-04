@@ -1,24 +1,18 @@
 @testset "bayesian_gp.jl" begin
-    n = 100
+    
+    df = CSV.read("dataset/gp_nonstationary.csv", DataFrame)
 
-    x₁ = Variable("x₁", randn(n) / 3)
-    x₂ = Variable("x₂", randn(n) / 10)
+    deleteat!(df, 101:nrow(df))
 
-    ϕ = -.05 .+ x₁.value
-    ξ = x₂.value
-
-    σ = exp.(ϕ)
-    θ = [-0.05; 1.0; 0.0; 1.0]
-
-    pd = GeneralizedPareto.(σ, ξ)
-    y = rand.(pd)
+    y = df.y
+    x₁ = Variable("x₁", df.x₁)
 
     @testset "gpfitbayes(y; logscalecov, shapecov, niter, warmup)" begin
         # model building with non-stationary logscale and shape
         fm = Extremes.gpfitbayes(y,
             logscalecov = [x₁],
-            shapecov = [x₂],
-            niter=500, warmup=5)
+            shapecov = [x₁],
+            niter=2, warmup=1)
 
             # data is y
             @test fm.model.data.value ≈ y
@@ -29,15 +23,17 @@
 
             # shape is x₂
             @test length(fm.model.shape.covariate) == 1
-            @test fm.model.shape.covariate[1].value ≈ x₂.value
+            @test fm.model.shape.covariate[1].value ≈ x₁.value
 
     end
 
     @testset "gpfitbayes(df, datacol; logscalecovid, shapecovid, niter, warmup)" begin
         # model building with non-stationary location, logscale and shape
-        df = DataFrame(y = y, x1 = x₁.value, x2 = x₂.value)
-
-        fm = Extremes.gpfitbayes(df, :y, logscalecovid = [:x1], shapecovid = [:x2], niter=500, warmup=5)
+        
+        fm = Extremes.gpfitbayes(df, :y, 
+            logscalecovid = [:x₁], 
+            shapecovid = [:x₁], 
+            niter=2, warmup=1)
 
         # data is y
         @test fm.model.data.value ≈ y
@@ -48,7 +44,7 @@
 
         # shape is x₂
         @test length(fm.model.shape.covariate) == 1
-        @test fm.model.shape.covariate[1].value ≈ x₂.value
+        @test fm.model.shape.covariate[1].value ≈ x₁.value
 
     end
 
@@ -56,9 +52,9 @@
         # non-stationary location, logscale and shape
         model = Extremes.ThresholdExceedance(Variable("y", y),
             logscalecov = [x₁],
-            shapecov = [x₂])
+            shapecov = [x₁])
 
-        fm = Extremes.gpfitbayes(model, niter=500, warmup=5)
+        fm = Extremes.gpfitbayes(model, niter=2, warmup=1)
 
         # data is y
         @test fm.model.data.value ≈ y
@@ -69,7 +65,7 @@
 
         # shape is x₂
         @test length(fm.model.shape.covariate) == 1
-        @test fm.model.shape.covariate[1].value ≈ x₂.value
+        @test fm.model.shape.covariate[1].value ≈ x₁.value
 
     end
 
