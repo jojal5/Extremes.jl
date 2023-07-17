@@ -24,6 +24,8 @@ end
     qqplot(fm::AbstractFittedExtremeValueModel)
 
 Quantile-Quantile plot
+
+See also [`qqplotci`](@ref).   
 """
 function qqplot(fm::AbstractFittedExtremeValueModel)::Plot
 
@@ -40,6 +42,58 @@ function qqplot(fm::AbstractFittedExtremeValueModel)::Plot
         Theme(discrete_highlight_color=c->nothing))
 
 end
+
+
+"""
+    qqplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05)
+
+Quantile-Quantile plot along with the confidence/credible interval of level `1-α`.
+
+## Note
+This function is currently only available for stationary models.
+
+See also [`returnlevelplotci`](@ref) and [`qqplot`](@ref).   
+
+## Example
+
+```@example
+using Distributions, Extremes
+
+pd = GeneralizedExtremeValue(0,1,0)
+y = rand(pd, 300)
+fm = gevfit(y)
+
+qqplotci(fm)
+```
+ 
+"""
+function qqplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05)::Plot
+    @assert 0 < α < 1 "the level should be in (0,1)." 
+    @assert getcovariatenumber(fm.model) == 0 "adding confidence intervals is currently only available for stationary models."
+
+    df = qqplot_data(fm)
+
+    q, p = Extremes.ecdf(fm.model.data.value)
+
+    q_inf = Float64[]
+    q_sup = Float64[]
+
+    for pᵢ in p
+        c = cint(returnlevel(fm, 1 / (1 - pᵢ)), 1-α)[]
+        push!(q_inf, c[1])
+        push!(q_sup, c[2])
+    end
+
+    df[:,:Inf] = q_inf
+    df[:,:Sup] = q_sup
+
+    l1 = layer(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="black", style=:dash), 
+        Theme(default_color="black", discrete_highlight_color=c->nothing))
+    l2 = layer(df, x=:Model, ymin=:Inf, ymax=:Sup, Geom.ribbon, Theme(lowlight_color=c->"lightgray"))
+    
+    return plot(l1,l2, Guide.xlabel("Model"), Guide.ylabel("Empirical"))
+end
+
 
 
 """
@@ -60,6 +114,59 @@ function returnlevelplot(fm::AbstractFittedExtremeValueModel)::Plot
             Guide.title("Return Level Plot"), Theme(discrete_highlight_color=c->nothing))
     end
 end
+
+
+"""
+    returnlevelplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05)
+
+Return level plot along with the confidence/credible interval of level `1-α`.
+
+## Note
+This function is currently only available for stationary models.
+
+See also [`returnlevelplotci`](@ref) and [`qqplot`](@ref).   
+
+## Example
+
+```@example
+using Distributions, Extremes
+
+pd = GeneralizedExtremeValue(0,1,0)
+y = rand(pd, 300)
+fm = gevfit(y)
+
+returnlevelplotci(fm)
+```
+"""
+function returnlevelplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05)::Plot
+    @assert 0 < α < 1 "the level should be in (0,1)." 
+    @assert getcovariatenumber(fm.model) == 0 "adding confidence intervals is currently only available for stationary models."
+
+    df = returnlevelplot_data(fm)
+
+    q, p = Extremes.ecdf(fm.model.data.value)
+
+    q_inf = Float64[]
+    q_sup = Float64[]
+    
+    for pᵢ in p
+        c = cint(returnlevel(fm, 1 / (1 - pᵢ)), 1-α)[]
+        push!(q_inf, c[1])
+        push!(q_sup, c[2])
+    end
+    
+    df[:,:Inf] = q_inf
+    df[:,:Sup] = q_sup
+
+    l1 = layer(df, x=:Period, y=:Level, Geom.line, Theme(default_color="black", line_style=[:dash]))
+    l2 = layer(df, x=:Period, y=:Data, Geom.point, Theme(default_color="black", discrete_highlight_color=c->nothing))
+    l3 = layer(df, x=:Period, ymin=:Inf, ymax=:Sup, Geom.ribbon, Theme(lowlight_color=c->"lightgray"))
+
+    return plot(l1,l2,l3, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"),
+        Guide.title("Return Level Plot"))
+
+end
+
 
 
 """
