@@ -8,4 +8,5 @@
 - Inference for the Gumbel distribution
 - Replace abstract type EVA by AbstractExtremeValueModel
 - Replace abstract type fittedEVA by AbstractFittedExtremeValueModel
+- Add confidence/credible interval in quantile-quantile and return level plots.
 
