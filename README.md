@@ -17,10 +17,10 @@ The following **julia** command will install the package:
 julia> Pkg.add("Extremes")
 ```
 
-See the [Package Documentation](https://jojal5.github.io/Extremes.jl/dev/) for details and examples and the related paper Jalbert *et al.* (2023).
+See the [Package Documentation](https://jojal5.github.io/Extremes.jl/dev/) for details and examples and the related paper Jalbert *et al.* (2023, to appear).
 
 Reference: 
-Jalbert, J., Farmer, M., Roy, P. and Gobeil, G. (2023). Extremes.jl: Extreme Value Analysis in Julia. Provisionally accepted in *Journal of statistical software*.
+Jalbert, J., Farmer, M., Gobeil, G. and Roy, P. (2023). Extremes.jl: Extreme Value Analysis in Julia. Provisionally accepted in *Journal of Statistical Software*.
 
 
 ## Data
