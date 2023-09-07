@@ -42,11 +42,11 @@
         x₂ = Extremes.standardize(Variable("x₂", [0; 1; 2]))
         x₃ = Extremes.standardize(Variable("x₃", [0; 2; 4]))
 
-        model = BlockMaxima(Variable("y", y), locationcov=[x₁; x₂], logscalecov = [x₃])
+        model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x₁; x₂], logscalecov = [x₃])
 
         θ̃ = collect(1.0:6.0)
 
-        fm_std = MaximumLikelihoodEVA(model, θ̃)
+        fm_std = MaximumLikelihoodAbstractExtremeValueModel(model, θ̃)
 
         fm = Extremes.transform(fm_std)
 

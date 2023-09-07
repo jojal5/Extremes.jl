@@ -27,9 +27,9 @@ function gumbelfitpwm end
 Estimate the Gumbel parameters with the probability weighted moments.
 
 """
-function gumbelfitpwm(y::Vector{<:Real})::pwmEVA
+function gumbelfitpwm(y::Vector{<:Real})::pwmAbstractExtremeValueModel
 
-    model = BlockMaxima(Variable("y", y))
+    model = BlockMaxima{Gumbel}(Variable("y", y))
 
     fittedmodel = gumbelfitpwm(model)
 
@@ -38,15 +38,15 @@ function gumbelfitpwm(y::Vector{<:Real})::pwmEVA
 end
 
 """
-    gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+    gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmAbstractExtremeValueModel
 
 Estimate the Gumbel parameters with the probability weighted moments.
 
 Block maxima data are in the column `datacol` of the dataframe `df`.
 """
-function gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
+function gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmAbstractExtremeValueModel
 
-    model = BlockMaxima(Variable(string(datacol), df[:, datacol]))
+    model = BlockMaxima{Gumbel}(Variable(string(datacol), df[:, datacol]))
 
     fittedmodel = gumbelfitpwm(model)
 
@@ -55,11 +55,11 @@ function gumbelfitpwm(df::DataFrame, datacol::Symbol)::pwmEVA
 end
 
 """
-    gumbelfitpwm(model::BlockMaxima)
+    gumbelfitpwm(model::BlockMaxima{Gumbel})
 
 Estimate the Gumbel parameters with the probability weighted moments.
 """
-function gumbelfitpwm(model::BlockMaxima)::pwmEVA
+function gumbelfitpwm(model::BlockMaxima{Gumbel})::pwmAbstractExtremeValueModel
 
     model = validatestationarity(model)
 
@@ -74,9 +74,9 @@ function gumbelfitpwm(model::BlockMaxima)::pwmEVA
 
     ϕ̂ = log(σ̂)
 
-    θ̂ = [μ̂, ϕ̂, 0.0]
+    θ̂ = [μ̂, ϕ̂]
 
-    fm = pwmEVA{BlockMaxima, Gumbel}(model,θ̂)
+    fm = pwmAbstractExtremeValueModel{BlockMaxima{Gumbel}}(model,θ̂)
 
     return fm
 

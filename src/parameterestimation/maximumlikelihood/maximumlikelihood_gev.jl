@@ -47,13 +47,13 @@ Estimate the GEV parameters.
 function gevfit(y::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodAbstractExtremeValueModel
 
     locationcovstd = standardize.(locationcov)
     logscalecovstd = standardize.(logscalecov)
     shapecovstd = standardize.(shapecov)
 
-    model = BlockMaxima(Variable("y", y), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fit(model)
 
@@ -82,9 +82,9 @@ Estimate the GEV parameters.
 function gevfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
     locationcov::Vector{<:DataItem} = Vector{Variable}(),
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-    shapecov::Vector{<:DataItem} = Vector{Variable}(),)::MaximumLikelihoodEVA
+    shapecov::Vector{<:DataItem} = Vector{Variable}(),)::MaximumLikelihoodAbstractExtremeValueModel
 
-    model = BlockMaxima(Variable("y", y), locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
     return fit(model, initialvalues)
 
@@ -110,13 +110,13 @@ Estimate the GEV parameters.
 function gevfit(df::DataFrame, datacol::Symbol;
     locationcovid::Vector{Symbol}=Symbol[],
     logscalecovid::Vector{Symbol}=Symbol[],
-    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodAbstractExtremeValueModel
 
     locationcovstd = standardize.(buildVariables(df, locationcovid))
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
     shapecovstd = standardize.(buildVariables(df, shapecovid))
 
-    model = BlockMaxima(Variable(string(datacol), df[:, datacol]), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable(string(datacol), df[:, datacol]), locationcov = locationcovstd, logscalecov = logscalecovstd, shapecov = shapecovstd)
 
     fittedmodel = fit(model)
 
@@ -145,24 +145,24 @@ Estimate the GEV parameters.
 function gevfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
     locationcovid::Vector{Symbol}=Symbol[],
     logscalecovid::Vector{Symbol}=Symbol[],
-    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodAbstractExtremeValueModel
 
     locationcov = buildVariables(df, locationcovid)
     logscalecov = buildVariables(df, logscalecovid)
     shapecov = buildVariables(df, shapecovid)
 
-    model = BlockMaxima(Variable(string(datacol), df[:, datacol]), locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable(string(datacol), df[:, datacol]), locationcov = locationcov, logscalecov = logscalecov, shapecov = shapecov)
 
     return fit(model, initialvalues)
 
 end
 
 """
-    gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})
+    gevfit(model::{BlockMaxima{GeneralizedExtremeValue}}, initialvalues::Vector{<:Real})
 
 Estimate the parameters of the `BlockMaxima` model using the given initialvalues.
 """
-function gevfit(model::BlockMaxima, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
+function gevfit(model::BlockMaxima{GeneralizedExtremeValue}, initialvalues::Vector{<:Real})::MaximumLikelihoodAbstractExtremeValueModel
 
     fit(model, initialvalues)
 

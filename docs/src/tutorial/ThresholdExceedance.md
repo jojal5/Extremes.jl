@@ -78,7 +78,24 @@ fm = gpfit(df, :Exceedance)
 !!! note
     In this example, the [`gpfit`](@ref) function is called using the data *DataFrame* structure as the first argument. The function can also be called using the vector of maxima as the first argument, *e.g.* `gpfit(df[:,:Exceedance])`.
 
-The vector of the parameter estimates ``\hat\mathbf{\theta} = (ϕ̂,\, ξ̂)^\top`` is contained in the field `θ̂` of the structure `fm:<fittedEVA`.
+The parameter estimates (location, scale and shape) can be extracted with the function [`params`](@ref):
+```@repl rain
+params(fm)
+```
+
+The scale parameter estimate can be obtained with [`Extremes.scale`](@ref):
+```@repl rain
+scale(fm)
+```
+and the shape parameter estimate with [`shape`](@ref):
+```@repl rain
+shape(fm)
+```
+
+!!! note "Type-stable function"
+
+    These functions return a unit dimension vector for the return level and a vector containing only one vector for the confidence interval. The reason is that the functions always return the same type in the stationary and non-stationary case. The functiona are therefore [type-stable](https://docs.julialang.org/en/v1/manual/performance-tips/index.html#Write-%22type-stable%22-functions-1) allowing better performance of code execution.  
+
 
 The approximate covariance matrix of the parameter estimates can be obtained with the  [`parametervar`](@ref) function:
 ```@repl rain
@@ -132,9 +149,6 @@ The corresponding confidence interval can be computed with the [`cint`](@ref) fu
 c = cint(r)
 ```
 
-!!! note "Type-stable function"
-
-    In this example of a stationary model, the function returns a unit dimension vector for the return level and a vector containing only one vector for the confidence interval. The reason is that the function always returns the same type in the stationary and non-stationary case. The function is therefore [type-stable](https://docs.julialang.org/en/v1/manual/performance-tips/index.html#Write-%22type-stable%22-functions-1) allowing better performance of code execution.  
 
 To get the scalar return level in the stationary case, the following command can be used:
 ```@repl rain

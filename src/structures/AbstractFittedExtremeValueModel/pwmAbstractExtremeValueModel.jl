@@ -1,4 +1,4 @@
-struct pwmEVA{T, U<:Distribution} <: fittedEVA{T}
+struct pwmAbstractExtremeValueModel{T} <: AbstractFittedExtremeValueModel{T}
     "Extreme value model definition"
     model::T
     "Maximum likelihood estimate"
@@ -6,12 +6,12 @@ struct pwmEVA{T, U<:Distribution} <: fittedEVA{T}
 end
 
 """
-    getdistribution(fittedmodel::pwmEVA)::Vector{<:Distribution}
+    getdistribution(fittedmodel::pwmAbstractExtremeValueModel)::Vector{<:Distribution}
 
 Return the fitted distribution for the model fitted with the probability weigthed moments.
 
 """
-function getdistribution(fittedmodel::pwmEVA)::Vector{<:Distribution}
+function getdistribution(fittedmodel::pwmAbstractExtremeValueModel)::Vector{<:Distribution}
 
     model = fittedmodel.model
     θ̂ = fittedmodel.θ̂
@@ -23,12 +23,12 @@ function getdistribution(fittedmodel::pwmEVA)::Vector{<:Distribution}
 end
 
 """
-    quantile(fm::pwmEVA, p::Real)::Vector{<:Real}
+    quantile(fm::pwmAbstractExtremeValueModel, p::Real)::Vector{<:Real}
 
 Compute the quantile of level `p` from the fitted model. For the probability weighted moment method, the model has to be stationary.
 
 """
-function quantile(fm::pwmEVA, p::Real)::Vector{<:Real}
+function quantile(fm::pwmAbstractExtremeValueModel, p::Real)::Vector{<:Real}
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
@@ -39,11 +39,11 @@ function quantile(fm::pwmEVA, p::Real)::Vector{<:Real}
 end
 
 """
-    parametervar(fm::pwmEVA, nboot::Int=1000)
+    parametervar(fm::pwmAbstractExtremeValueModel, nboot::Int=1000)
 
 Estimate the parameter estimates covariance matrix by bootstrap.
 """
-function parametervar(fm::pwmEVA, nboot::Int=1000)::Array{Float64, 2}
+function parametervar(fm::pwmAbstractExtremeValueModel, nboot::Int=1000)::Array{Float64, 2}
 
     @assert nboot>0 "the number of bootstrap samples should be positive."
 
@@ -66,7 +66,7 @@ function parametervar(fm::pwmEVA, nboot::Int=1000)::Array{Float64, 2}
 end
 
 
-function cint(fm::pwmEVA, clevel::Real=.95, nboot::Int=5000)::Array{Array{Float64,1},1}
+function cint(fm::pwmAbstractExtremeValueModel, clevel::Real=.95, nboot::Int=5000)::Array{Array{Float64,1},1}
 
     @assert 0<clevel<1 "the confidence level should be between 0 and 1."
     @assert nboot>0 "the number of bootstrap samples should be positive."
@@ -98,42 +98,44 @@ end
 
 
 """
-    fitpwmfunction(fm::pwmEVA{BlockMaxima, GeneralizedExtremeValue})::Function
+    fitpwmfunction(fm::pwmAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue})::Function
 
 Returns the corresponding fitpwm function.
 
 """
-function fitpwmfunction(fm::pwmEVA{BlockMaxima, GeneralizedExtremeValue})::Function
+function fitpwmfunction(fm::pwmAbstractExtremeValueModel{BlockMaxima{GeneralizedExtremeValue}})::Function 
     return gevfitpwm
 end
 
 """
-    fitpwmfunction(fm::pwmEVA{ThresholdExceedance, GeneralizedPareto})::Function
+    fitpwmfunction(fm::pwmAbstractExtremeValueModel{BlockMaxima{Gumbel}})::Function
 
 Returns the corresponding fitpwm function.
 
 """
-function fitpwmfunction(fm::pwmEVA{ThresholdExceedance, GeneralizedPareto})::Function
-    return gpfitpwm
-end
-
-"""
-    fitpwmfunction(fm::pwmEVA{BlockMaxima, Gumbel})::Function
-
-Returns the corresponding fitpwm function.
-
-"""
-function fitpwmfunction(fm::pwmEVA{BlockMaxima, Gumbel})::Function
+function fitpwmfunction(fm::pwmAbstractExtremeValueModel{BlockMaxima{Gumbel}})::Function
     return gumbelfitpwm
 end
 
 """
-    quantilevar(fm::pwmEVA, level::Real, nboot::Int=1000)::Vector{<:Real}
+    fitpwmfunction(fm::pwmAbstractExtremeValueModel{ThresholdExceedance})::Function
+
+Returns the corresponding fitpwm function.
+
+"""
+function fitpwmfunction(fm::pwmAbstractExtremeValueModel{ThresholdExceedance})::Function
+    return gpfitpwm
+end
+
+
+
+"""
+    quantilAbstractExtremeValueModelr(fm::pwmAbstractExtremeValueModel, level::Real, nboot::Int=1000)::Vector{<:Real}
 
 Compute the  approximate variance of the quantile of level `level` from the fitted model `fm` by bootstrap.
 
 """
-function quantilevar(fm::pwmEVA, level::Real, nboot::Int=1000)::Vector{<:Real}
+function quantilAbstractExtremeValueModelr(fm::pwmAbstractExtremeValueModel, level::Real, nboot::Int=1000)::Vector{<:Real}
 
     # Compute the approximate covariance matrice of the parameter estimates by bootstrap
     V = parametervar(fm, nboot)
@@ -151,13 +153,13 @@ end
 
 
 """
-    returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::ReturnLevel
+    returnlevel(fm::pwmAbstractExtremeValueModel{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::ReturnLevel
 
 Compute the confidence intervel for the return level corresponding to the return period
 `returnPeriod` from the fitted model `fm` with confidence level `confidencelevel`.
 
 """
-function returnlevel(fm::pwmEVA{BlockMaxima, T} where T<:Distribution, returnPeriod::Real)::ReturnLevel
+function returnlevel(fm::pwmAbstractExtremeValueModel{BlockMaxima{T}}, returnPeriod::Real)::ReturnLevel where T
 
       @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
 
@@ -170,7 +172,7 @@ end
 
 
 
-function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, confidencelevel::Real=.95, nboot::Int=1000)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{pwmAbstractExtremeValueModel{BlockMaxima{T}}}, confidencelevel::Real=.95, nboot::Int=1000)::Vector{Vector{Real}} where T
 
       @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
       @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -199,7 +201,7 @@ function cint(rl::ReturnLevel{pwmEVA{BlockMaxima, T}} where T<:Distribution, con
 end
 
 """
-    returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
+    returnlevel(fm::pwmAbstractExtremeValueModel{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
         nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
 Compute the return level corresponding to the return period `returnPeriod` from the fitted model `fm`.
@@ -207,7 +209,7 @@ Compute the return level corresponding to the return period `returnPeriod` from 
 The threshold should be a scalar. A varying threshold is not yet implemented.
 
 """
-function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, threshold::Real, nobservation::Int,
+function returnlevel(fm::pwmAbstractExtremeValueModel{ThresholdExceedance}, threshold::Real, nobservation::Int,
     nobsperblock::Int, returnPeriod::Real)::ReturnLevel
 
     @assert returnPeriod > zero(returnPeriod) "the return period should be positive."
@@ -224,7 +226,7 @@ function returnlevel(fm::pwmEVA{ThresholdExceedance, T} where T<:Distribution, t
 end
 
 
-function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribution, confidencelevel::Real=.95)::Vector{Vector{Real}}
+function cint(rl::ReturnLevel{pwmAbstractExtremeValueModel{ThresholdExceedance}}, confidencelevel::Real=.95)::Vector{Vector{Real}}
 
     @assert rl.returnperiod > zero(rl.returnperiod) "the return period should be positive."
     @assert zero(confidencelevel)<confidencelevel<one(confidencelevel) "the confidence level should be in (0,1)."
@@ -258,16 +260,16 @@ function cint(rl::ReturnLevel{pwmEVA{ThresholdExceedance, T}} where T<:Distribut
 end
 
 """
-    showfittedEVA(io::IO, obj::pwmEVA; prefix::String = "")
+    showAbstractFittedExtremeValueModel(io::IO, obj::pwmAbstractExtremeValueModel; prefix::String = "")
 
-Displays a pwmEVA with the prefix `prefix` before every line.
+Displays a pwmAbstractExtremeValueModel with the prefix `prefix` before every line.
 
 """
-function showfittedEVA(io::IO, obj::pwmEVA; prefix::String = "")
+function showAbstractFittedExtremeValueModel(io::IO, obj::pwmAbstractExtremeValueModel; prefix::String = "")
 
-    println(io, prefix, "pwmEVA")
+    println(io, prefix, "pwmAbstractExtremeValueModel")
     println(io, prefix, "model :")
-    showEVA(io, obj.model, prefix = prefix*"\t")
+    showAbstractExtremeValueModel(io, obj.model, prefix = prefix*"\t")
     println(io)
     println(io, prefix, "θ̂  :\t", obj.θ̂)
 

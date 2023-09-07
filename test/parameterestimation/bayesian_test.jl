@@ -1,122 +1,111 @@
 @testset "bayesian.jl" begin
-    @testset "fitbayes(model; niter, warmup)" begin
 
-        # stationary GEV Bayesian fit
-        n = 5000
+    @testset "fitbayes(BlockMaxima{GeneralizedExtremeValue}; niter, warmup) -- stationary" begin
 
-        μ = 0.0
-        σ = 1.0
-        ξ = 0.1
+        df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
-        ϕ = log(σ)
-        θ = [μ; ϕ; ξ]
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y))
 
-        pd = GeneralizedExtremeValue(μ, σ, ξ)
-        y = rand(pd, n)
+        fm = Extremes.fitbayes(model, niter=100, warmup=50)
 
-        model = Extremes.BlockMaxima(Variable("y", y))
+        θ̂ = vec(mean(fm.sim.value, dims=1))
 
-        fm = Extremes.fitbayes(model, niter=500, warmup=400)
+        @test θ̂[1] ≈ 0 atol=0.03
+        @test θ̂[2] ≈ 0 atol=0.024
+        @test θ̂[3] ≈ 0 atol=0.02
 
-        cinterval = cint(fm)
+    end
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+    @testset "fitbayes(BlockMaxima{GeneralizedExtremeValue}; niter, warmup) -- non-stationary" begin
 
-        # non-stationary GEV Bayesian fit
-        n = 5000
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
-        x₁ = randn(n)
-        x₂ = randn(n)
-        x₃ = randn(n) / 10
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", df.y),
+            locationcov = [Variable("x₁", df.x₁)],
+            logscalecov = [Variable("x₂", df.x₂)],
+            shapecov = [Variable("x₃", df.x₃)])
 
-        μ = 1.0 .+ x₁
-        ϕ = -0.5 .+ x₂
-        ξ = x₃
+        fm = Extremes.fitbayes(model, niter=100, warmup=50)
 
-        ϕ = log(σ)
-        θ = [1.0; 1.0; -0.5; 1.0; 0.0; 1.0]
+        θ̂ = vec(mean(fm.sim.value, dims=1))
 
-        pd = GeneralizedExtremeValue.(μ, σ, ξ)
-        y = rand.(pd)
+        @test θ̂[1] ≈ 1 atol=0.03
+        @test θ̂[2] ≈ 1 atol=0.03
+        @test θ̂[3] ≈ -.5 atol=0.04
+        @test θ̂[4] ≈ 1 atol=0.1
+        @test θ̂[5] ≈ 0 atol=0.03
+        @test θ̂[6] ≈ 0 atol=0.3
 
-        model = Extremes.BlockMaxima(Variable("y", y), locationcov = [Variable("x₁", x₁)], logscalecov = [Variable("x₂", x₂)], shapecov = [Variable("x₃", x₃)])
+    end
 
-        fm = Extremes.fitbayes(model, niter=500, warmup=400)
+    @testset "fitbayes(BlockMaxima{Gumbel}; niter, warmup) -- stationary" begin
 
-        cinterval = cint(fm)
+        df = CSV.read("dataset/gev_stationary.csv", DataFrame)
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", df.y))
 
-        # stationary GP bayes fit
-        n = 5000
+        fm = Extremes.fitbayes(model, niter=100, warmup=50)
 
-        σ = 1.0
-        ξ = 0.1
+        θ̂ = vec(mean(fm.sim.value, dims=1))
 
-        ϕ = log(σ)
-        θ = [ϕ; ξ]
+        @test θ̂[1] ≈ 0 atol=0.05
+        @test θ̂[2] ≈ 0 atol=0.04
 
-        pd = GeneralizedPareto(σ, ξ)
-        y = rand(pd, n)
+    end
 
-        model = Extremes.ThresholdExceedance(Variable("y", y))
+    @testset "fitbayes(BlockMaxima{Gumbel}; niter, warmup) -- non-stationary" begin
 
-        fm = Extremes.fitbayes(model, niter=500, warmup=400)
+        df = CSV.read("dataset/gev_nonstationary.csv", DataFrame)
 
-        cinterval = cint(fm)
+        model = Extremes.BlockMaxima{Gumbel}(Variable("y", df.y),
+            locationcov = [Variable("x₁", df.x₁)],
+            logscalecov = [Variable("x₂", df.x₂)])
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        fm = Extremes.fitbayes(model, niter=100, warmup=50)
 
-        # non-stationary GP Bayesian fit
-        n = 5000
+        θ̂ = vec(mean(fm.sim.value, dims=1))
 
-        x₁ = randn(n) / 3
-        x₂ = randn(n) / 10
+        @test θ̂[1] ≈ 1 atol=0.03
+        @test θ̂[2] ≈ 1 atol=0.02
+        @test θ̂[3] ≈ -.5 atol=0.05
+        @test θ̂[4] ≈ 1 atol=0.07
 
-        ϕ = -.5 .+ x₁
-        ξ = x₂
+    end
 
-        σ = exp.(ϕ)
-        θ = [-.5; 1.0; 0.0; 1.0]
+    @testset "fitbayes(ThresholdExceedance) -- stationary" begin
 
-        pd = GeneralizedPareto.(σ, ξ)
-        y = rand.(pd)
+        df = CSV.read("dataset/gp_stationary.csv", DataFrame)
 
-        model = Extremes.ThresholdExceedance(Variable("y", y), logscalecov = [Variable("x₁", x₁)], shapecov = [Variable("x₂", x₂)])
+        model = Extremes.ThresholdExceedance(Variable("y", df.y))
 
-        fm = Extremes.fitbayes(model, niter=500, warmup=400)
+        fm = Extremes.fitbayes(model, niter=100, warmup=50)
 
-        cinterval = cint(fm)
+        θ̂ = vec(mean(fm.sim.value, dims=1))
 
-        @test [x[1] for x in cinterval] <= θ
-        @test θ <= [x[2] for x in cinterval]
+        @test θ̂[1] ≈ 0 atol=0.07
+        @test θ̂[2] ≈ 0 atol=0.05
 
-end
+    end
 
-    @testset "parametervar(model)" begin
+    @testset "fitbayes(ThresholdExceedance) -- non-stationary" begin
 
-        n = 1000
+        df = CSV.read("dataset/gp_nonstationary.csv", DataFrame)
 
-        μ = 0.0
-        σ = 1.0
-        ξ = 0.1
+        model = Extremes.ThresholdExceedance(Variable("y", df.y),
+            logscalecov = [Variable("x₁", df.x₁)])
 
-        ϕ = log(σ)
-        θ = [μ; ϕ; ξ]
+        fm = Extremes.fitbayes(model, niter=100, warmup=50)
 
-        pd = GeneralizedExtremeValue(μ, σ, ξ)
-        y = rand(pd, n)
+        θ̂ = vec(mean(fm.sim.value, dims=1))
 
-        fm = Extremes.gevfitbayes(y, niter=1000, warmup = 500)
-        npar = 3 + Extremes.getcovariatenumber(fm.model)
-        @test size(Extremes.parametervar(fm)) == (npar,npar)
+        @test θ̂[1] ≈ -.5 atol=0.09
+        @test θ̂[2] ≈ 1 atol=0.15
+        @test θ̂[3] ≈ 0 atol=0.05
 
     end
 
     include(joinpath("bayesian", "bayesian_gev_test.jl"))
     include(joinpath("bayesian", "bayesian_gp_test.jl"))
+    include(joinpath("bayesian", "bayesian_gumbel_test.jl"))
 
 end

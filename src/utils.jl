@@ -199,3 +199,13 @@ maximum(pd::Flat) = Inf
 insupport(pd::Flat, y::Real) = true
 
 logpdf(pd::Flat, y::Real) = 0.0
+
+
+"""
+    shape(pd::Gumbel)
+
+Return the Gumbel distribution shape parameter value, *i.e.* 0.
+"""
+function shape(pd::Gumbel)
+    return 0.
+end

@@ -44,7 +44,7 @@ Estimate the GP parameters
 """
 function gpfit(y::Vector{<:Real};
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodAbstractExtremeValueModel
 
     logscalecovstd = standardize.(logscalecov)
     shapecovstd = standardize.(shapecov)
@@ -75,7 +75,7 @@ Estimate the GP parameters
 """
 function gpfit(y::Vector{<:Real}, initialvalues::Vector{<:Real};
     logscalecov::Vector{<:DataItem} = Vector{Variable}(),
-    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodEVA
+    shapecov::Vector{<:DataItem} = Vector{Variable}())::MaximumLikelihoodAbstractExtremeValueModel
 
     model = ThresholdExceedance(Variable("y", y), logscalecov = logscalecov, shapecov = shapecov)
 
@@ -100,7 +100,7 @@ Estimate the GP parameters
 """
 function gpfit(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
-    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodAbstractExtremeValueModel
 
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
     shapecovstd = standardize.(buildVariables(df, shapecovid))
@@ -131,7 +131,7 @@ Estimate the GP parameters
 """
 function gpfit(df::DataFrame, datacol::Symbol, initialvalues::Vector{<:Real};
     logscalecovid::Vector{Symbol}=Symbol[],
-    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodEVA
+    shapecovid::Vector{Symbol}=Symbol[])::MaximumLikelihoodAbstractExtremeValueModel
 
     logscalecov = buildVariables(df, logscalecovid)
     shapecov = buildVariables(df, shapecovid)
@@ -147,7 +147,7 @@ end
 
 Estimate the parameters of the `ThresholdExceedance` model using the given initialvalues.
 """
-function gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodEVA
+function gpfit(model::ThresholdExceedance, initialvalues::Vector{<:Real})::MaximumLikelihoodAbstractExtremeValueModel
 
     return fit(model, initialvalues)
 

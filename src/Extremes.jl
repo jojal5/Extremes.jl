@@ -9,7 +9,7 @@ using Gadfly
 import CSV
 import ForwardDiff, SpecialFunctions
 
-import Distributions: insupport, logpdf, maximum, minimum, pdf, quantile
+import Distributions: insupport, location, logpdf, maximum, minimum, params, pdf, quantile, scale, shape
 import Statistics.var
 import Base.length, Base.maximum, Base.sum
 
@@ -28,17 +28,17 @@ export
     Cluster,
 
     # Generic types
-    EVA,
-    fittedEVA,
+    AbstractExtremeValueModel,
+    AbstractFittedExtremeValueModel,
 
     # Extreme value analysis type
     BlockMaxima,
     ThresholdExceedance,
 
     # Fitted extreme value analysis model
-    pwmEVA,
-    MaximumLikelihoodEVA,
-    BayesianEVA,
+    pwmAbstractExtremeValueModel,
+    MaximumLikelihoodAbstractExtremeValueModel,
+    BayesianAbstractExtremeValueModel,
 
     # Data related functions
     getcluster,
@@ -50,11 +50,21 @@ export
     gpfit,
     gpfitbayes,
     gpfitpwm,
+    gumbelfit,
+    gumbelfitbayes,
+    gumbelfitpwm,
     cint,
 
 
     # Other functions
+    
+    aic,
+    bic,
+    location,
     parametervar,
+    params,
+    scale,
+    shape,
     Flat,
 
     # Return level
@@ -73,8 +83,10 @@ export
     probplot,
     qqplot_data,
     qqplot,
+    qqplotci,
     returnlevelplot_data,
     returnlevelplot,
+    returnlevelplotci,
     histplot_data,
     histplot,
     diagnosticplots,

@@ -1,23 +1,27 @@
 
 
-abstract type ReturnLevelModel{T<:fittedEVA} end
+abstract type ReturnLevelModel{T<:AbstractFittedExtremeValueModel} end
 
 """
     ReturnLevel
 
 ReturnLevel type constructed by the function [`returnlevel`](@ref).
 """
-struct ReturnLevel{T<:fittedEVA}
+struct ReturnLevel{T<:AbstractFittedExtremeValueModel}
       model::ReturnLevelModel{T}
       returnperiod::Real
       value::Array{<:Real}
 end
 
-struct BlockMaximaModel{T<:fittedEVA{BlockMaxima}} <: ReturnLevelModel{T}
-  fm::T
+# struct BlockMaximaModel{T<:AbstractFittedExtremeValueModel{BlockMaxima}} <: ReturnLevelModel{T}
+#   fm::T
+# end
+
+struct BlockMaximaModel{obj<:AbstractFittedExtremeValueModel{BlockMaxima{T}} where T} <: ReturnLevelModel{obj}
+  fm::obj
 end
 
-struct PeakOverThreshold{T<:fittedEVA{ThresholdExceedance}} <: ReturnLevelModel{T}
+struct PeakOverThreshold{T<:AbstractFittedExtremeValueModel{ThresholdExceedance}} <: ReturnLevelModel{T}
   fm::T
   threshold::Real
   nobservation::Int

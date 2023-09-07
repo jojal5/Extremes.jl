@@ -65,7 +65,7 @@ Generate a sample from the GP parameters' posterior distribution.
 function gpfitbayes(y::Vector{<:Real};
      logscalecov::Vector{<:DataItem} = Vector{Variable}(),
      shapecov::Vector{<:DataItem} = Vector{Variable}(),
-     niter::Int=5000, warmup::Int=2000)::BayesianEVA
+     niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
      logscalecovstd = standardize.(logscalecov)
      shapecovstd = standardize.(shapecov)
@@ -97,7 +97,7 @@ Generate a sample from the GP parameters' posterior distribution.
 function gpfitbayes(df::DataFrame, datacol::Symbol;
     logscalecovid::Vector{Symbol}=Symbol[],
     shapecovid::Vector{Symbol}=Symbol[],
-    niter::Int=5000, warmup::Int=2000)::BayesianEVA
+    niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     logscalecovstd = standardize.(buildVariables(df, logscalecovid))
     shapecovstd = standardize.(buildVariables(df, shapecovid))
@@ -120,7 +120,7 @@ end
 Generate a sample from the GP parameters' posterior distribution.
 
 """
-function gpfitbayes(model::ThresholdExceedance; niter::Int=5000, warmup::Int=2000)::BayesianEVA
+function gpfitbayes(model::ThresholdExceedance; niter::Int=5000, warmup::Int=2000)::BayesianAbstractExtremeValueModel
 
     return fitbayes(model, niter=niter, warmup=warmup)
 

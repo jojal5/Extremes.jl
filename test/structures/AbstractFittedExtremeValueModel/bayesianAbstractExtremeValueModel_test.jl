@@ -1,4 +1,4 @@
-@testset "bayesianeva.jl" begin
+@testset "bayesianAbstractExtremeValueModel.jl" begin
 
     n = 100
 
@@ -15,9 +15,9 @@
 
     y = rand.(pd)
 
-    model = BlockMaxima(Variable("y", y), locationcov = [x] ,logscalecov = [x])
+    model = BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov = [x] ,logscalecov = [x])
 
-    fm = Extremes.BayesianEVA(model, MambaLite.Chains(collect(θ')))
+    fm = Extremes.BayesianAbstractExtremeValueModel(model, MambaLite.Chains(collect(θ')))
 
     rl = returnlevel(fm, 100)
 
@@ -76,7 +76,7 @@
 
     model = ThresholdExceedance(Variable("y", y), logscalecov = [x])
 
-    fm = Extremes.BayesianEVA(model, MambaLite.Chains(collect(θ')))
+    fm = Extremes.BayesianAbstractExtremeValueModel(model, MambaLite.Chains(collect(θ')))
 
     rl = returnlevel(fm, 0, nobservation, nobsperblock, 100)
 
@@ -117,10 +117,10 @@
 
 
 
-    @testset "showfittedEVA(io, obj, prefix)" begin
+    @testset "showAbstractFittedExtremeValueModel(io, obj, prefix)" begin
         # print does not throw
         buffer = IOBuffer()
-        @test_logs Extremes.showfittedEVA(buffer, fm, prefix = "\t")
+        @test_logs Extremes.showAbstractFittedExtremeValueModel(buffer, fm, prefix = "\t")
     end
 
     @testset "showChain(io, chain, prefix)" begin
@@ -130,7 +130,7 @@
     end
 
 
-    @testset "findposteriormode(fm::BayesianEVA)" begin
+    @testset "findposteriormode(fm::BayesianAbstractExtremeValueModel)" begin
 
         x = Variable("x", randn(10))
         μ = 10 .+ x.value
@@ -138,7 +138,7 @@
         ξ = .1
         pd = GeneralizedExtremeValue.(μ, σ, ξ)
         y = rand.(pd)
-        fm = Extremes.BayesianEVA(Extremes.BlockMaxima(Variable("y", y), locationcov=[x]),
+        fm = Extremes.BayesianAbstractExtremeValueModel(Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", y), locationcov=[x]),
             MambaLite.Chains([10.0 1.0 0.0 .1; -10.0 1.0 0.0 .1; 20.0 1.0 0.0 .1]))
 
         θ̂ = Extremes.findposteriormode(fm)

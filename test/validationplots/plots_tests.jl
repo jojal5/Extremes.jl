@@ -2,11 +2,11 @@
     n = 5000
 
     y = rand(GeneralizedExtremeValue(1.0, 1.0, 0.1), n)
-    fm = MaximumLikelihoodEVA(BlockMaxima(Variable("y", y)), [1.0, 0.0, 0.1])
+    fm = MaximumLikelihoodAbstractExtremeValueModel(BlockMaxima{GeneralizedExtremeValue}(Variable("y", y)), [1.0, 0.0, 0.1])
 
     x = rand(n)
     yns = rand.(GeneralizedExtremeValue.(x, 1.0, 0.1))
-    fmns = MaximumLikelihoodEVA(BlockMaxima(Variable("y", yns), locationcov = [Variable("x", x)]), [0.0, 1.0, 0.0, 0.1])
+    fmns = MaximumLikelihoodAbstractExtremeValueModel(BlockMaxima{GeneralizedExtremeValue}(Variable("y", yns), locationcov = [Variable("x", x)]), [0.0, 1.0, 0.0, 0.1])
 
     @testset "probplot_data(fm)" begin
         df = probplot_data(fm)

@@ -1,6 +1,6 @@
 
 """
-    EVA
+    AbstractExtremeValueModel
 
 Abstract type containing the extreme value model types.
 
@@ -8,14 +8,14 @@ Abstract type containing the extreme value model types.
 - ThresholdExceedance
 
 """
-abstract type EVA end
+abstract type AbstractExtremeValueModel end
 
 struct paramfun
     covariate::Vector{<:DataItem}
     fun::Function
 end
 
-Base.Broadcast.broadcastable(obj::EVA) = Ref(obj)
+Base.Broadcast.broadcastable(obj::AbstractExtremeValueModel) = Ref(obj)
 
 """
     computeparamfunction(covariates::Vector{Variable})
@@ -45,7 +45,7 @@ function computeparamfunction(covariates::Vector{<:DataItem})::Function
 end
 
 """
-    getcovariatenumber(model::EVA)::Int
+    getcovariatenumber(model::AbstractExtremeValueModel)::Int
 
 Return the number of covariates.
 
@@ -53,8 +53,8 @@ Return the number of covariates.
 function getcovariatenumber end
 
 """
-    getdistribution(model::EVA, θ::Vector{<:Real})
-    getdistribution(fm::fittedEVA)
+    getdistribution(model::AbstractExtremeValueModel, θ::Vector{<:Real})
+    getdistribution(fm::AbstractFittedExtremeValueModel)
 
 Return the distributions corresponding to the model or the fitted model.
 
@@ -76,7 +76,7 @@ each column corresponds to a MCMC iteration.
 function getdistribution end
 
 """
-    getinitialvalue(model::EVA)
+    getinitialvalue(model::AbstractExtremeValueModel)
 
 Get an initial estimates of the model parameters.
 
@@ -85,7 +85,7 @@ function getinitialvalue end
 
 
 """
-    paramindex(model::EVA)
+    paramindex(model::AbstractExtremeValueModel)
 
 Return the postitions corresponding to the location, scale and shape parameter.
 """
@@ -93,12 +93,12 @@ function paramindex end
 
 
 """
-    loglike(model::EVA, θ::Vector{<:Real})
+    loglike(model::AbstractExtremeValueModel, θ::Vector{<:Real})
 
-Compute the model loglikelihood evaluated at θ.
+Compute the model loglikelihood AbstractExtremeValueModelluated at θ.
 
 """
-function loglike(model::EVA, θ::Vector{<:Real})::Real
+function loglike(model::AbstractExtremeValueModel, θ::Vector{<:Real})::Real
 
     y = model.data.value
 
@@ -111,15 +111,15 @@ function loglike(model::EVA, θ::Vector{<:Real})::Real
 end
 
 """
-    quantile(model::EVA, θ::Vector{<:Real}, p::Real)
+    quantile(model::AbstractExtremeValueModel, θ::Vector{<:Real}, p::Real)
 
-Compute the quantile of level `p` from the model evaluated at `θ"".
+Compute the quantile of level `p` from the model AbstractExtremeValueModelluated at `θ"".
 
 If the model is non-stationary, then the *effective quantiles* are returned,
 *i.e.* one for each covariate value.
 
 """
-function quantile(model::EVA, θ::Vector{<:Real}, p::Real)::Vector{<:Real}
+function quantile(model::AbstractExtremeValueModel, θ::Vector{<:Real}, p::Real)::Vector{<:Real}
 
     @assert zero(p)<p<one(p) "the quantile level should be between 0 and 1."
 
@@ -132,12 +132,12 @@ function quantile(model::EVA, θ::Vector{<:Real}, p::Real)::Vector{<:Real}
 end
 
 """
-    validatestationarity(model::T)::T where T<:EVA
+    validatestationarity(model::T)::T where T<:AbstractExtremeValueModel
 
 Throw warning if the model is nonstationary.
 
 """
-function validatestationarity(model::T)::T where T<:EVA
+function validatestationarity(model::T)::T where T<:AbstractExtremeValueModel
 
     if getcovariatenumber(model) > 0
         @warn "covariates cannot be included in the model when estimating the
@@ -152,14 +152,14 @@ function validatestationarity(model::T)::T where T<:EVA
 end
 
 """
-    Base.show(io::IO, obj::EVA)
+    Base.show(io::IO, obj::AbstractExtremeValueModel)
 
-Override of the show function for the objects of type EVA.
+Override of the show function for the objects of type AbstractExtremeValueModel.
 
 """
-function Base.show(io::IO, obj::EVA)
+function Base.show(io::IO, obj::AbstractExtremeValueModel)
 
-    showEVA(io, obj)
+    showAbstractExtremeValueModel(io, obj)
 
 end
 
@@ -192,5 +192,5 @@ function validatelength(n::Real, explvariables::Vector{<:DataItem})
 end
 
 
-include(joinpath("eva", "blockmaxima.jl"))
-include(joinpath("eva", "thresholdexceedance.jl"))
+include(joinpath("AbstractExtremeValueModel", "blockmaxima.jl"))
+include(joinpath("AbstractExtremeValueModel", "thresholdexceedance.jl"))

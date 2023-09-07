@@ -27,7 +27,7 @@ Return the histogram plot data in a Dictionary.
 function hisplot_data end
 
 
-function probplot_data(fm::BayesianEVA)::DataFrame
+function probplot_data(fm::BayesianAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -51,7 +51,7 @@ function probplot_data(fm::BayesianEVA)::DataFrame
 end
 
 
-function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
+function probplot_data(fm::MaximumLikelihoodAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -66,7 +66,7 @@ function probplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 end
 
 
-function probplot_data(fm::pwmEVA)::DataFrame
+function probplot_data(fm::pwmAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -82,7 +82,7 @@ end
 
 
 
-function qqplot_data(fm::BayesianEVA)::DataFrame
+function qqplot_data(fm::BayesianAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -106,7 +106,7 @@ function qqplot_data(fm::BayesianEVA)::DataFrame
 end
 
 
-function qqplot_data(fm::MaximumLikelihoodEVA)::DataFrame
+function qqplot_data(fm::MaximumLikelihoodAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -125,7 +125,7 @@ function qqplot_data(fm::MaximumLikelihoodEVA)::DataFrame
 end
 
 
-function qqplot_data(fm::pwmEVA)::DataFrame
+function qqplot_data(fm::pwmAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -144,7 +144,7 @@ function qqplot_data(fm::pwmEVA)::DataFrame
 end
 
 
-function returnlevelplot_data(fm::BayesianEVA)::DataFrame
+function returnlevelplot_data(fm::BayesianAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -170,7 +170,7 @@ end
 
 
 
-function returnlevelplot_data(fm::MaximumLikelihoodEVA)::DataFrame
+function returnlevelplot_data(fm::MaximumLikelihoodAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -194,7 +194,7 @@ end
 
 
 
-function returnlevelplot_data(fm::pwmEVA)::DataFrame
+function returnlevelplot_data(fm::pwmAbstractExtremeValueModel)::DataFrame
 
     checkstationarity(fm.model)
 
@@ -215,7 +215,7 @@ function returnlevelplot_data(fm::pwmEVA)::DataFrame
 end
 
 
-function histplot_data(fm::BayesianEVA)::Dict
+function histplot_data(fm::BayesianAbstractExtremeValueModel)::Dict
 
     checkstationarity(fm.model)
 
@@ -245,7 +245,7 @@ function histplot_data(fm::BayesianEVA)::Dict
 end
 
 
-function histplot_data(fm::MaximumLikelihoodEVA)::Dict
+function histplot_data(fm::MaximumLikelihoodAbstractExtremeValueModel)::Dict
 
     checkstationarity(fm.model)
 
@@ -265,7 +265,7 @@ function histplot_data(fm::MaximumLikelihoodEVA)::Dict
 end
 
 
-function histplot_data(fm::pwmEVA)::Dict
+function histplot_data(fm::pwmAbstractExtremeValueModel)::Dict
 
     checkstationarity(fm.model)
 
