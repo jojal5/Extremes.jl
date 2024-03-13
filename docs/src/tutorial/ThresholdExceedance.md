@@ -231,6 +231,17 @@ nobsperblock = 365
 r = returnlevel(fm, threshold, nobs, nobsperblock, 100)
 ```
 
+A punctual estimate can be obtained by taking the mean of the return level sample as follows:
+```@repl rain
+mean(r.value)
+```
+
+A credidle interval of level 95% can be obtained with the function [`cint`](@ref) as follows:
+```@repl rain
+cint(r, .95)
+```
+
+
 ## Inference based on the probability weighted moments
 
 Most functions described in the previous sections also work for the model fitted with the probability weighted moments.
