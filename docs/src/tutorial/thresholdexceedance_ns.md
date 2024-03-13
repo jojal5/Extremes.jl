@@ -115,7 +115,7 @@ plot(df_plot, x=:Year, y=:r, ymin=:rmin, ymax=rmax, Geom.line, Geom.ribbon,
 ## Bayesian Inference
 
 Most functions described in the previous sections also work in the Bayesian context. To reproduce exactly the results, the seed should be fixed as follows:
-```@example
+```@example rainfall
 import Random
 Random.seed!(4786)
 nothing #hide
