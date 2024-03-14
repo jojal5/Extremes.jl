@@ -13,4 +13,7 @@
 ## 1.0.1
 - Documentation updates to comply with the requirements of the JOSS paper.
 
+## 1.0.2
+- Replication notebook reproducing the results and the figures of the JOSS paper.
+
 ## Nightly
