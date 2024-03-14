@@ -10,4 +10,7 @@
 - Replace abstract type fittedEVA by AbstractFittedExtremeValueModel
 - Add confidence/credible interval in quantile-quantile and return level plots.
 
+## 1.0.1
+- Documentation updates to comply with the requirements of the JOSS paper.
+
 ## Nightly
