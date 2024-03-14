@@ -19,7 +19,7 @@ julia> Pkg.add("Extremes")
 
 See the [Package Documentation](https://jojal5.github.io/Extremes.jl/dev/) for details and examples on how to use the package.
 
-See also the related paper by Jalbert *et al.* (2024, to appear) describing the package, along with the [Jupyter notebook file](docs/src/JOSS/JOSS.ipynb), which replicates the results and the figures.
+See also the related paper by Jalbert *et al.* (2024, to appear) describing the package, along with the [Jupyter notebook file](docs/src/JOSS/JOSS.ipynb), which replicates the results and the figures. The notebook can be consulted online *via* nbviewer following this [link](https://nbviewer.org/github/jojal5/Extremes.jl/blob/dev/docs/src/JOSS/JOSS.ipynb).
 
 Reference: 
 Jalbert, J., Farmer, M., Gobeil, G. and Roy, P. (2023). Extremes.jl: Extreme Value Analysis in Julia. Provisionally accepted in *Journal of Statistical Software*.
