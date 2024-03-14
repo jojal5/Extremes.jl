@@ -30,6 +30,7 @@ set_default_plot_size(14cm ,8cm) # hide
 plot(data, x=:Date, y=:Rainfall, Geom.point, Theme(discrete_highlight_color=c->nothing))
 ```
 
+
 ## Threshold selection
 
 A suitable threshold for the Peaks-Over-Threshold model can be chosen by examining the mean residual life plot. The mean residual life is expected to be a linear function of the threshold when the latter is high enough. The mean residual life plot can be plotted with the [`mrlplot`](@ref) function:
@@ -163,6 +164,13 @@ c[]
 
 ## Bayesian Inference
 
+Most functions described in the previous sections also work in the Bayesian context. To reproduce exactly the results, the seed should be fixed as follows:
+```@example rain
+import Random
+Random.seed!(4786)
+nothing #hide
+``` 
+
 Most functions described in the previous sections also work in the Bayesian context.
 
 ### GP parameter estimation
@@ -185,9 +193,54 @@ fm = gpfitbayes(df, :Exceedance)
 
 The generated sample from the posterior distribution is contained in the field `sim` of the fitted structure. It is an object of type *Chains* from the [*Mamba.jl*](https://mambajl.readthedocs.io/en/latest/index.html) package.
 
+
+The MCMC sample of the scale and shape parameters can be extracted respectively with the functions Extremes.scale and shape. The marginal chains for those parameters can be plotted as follows:
+```@example rain
+set_default_plot_size(12cm ,10cm) #hide
+p1 = plot(y = Extremes.scale(fm), Geom.line,
+    Guide.xlabel("Iteration"), Guide.ylabel("σ"))
+
+p2 = plot(y = Extremes.shape(fm), Geom.line,
+    Guide.xlabel("Iteration"), Guide.ylabel("ξ"))
+
+vstack(p1, p2)
+```
+
+Several diagnostic plots for assessing the accuracy of the fitted GP distribution to the rainfall data are can be shown with the [`diagnosticplots`](@ref) function:
+```@example rain
+set_default_plot_size(21cm ,16cm)
+diagnosticplots(fm)
+```
+
 Credible intervals for the parameters are obtained with the [`cint`](@ref) function:
 ```@repl rain
 cint(fm)
+```
+
+The empirical covariance matrix of the parameters can be obtained with [`parametervar`](@ref) as follows:
+```@repl rain
+parametervar(fm)
+```
+
+The T-year return level estimate can be obtained using the function [`returnlevel`](@ref). Along with 
+the fitted generalized Pareto distribution for the threshold exceedances, the following information is 
+also needed for estimating the T-year return level using the POT model: the threshold, the number of 
+total observations and the number of observations per year. For example, the 100-year return level 
+for the rainfall POT model is computed as follows:
+```@repl rain
+nobs = size(data,1)
+nobsperblock = 365
+r = returnlevel(fm, threshold, nobs, nobsperblock, 100)
+```
+
+A punctual estimate can be obtained by taking the mean of the return level sample as follows:
+```@repl rain
+mean(r.value)
+```
+
+A credidle interval of level 95% can be obtained with the function [`cint`](@ref) as follows:
+```@repl rain
+cint(r, .95)
 ```
 
 

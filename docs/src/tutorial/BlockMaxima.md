@@ -130,7 +130,12 @@ c[]
 
 ## Bayesian Inference
 
-Most functions described in the previous sections also work in the Bayesian context.
+Most functions described in the previous sections also work in the Bayesian context. To reproduce exactly the results, the seed should be fixed as follows:
+```@example portpirie
+import Random
+Random.seed!(4786)
+nothing #hide
+``` 
 
 ### GEV parameter estimation
 

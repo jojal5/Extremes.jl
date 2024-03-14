@@ -14,7 +14,7 @@ where ``(X₂,β₂)`` and ``(X₃,β₃)`` are respectively the design matrix a
 The non-stationary [`ThresholdExceedance`](@ref) model is illustrated using the daily rainfall accumulations at a location in south-west England from 1914 to 1962, studied by Coles (2001) in Chapter 6.
 
 ```@setup rainfall
-using Extremes, DataFrames, Dates, Distributions, Gadfly
+using Extremes, DataFrames, Dates, Distributions, Gadfly, Statistics
 ```
 
 ### Load the data
@@ -114,13 +114,19 @@ plot(df_plot, x=:Year, y=:r, ymin=:rmin, ymax=rmax, Geom.line, Geom.ribbon,
 
 ## Bayesian Inference
 
-Most functions described in the previous sections also work in the Bayesian context.
+Most functions described in the previous sections also work in the Bayesian context. To reproduce exactly the results, the seed should be fixed as follows:
+```@example rainfall
+import Random
+Random.seed!(4786)
+nothing #hide
+``` 
 
 ### GP parameter estimation
 
 The Bayesian GP parameter estimation is performed with the [`gpfitbayes`](@ref) function:
 
 ```@repl rainfall
+
 fm = gpfitbayes(df, :Exceedance, logscalecovid = [:Year])
 ```
 
@@ -131,3 +137,47 @@ fm = gpfitbayes(df, :Exceedance, logscalecovid = [:Year])
 
 
 [^1]: Katz, R. W., M. B. Parlange, and P. Naveau (2002), Statistics of extremes in hydrology, Adv. Water Resour., 25, 1287–1304.
+
+The model fit can be assessed with the diagnostic plots using the function [`diagnosticplots`](@ref):
+```@example rainfall
+set_default_plot_size(21cm ,16cm)
+diagnosticplots(fm)
+``` 
+
+The empirical covariance matrix of the parameters and the credible intervals can be obtained
+with the functions [`parametervar`](@ref) and [`cint`](@ref), respectively:
+
+```@repl rainfall
+parametervar(fm)
+``` 
+
+```@repl rainfall
+cint(fm, .95)
+``` 
+
+### Return level estimation
+
+The 100-year effective return level estimates can be obtained using the function [`returnlevel`](@ref):
+
+```@repl rainfall
+nobs = size(data,1)
+nobsperblock = 365
+r = returnlevel(fm, threshold, nobs, nobsperblock, 100)
+``` 
+
+The corresponding 95% credible interval can be computed using the function [`cint`](@ref):
+```@repl rainfall
+c = cint(r, 0.95)
+```
+
+The 100-year effective return levels along with their 95% credible intervals can be illustrated as follows:
+```@example rainfall
+df_plot = DataFrame(Year=df.Year, ReturnLevel = vec(mean(r.value, dims=1)), 
+    LowerBound = first.(c), UpperBound=last.(c))
+
+set_default_plot_size(12cm, 8cm)
+plot(df_plot, x=:Year, y=:ReturnLevel, Geom.line,
+    ymin=:LowerBound, ymax=:UpperBound, Geom.ribbon,
+    Guide.ylabel("100-year effective return level"))
+```
+

@@ -45,9 +45,14 @@ cluster = getcluster(df[:,:Temperature], threshold, runlength=4)
 nothing # hide
 ```
 
+The first cluster can be retrieved as follows:
+```@example wooster
+first(cluster)
+```
+
 The GP distribution can be fitted on the cluster maximal exceedances (the cluster maximum can be computed with the `maximum` method applied to the Cluster type):
 ```@repl wooster
-z = maximum.(cluster) .- threshold
+z = maximum.(cluster)
 ```
 
 
@@ -58,12 +63,18 @@ With the two thresholds method, a cluster of threshold exceedances is defined as
 When using the ``u₁ = 0°F`` as the first threshold and ``u₂ = -10°F`` as the second threshold, 11 clusters are idenfied:
 
 ```@example wooster
-u₁ = 0.0
-u₂ = -10.0
+u₁ = -10
+u₂ = -15
 cluster = getcluster(df[:,:Temperature], u₁, u₂)
 nothing # hide
 ```
+
+The first cluster can be retrieved as follows:
+```@example wooster
+first(cluster)
+```
+
 The GP distribution can be fitted on the cluster maximal exceedances:
 ```@repl wooster
-z = maximum.(cluster) .- u₁
+z = maximum.(cluster)
 ```
