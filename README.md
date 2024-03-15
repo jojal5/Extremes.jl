@@ -7,8 +7,7 @@
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://jojal5.github.io/Extremes.jl/stable/)
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://jojal5.github.io/Extremes.jl/dev/)
 
-
-The `Extremes.jl` package provides exhaustive, high-performance functions by leveraging the multiple-dispatch capabilities in **Julia** for the analysis of extreme values. In particular, the package implements statistical models for
+Extremes.jl is a package in the **Julia** programming language ecosystem. It specializes in statistical analysis of extreme values or rare events, particularly in the context of environmental science, finance, and engineering. It provides exhaustive, high-performance functions by leveraging the multiple-dispatch capabilities in **Julia** for the analysis of extreme values. In particular, the package implements statistical models for
 - block maxima;
 - peaks-over-threshold;
 along with several methods for the generalized extreme value and generalized Pareto distributions used in extreme value theory. 
