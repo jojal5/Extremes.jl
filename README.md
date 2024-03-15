@@ -36,11 +36,6 @@ The following **julia** command will install the package:
 julia> Pkg.add("Extremes")
 ```
 
-See the [Package Documentation](https://jojal5.github.io/Extremes.jl/dev/) for details and examples on how to use the package.
-
-See also the related paper by Jalbert *et al.* (2024, to appear) describing the package, along with the [Jupyter notebook file](docs/src/JOSS/JOSS.ipynb), which replicates the results and the figures. The notebook can be consulted online *via* nbviewer following this [link](https://nbviewer.org/github/jojal5/Extremes.jl/blob/dev/docs/src/JOSS/JOSS.ipynb).
-
-
 ## Data
 The datasets that are available through this package are the datasets referenced in *An Introduction to Statistical Modeling of Extreme Values* by Stuart Coles.
 
