@@ -8,6 +8,25 @@
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://jojal5.github.io/Extremes.jl/dev/)
 
 
+The `Extremes.jl` package provides exhaustive, high-performance functions by leveraging the multiple-dispatch capabilities in **Julia** for the analysis of extreme values. In particular, the package implements statistical models for
+- block maxima;
+- peaks-over-threshold;
+along with several methods for the generalized extreme value and generalized Pareto distributions used in extreme value theory. 
+
+Additionally, the package offers various parameter estimation methods, such as 
+- probability-weighted moments;
+- maximum likelihood;
+- Bayesian estimation. 
+It also includes tools for handling dependence in excesses over a threshold and methods for managing nonstationary models. Inference for extreme quantiles is available for both stationary and nonstationary models, along with diagnostic figures to assess the goodness of fit of the model to the data.
+
+## Documentation
+
+See the [Package Documentation](https://jojal5.github.io/Extremes.jl/dev/) for details and examples on how to use the package.
+
+Additionally, refer to the related paper by Jalbert *et al.* (2024, to appear) which describes the package, along with the accompanying [Jupyter notebook file](docs/src/JOSS/JOSS.ipynb) that replicates the results and figures. The notebook can be viewed online *via* nbviewer through this [link](https://nbviewer.org/github/jojal5/Extremes.jl/blob/dev/docs/src/JOSS/JOSS.ipynb).
+
+Reference: 
+Jalbert, J., Farmer, M., Gobeil, G. and Roy, P. (2023). Extremes.jl: Extreme Value Analysis in Julia. Provisionally accepted in *Journal of Statistical Software*.
 
 ## Installation
 
@@ -20,9 +39,6 @@ julia> Pkg.add("Extremes")
 See the [Package Documentation](https://jojal5.github.io/Extremes.jl/dev/) for details and examples on how to use the package.
 
 See also the related paper by Jalbert *et al.* (2024, to appear) describing the package, along with the [Jupyter notebook file](docs/src/JOSS/JOSS.ipynb), which replicates the results and the figures. The notebook can be consulted online *via* nbviewer following this [link](https://nbviewer.org/github/jojal5/Extremes.jl/blob/dev/docs/src/JOSS/JOSS.ipynb).
-
-Reference: 
-Jalbert, J., Farmer, M., Gobeil, G. and Roy, P. (2023). Extremes.jl: Extreme Value Analysis in Julia. Provisionally accepted in *Journal of Statistical Software*.
 
 
 ## Data
