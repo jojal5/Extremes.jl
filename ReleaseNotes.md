@@ -17,3 +17,4 @@
 - Replication notebook reproducing the results and the figures of the JOSS paper.
 
 ## Nightly
+- Refactor delta method
