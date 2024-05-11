@@ -45,14 +45,16 @@ function bic(fm::MaximumLikelihoodAbstractExtremeValueModel)
 end
 
 """
-    hessian(model::MaximumLikelihoodAbstractExtremeValueModel)::Array{Float64, 2}
+    hessian(model::MaximumLikelihoodAbstractExtremeValueModel)::PDMat{Float64, Matrix{Float64}}
 
 Calculates the Hessian matrix associated with the MaximumLikelihoodAbstractExtremeValueModel model.
 """
-function hessian(model::MaximumLikelihoodAbstractExtremeValueModel)::Array{Float64, 2}
+function hessian(model::MaximumLikelihoodAbstractExtremeValueModel)::PDMat{Float64, Matrix{Float64}}
 
     fobj(θ) = -loglike(model.model, θ)
-    return ForwardDiff.hessian(fobj, model.θ̂)
+    H = ForwardDiff.hessian(fobj, model.θ̂)
+
+    return PDMat(Symmetric(H))
 
 end
 
@@ -117,16 +119,17 @@ function quantile(fm::MaximumLikelihoodAbstractExtremeValueModel, p::Real)::Vect
 
 end
 
+
 """
-    quantilAbstractExtremeValueModelr(fd::MaximumLikelihoodAbstractExtremeValueModel, level::Real)::Vector{<:Real}
+    quantilevar(fd::MaximumLikelihoodAbstractExtremeValueModel, level::Real)::Vector{<:Real}
 
 Compute the variance of the quantile of level `level` from the fitted model `fm`.
 
 """
-function quantilAbstractExtremeValueModelr(fm::MaximumLikelihoodAbstractExtremeValueModel, level::Real)::Vector{<:Real}
+function quantilevar(fm::MaximumLikelihoodAbstractExtremeValueModel, level::Real)::Vector{<:Real}
 
     θ̂ = fm.θ̂
-    H = hessian(fm)
+    H = Extremes.hessian(fm)
 
     q = quantile(fm, level)
 
@@ -134,17 +137,17 @@ function quantilAbstractExtremeValueModelr(fm::MaximumLikelihoodAbstractExtremeV
 
     for i=1:length(q)
 
-        f(θ::DenseVector) = quantile(fm.model,θ,level)[i]
-        Δf(θ::DenseVector) = ForwardDiff.gradient(f, θ)
-        G = Δf(θ̂)
-
-        V[i] = G'/H*G
+        g(θ::DenseVector) = Extremes.quantile(fm.model,θ,level)[i]
+       
+        V[i] = Extremes.delta(g, θ̂, H)
 
     end
 
     return V
 
 end
+
+
 
 """
     returnlevel(fm::MaximumLikelihoodAbstractExtremeValueModel{BlockMaxima}, returnPeriod::Real)::ReturnLevel
@@ -178,7 +181,7 @@ function cint(rl::ReturnLevel{MaximumLikelihoodAbstractExtremeValueModel{BlockMa
 
       α = (1 - confidencelevel)
 
-      v = quantilAbstractExtremeValueModelr(rl.model.fm,p)
+      v = quantilevar(rl.model.fm,p)
 
       qdist = Normal.(q,sqrt.(v))
 
@@ -241,7 +244,7 @@ function cint(rl::ReturnLevel{MaximumLikelihoodAbstractExtremeValueModel{Thresho
     # This component seems to be forgoten by Coles (2001) in Section 4.4.1
 
     # Computing the variance corresponding to the other parameters
-    v₂ = quantilAbstractExtremeValueModelr(rl.model.fm, p)
+    v₂ = quantilevar(rl.model.fm, p)
 
     v = v₁ .+ v₂
 

@@ -1,5 +1,19 @@
 @testset "utils.jl" begin
     
+    @testset "delta method" begin
+        # Corrosion example in Section 2.7 of Coles.
+            
+            V = PDMat([ 0.04682 -0.01442 ; -0.01442 0.03104])
+            H = inv(V)
+            
+            g(θ::AbstractVector{<:Real}) = 3^(-θ[2]) / θ[1]
+            
+            θ̂ = [1.133, 0.479]
+            
+            @test Extremes.delta(g, θ̂, H) ≈ 0.0125 atol = 1e-4
+            
+    end
+
     @testset "slicematrix(A; dims)" begin
         m = 10
         n = 5

@@ -1,6 +1,6 @@
 module Extremes
 
-using Distributions, DataFrames, Dates
+using Distributions, DataFrames, Dates, PDMats
 using Optim
 using LinearAlgebra, MambaLite, Statistics
 using ProgressMeter

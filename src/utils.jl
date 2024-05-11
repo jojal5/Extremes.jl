@@ -1,3 +1,24 @@
+
+"""
+    delta(g::Function, θ̂::AbstractVector{<:Real}, H::AbstractPDMat)
+
+Compute the variance of the function `g` of estimated paramters `θ̂` with negative observed information matrix `H`.
+
+## Detail
+
+`H`corresponds to the Hessian matrix of the negative log likelihood.
+"""
+function delta(g::Function, θ̂::AbstractVector{<:Real}, H::AbstractPDMat)
+    
+    ∇ = ForwardDiff.gradient(g, θ̂)
+    
+    v = invquad(H, ∇)
+    
+    return v
+    
+end
+
+
 """
     getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vector{<:Real}
 
