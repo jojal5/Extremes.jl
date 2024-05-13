@@ -16,5 +16,8 @@
 ## 1.0.2
 - Replication notebook reproducing the results and the figures of the JOSS paper.
 
+## 1.0.3
+- Refactor Hessian computations with PDMats
+- Implement generic Delta method using PDMats 
+
 ## Nightly
-- Refactor delta method
