@@ -1,4 +1,4 @@
-using CSV, DataFrames, Dates, SpecialFunctions
+using CSV, DataFrames, Dates, PDMats, SpecialFunctions
 using Distributions, Extremes
 using Test
 using LinearAlgebra, MambaLite, Random
