@@ -49,3 +49,17 @@ https://www.rdocumentation.org/packages/ismev/
 
 ## How to cite this library
 Jalbert, J., Farmer, M., Gobeil, G., & Roy, P. (2024). Extremes.jl: Extreme Value Analysis in Julia. Journal of Statistical Software, 109(6), 1–35. https://doi.org/10.18637/jss.v109.i06
+
+```bibtex
+@article{Jalbert2024,
+ title={Extremes.jl: Extreme Value Analysis in Julia},
+ volume={109},
+ url={https://www.jstatsoft.org/index.php/jss/article/view/v109i06},
+ doi={10.18637/jss.v109.i06},
+ number={6},
+ journal={Journal of Statistical Software},
+ author={Jalbert, Jonathan and Farmer, Marilou and Gobeil, Gabriel and Roy, Philippe},
+ year={2024},
+ pages={1–35}
+}
+```
