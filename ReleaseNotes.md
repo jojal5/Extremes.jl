@@ -18,4 +18,7 @@
 - Refactor Hessian computations with PDMats.
 - Implement generic Delta method using PDMats.
 
+## 1.0.3
+- Add lightweight functions for simple fit of Generalized Extreme Value, Gumbel and Generalized Pareto distributions. See [`Extremes.fit`](@ref). 
+
 ## Nightly

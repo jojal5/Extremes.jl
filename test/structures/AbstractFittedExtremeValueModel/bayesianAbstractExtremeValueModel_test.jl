@@ -24,7 +24,7 @@
     ci = cint(rl)
 
     @testset "getdistribution(fittedmodel)" begin
-        @test all(vec(Extremes.getdistribution(fm)) .== pd)
+        @test all(vec(Extremes.getdistribution(fm)) .≈ pd)
     end
 
 

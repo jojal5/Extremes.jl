@@ -9,7 +9,7 @@ using Gadfly
 import CSV
 import ForwardDiff, SpecialFunctions
 
-import Distributions: insupport, location, logpdf, maximum, minimum, params, pdf, quantile, scale, shape
+import Distributions: fit, fit_mle, insupport, location, logpdf, maximum, minimum, params, pdf, quantile, scale, shape
 import Statistics.var
 import Base.length, Base.maximum, Base.sum
 
@@ -44,6 +44,7 @@ export
     getcluster,
 
     # Fitting functions
+    fit,
     gevfit,
     gevfitbayes,
     gevfitpwm,
