@@ -44,3 +44,17 @@ The datasets that are available through this package are the datasets referenced
 
 They were obtained using the R package `ismev`.  
 https://www.rdocumentation.org/packages/ismev/  
+
+## Lightweight fit functions
+
+The package also provides fit functions using maximum likelihood and probability-weighted moments for the Generalized Extreme Value, Gumbel, and Generalized Pareto distributions. They can be used with the `fit` function for the corresponding type in `Distributions.jl`. For example:
+
+```julia
+julia> using Distributions, Extremes
+
+y = rand(GeneralizedExtremeValue(0,1,.1))
+
+fit(GeneralizedExtremeValue, y)
+fit(GeneralizedExtremeValue, y, method="mle")
+fit(GeneralizedExtremeValue, y, method="pwm")
+```

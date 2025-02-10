@@ -19,3 +19,4 @@
 - Implement generic Delta method using PDMats.
 
 ## Nightly
+- Add lightweight functions for simple fit of Generalized Extreme Value, Gumbel and Generalized Pareto distributions. See [`Extremes.fit`](@ref). 
