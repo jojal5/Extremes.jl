@@ -7,6 +7,8 @@
 [![documentation stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://jojal5.github.io/Extremes.jl/stable/)
 [![documentation latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://jojal5.github.io/Extremes.jl/dev/)
 
+
+
 Extremes.jl is a package in the **Julia** programming language ecosystem. It specializes in statistical analysis of extreme values or rare events, particularly in the context of environmental science, finance, and engineering. It provides exhaustive, high-performance functions by leveraging the multiple-dispatch capabilities in **Julia** for the analysis of extreme values. In particular, the package implements statistical models for
 
 - block maxima;
@@ -29,7 +31,7 @@ See the [Package Documentation](https://jojal5.github.io/Extremes.jl/dev/) for d
 Additionally, refer to the related paper by Jalbert *et al.* (2024, to appear) which describes the package, along with the accompanying [Jupyter notebook file](docs/src/JOSS/JOSS.ipynb) that replicates the results and figures. The notebook can be viewed online *via* nbviewer through this [link](https://nbviewer.org/github/jojal5/Extremes.jl/blob/dev/docs/src/JOSS/JOSS.ipynb).
 
 Reference: 
-Jalbert, J., Farmer, M., Gobeil, G. and Roy, P. (2023). Extremes.jl: Extreme Value Analysis in Julia. Provisionally accepted in *Journal of Statistical Software*.
+Jalbert, J., Farmer, M., Gobeil, G., & Roy, P. (2024). Extremes.jl: Extreme Value Analysis in Julia. Journal of Statistical Software, 109(6), 1–35. https://doi.org/10.18637/jss.v109.i06
 
 ## Installation
 
@@ -57,4 +59,21 @@ y = rand(GeneralizedExtremeValue(0,1,.1))
 fit(GeneralizedExtremeValue, y)
 fit(GeneralizedExtremeValue, y, method="mle")
 fit(GeneralizedExtremeValue, y, method="pwm")
+```
+
+## How to cite this library
+Jalbert, J., Farmer, M., Gobeil, G., & Roy, P. (2024). Extremes.jl: Extreme Value Analysis in Julia. Journal of Statistical Software, 109(6), 1–35. https://doi.org/10.18637/jss.v109.i06
+
+```bibtex
+@article{Jalbert2024,
+ title={Extremes.jl: Extreme Value Analysis in Julia},
+ volume={109},
+ url={https://www.jstatsoft.org/index.php/jss/article/view/v109i06},
+ doi={10.18637/jss.v109.i06},
+ number={6},
+ journal={Journal of Statistical Software},
+ author={Jalbert, Jonathan and Farmer, Marilou and Gobeil, Gabriel and Roy, Philippe},
+ year={2024},
+ pages={1–35}
+}
 ```
