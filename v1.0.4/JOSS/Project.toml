@@ -1,0 +1,19 @@
+name = "JOSS"
+uuid = "88e5e896-610e-4329-b297-bec004326185"
+authors = ["jojal5 <Jonathan.jalbert@polymtl.ca>"]
+version = "0.1.0"
+
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Extremes = "fe3fe864-1b39-11e9-20b8-1f96fa57382d"
+Gadfly = "c91e804a-d5a3-530f-b6f0-dfbca275c004"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+
+[compat]
+DataFrames = "1.6.1"
+Distributions = "0.25.107"
+Extremes = "1.0.1"
+Gadfly = "1.4.0"
+
