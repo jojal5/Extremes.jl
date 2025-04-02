@@ -22,3 +22,4 @@
 - Add lightweight functions for simple fit of Generalized Extreme Value, Gumbel and Generalized Pareto distributions. See [`Extremes.fit`](@ref). 
 
 ## Nightly
+- Changed the initial values in the Fremantle test set in ReproducingColesResults.jl to comply with Optim.jl v1.12.
