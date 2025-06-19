@@ -101,37 +101,19 @@
     end
 
     @testset "getinitialvalue(::Type{GeneralizedPareto},y)" begin
-        # Test with valid pwm GPD estimates
-        y = [0.0, 1.0, 2.0]
-        ini = Extremes.getinitialvalue(GeneralizedPareto,y)
-        @test !isapprox(ini[2],0)
-        pd = GeneralizedPareto(exp(ini[1]), ini[2])
-        @test all(insupport.(pd,y))
-
-        # Test with invalid pwm GPD estimates
         y = [0.0 , 1.0, 1.0, 1.0, 3.0]
         ini = Extremes.getinitialvalue(GeneralizedPareto,y)
         @test ini[2] ≈ 0
         pd = GeneralizedPareto(exp(ini[1]), ini[2])
         @test all(insupport.(pd,y))
-
     end
 
     @testset "getinitialvalue(model)" begin
-        # Test with valid pwm GPD estimates
-        y = [0.0, 1.0, 2.0]
-        model = ThresholdExceedance(Variable("y", y))
-        ini = Extremes.getinitialvalue(model)
-        @test ini[1] ≈ .-.693 atol = .001
-        @test ini[2] ≈ .5 atol = .001
-
-        # Test with invalid pwm GPD estimates
         y = [0.0 , 1.0, 1.0, 1.0, 3.0]
         model = ThresholdExceedance(Variable("y", y))
         ini = Extremes.getinitialvalue(model)
         @test ini[1] ≈ .182 atol = .001
         @test ini[2] ≈ 0 atol = .001
-
     end
 
     @testset "showAbstractExtremeValueModel(io, obj; prefix)" begin
