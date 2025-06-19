@@ -35,27 +35,10 @@ julia> Extremes.getinitialvalue(GeneralizedExtremeValue, y)
 """
 function getinitialvalue(::Type{GeneralizedExtremeValue},y::Vector{<:Real})::Vector{<:Real}
 
-    # Fit the model with by the probability weigthed moments
-    fm = gevfitpwm(y)
-
-    # Convert to fitted model in a Distribution object
-    fd = getdistribution(fm.model, fm.θ̂)[]
-
-    # check if initial values are in the domain of the GEV
-    valid_initialvalues = all(insupport(fd,y))
-
-    #= If one at least one value does not lie in the support, then the initial
-     values are replaced by the Gumbel initial values. =#
-    if valid_initialvalues
-        μ₀ = location(fd)
-        ϕ₀ = log(scale(fd))
-        ξ₀ = Distributions.shape(fd)
-    else
-        fm = gumbelfitpwm(y)
-        μ₀ = fm.θ̂[1]
-        ϕ₀ = fm.θ̂[2]
-        ξ₀ = 0.0
-    end
+    fm = gumbelfitpwm(y)
+    μ₀ = location(fm)[]
+    ϕ₀ = log(scale(fm)[])
+    ξ₀ = 0.
 
     initialvalues = [μ₀, ϕ₀, ξ₀]
 
@@ -78,19 +61,8 @@ julia> Extremes.getinitialvalue(GeneralizedPareto, y)
 """
 function getinitialvalue(::Type{GeneralizedPareto},y::Vector{<:Real})::Vector{<:Real}
 
-    # Fit the model with by the probability weigthed moments
-    fm = gpfitpwm(y)
-
-    # Convert to fitted model in a Distribution object
-    fd = getdistribution(fm.model, fm.θ̂)[]
-
-    if all(insupport(fd,y))
-        σ₀ = scale(fd)
-        ξ₀ = Distributions.shape(fd)
-    else
-        σ₀ = mean(y)
-        ξ₀ = 0.0
-    end
+    σ₀ = mean(y)
+    ξ₀ = 0.0
 
     initialvalues = [log(σ₀), ξ₀]
 
