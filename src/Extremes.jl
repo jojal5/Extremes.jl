@@ -4,7 +4,6 @@ using Distributions, DataFrames, Dates, PDMats
 using Optim
 using LinearAlgebra, MambaLite, Statistics
 using ProgressMeter
-using Gadfly
 
 import CSV
 import ForwardDiff, SpecialFunctions
@@ -17,7 +16,6 @@ include("utils.jl")
 include("structures.jl")
 include("parameterestimation.jl")
 include("data.jl")
-include("validationplots.jl")
 
 export
 
@@ -70,28 +68,6 @@ export
 
     # Return level
     ReturnLevel,
-    returnlevel,
-
-
-    # Diagnostic plots
-    probplot_std_data,
-    probplot_std,
-    qqplot_std_data,
-    qqplot_std,
-    diagnosticplots_std,
-
-    probplot_data,
-    probplot,
-    qqplot_data,
-    qqplot,
-    qqplotci,
-    returnlevelplot_data,
-    returnlevelplot,
-    returnlevelplotci,
-    histplot_data,
-    histplot,
-    diagnosticplots,
-    mrlplot,
-    mrlplot_data
+    returnlevel
 
 end # module
