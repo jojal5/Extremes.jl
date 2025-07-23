@@ -7,11 +7,12 @@ This tutorial shows the functionalities of *Extremes.jl*. They are illustrated b
 
 Before executing this tutorial, make sure to have installed the following packages:
 - *Extremes.jl* (of course)
+- *ExtremePlots.jl* (for plotting diagnostics plots of fitted extreme value models)
 - *DataFrames.jl* (for using the DataFrame type)
 - *Distributions.jl* (for using probability distribution objects)
 - *Gadfly.jl* (for plotting)
 
 and import them using the following command:
  ```@repl
-using Extremes, Dates, DataFrames, Distributions, Gadfly
+using Extremes, ExtremePlots, Dates, DataFrames, Distributions, Gadfly
 ```

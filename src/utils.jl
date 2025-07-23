@@ -202,3 +202,29 @@ Return the Gumbel distribution shape parameter value, *i.e.* 0.
 function shape(pd::Gumbel)
     return 0.
 end
+
+"""
+    standardize(y, μ, σ, ξ)
+
+Transforms a value `y` from a Generalized Extreme Value (GEV) distribution with location parameter `μ`, scale parameter `σ`, and shape parameter `ξ` to the standard Gumbel scale.
+
+## Details
+
+- When `ξ ≈ 0`, the transformation reduces to `(y - μ)/σ`.
+- For `ξ ≠ 0`, the transformation is: `z = (1/ξ) * log(1 + ξ/σ * (y - μ))`.
+- The function asserts that the scale `σ > 0` and that the transformed value is within 
+  the domain of the logarithm (i.e., `1 + ξ/σ * (y - μ) > 0`).
+"""
+function standardize(y::Real, μ::Real, σ::Real, ξ::Real)::Real
+    @assert σ > 0 "Scale parameter σ must be positive."
+
+    if isapprox(ξ, 0.0; atol=1e-8)
+        return (y - μ) / σ
+    else
+        term = 1 + (ξ / σ) * (y - μ)
+        @assert term > 0 "Invalid input: log domain error in standardization."
+        return (1 / ξ) * log(term)
+    end
+end
+
+# TODO: add test

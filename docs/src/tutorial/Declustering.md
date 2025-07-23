@@ -15,7 +15,7 @@ In *Extremes.jl*, two methods for identifying cluster of extreme values are impl
  Both methods for identifying the clusters are illustrated with the Wooster dataset studied by Coles (2001). This dataset consists in the daily temperature minimum recorded in Wooster, Ohio, from 1983 to 1988. The attention is restricted to the winter months (November to February) and to the negated series for using the model defined for maxima.
 
 ```@setup wooster
-using Extremes, Dates, DataFrames, Distributions, Gadfly
+using Extremes, ExtremePlots, Dates, DataFrames, Distributions, Gadfly
 ```
 
 ```@example wooster

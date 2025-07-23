@@ -1,4 +1,4 @@
-using Extremes, DataFrames, Distributions, Gadfly, Dates. Mamba
+using Extremes, ExtremePlots, DataFrames, Distributions, Gadfly, Dates. Mamba
 
 data = load("wooster")
 

@@ -89,3 +89,17 @@ end
         @test logpdf(Flat(), 0) ≈ 0.0
     end
 end
+
+@testset "standardize" begin
+    @test_throws AssertionError Extremes.standardize(2.0, 1.0, 0.0, 0.1)
+
+    # Gumbel case (ξ ≈ 0)
+    y, μ, σ, ξ = 3.0, 2.0, 0.5, 0.0
+    expected = (y - μ)/σ
+    @test isapprox(Extremes.standardize(y, μ, σ, ξ), expected; atol=1e-8)
+
+    # Non-zero shape parameter
+    y, μ, σ, ξ = 4.0, 2.0, 1.0, 0.2
+    expected = (1/ξ) * log(1 + ξ/σ * (y - μ))
+    @test isapprox(Extremes.standardize(y, μ, σ, ξ), expected; atol=1e-8)
+end

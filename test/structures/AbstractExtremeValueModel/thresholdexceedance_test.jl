@@ -1,4 +1,11 @@
 @testset "thresholdexceedance.jl" begin
+
+    @testset "standarddist" begin
+        model = Extremes.ThresholdExceedance(Variable("y", [1]))
+        @test Extremes.standarddist(model)==Exponential()
+    end
+    
+    
     n = 10000
 
     pd = GeneralizedPareto(1.0, 0.1)

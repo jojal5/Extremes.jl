@@ -412,3 +412,17 @@ function cint(fm::MaximumLikelihoodAbstractExtremeValueModel, clevel::Real=.95):
     return confint
 
 end
+
+"""
+    standardize(fm::MaximumLikelihoodAbstractExtremeValueModel)
+
+Transform the observed data from a fitted extreme value model to the standard Gumbel scale.
+"""
+function standardize(fm::MaximumLikelihoodAbstractExtremeValueModel)
+
+    y = fm.model.data.value
+    d = getdistribution(fm)
+
+    return standardize.(y, location.(d), scale.(d), shape.(d))
+
+end

@@ -340,3 +340,24 @@ function findposteriormode(fm::BayesianAbstractExtremeValueModel)::Vector{<:Real
     return θ̂
 
 end
+
+"""
+    standardize(fm::BayesianAbstractExtremeValueModel)
+
+Transform the observed data from a fitted extreme value model to the standard Gumbel scale using the posterior mode as parameter point estimates.
+"""
+function standardize(fm::BayesianAbstractExtremeValueModel)
+
+    θ̂ = findposteriormode(fm)
+    dist = getdistribution(fm.model, θ̂)
+
+    μ = location.(dist)
+    σ = scale.(dist)
+    ξ = shape.(dist)
+
+    y = fm.model.data.value
+
+    z = standardize.(y, μ, σ, ξ)
+
+    return z
+end
