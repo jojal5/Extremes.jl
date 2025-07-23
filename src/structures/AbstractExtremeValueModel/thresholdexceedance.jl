@@ -40,6 +40,10 @@ function paramindex(model::ThresholdExceedance)::Dict{Symbol,Vector{<:Int}}
 
 end
 
+function standarddist(::ThresholdExceedance)::Distribution
+    return Exponential()
+end
+
 
 function getcovariatenumber(model::ThresholdExceedance)::Int
 

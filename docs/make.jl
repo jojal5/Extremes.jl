@@ -1,4 +1,5 @@
-using Documenter, Extremes
+
+using Documenter, Extremes, ExtremePlots
 import Random
 using Cairo, Fontconfig
 
@@ -25,7 +26,7 @@ makedocs(sitename = "Extremes.jl",
 if CI
     deploydocs(
     repo   = "github.com/jojal5/Extremes.jl.git",
-    devbranch = "dev",
+    devbranch = "master",
     versions = ["stable" => "v^", "v#.#", "master"],
     push_preview = false,
     target = "build"

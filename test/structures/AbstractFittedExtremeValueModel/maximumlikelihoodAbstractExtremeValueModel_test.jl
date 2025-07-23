@@ -202,5 +202,10 @@
         @test_logs Extremes.showAbstractFittedExtremeValueModel(buffer, fm, prefix = "\t")
     end
 
+    @testset "standardize" begin
+        model = Extremes.BlockMaxima{GeneralizedExtremeValue}(Variable("y", [1]))
+        fm = MaximumLikelihoodAbstractExtremeValueModel(model, [0., 0., .5])
+        @test Extremes.standardize(fm)[] ≈ 2*log(3/2) atol = 1e-8
+    end
 
 end

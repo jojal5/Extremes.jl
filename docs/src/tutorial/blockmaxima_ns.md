@@ -14,7 +14,7 @@ where ``(X₁,β₁)``, ``(X₂,β₂)`` and ``(X₃,β₃)`` are respectively t
 The non-stationary [`BlockMaxima`](@ref) model is illustrated using the annual maximum sea-levels recorded at Fremantle in West Australia from 1897 to 1989, studied by Coles (2001) in Chapter 6.
 
 ```@setup fremantle
-using Extremes, DataFrames, Distributions, Gadfly
+using Extremes, ExtremePlots, DataFrames, Distributions, Gadfly
 ```
 
 ### Load the data
@@ -103,14 +103,14 @@ cint(fm₂)[2]
 
 ### Diagnostic plots
 
-Several diagnostic plots for assessing the accuracy of the GEV model fitted to the Fremantle data can be shown with the [`diagnosticplots`](@ref) function:
+Several diagnostic plots for assessing the accuracy of the GEV model fitted to the Fremantle data can be shown with the `diagnosticplots` function of ExtremePlots.jl:
 
 ```@example fremantle
 set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm₂)
 ```
 
-The diagnostic plots consist in the residual probability plot (upper left panel), the residual quantile plot (upper right panel) and the residual density plot (lower left panel) of the standardized data (see Chapter 6 of Coles, 2001). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
+The diagnostic plots consist in the residual probability plot (upper left panel), the residual quantile plot (upper right panel) and the residual density plot (lower left panel) of the standardized data (see Chapter 6 of Coles, 2001). These plots can be displayed separately using respectively the `probplot`, `qqplot`, `histplot` and `returnlevelplot` functions.
 
 
 ### Return level estimation
@@ -190,7 +190,7 @@ Confidence intervals for the parameters are obtained with the [`cint`](@ref) fun
 cint(fm₂)
 ```
 
-The diagnostic plots for assessing the accuracy of the Gumbel model fitted to the Fremantle data can be shown with the [`diagnosticplots`](@ref) function:
+The diagnostic plots for assessing the accuracy of the Gumbel model fitted to the Fremantle data can be shown with the `diagnosticplots` function:
 
 ```@example fremantle
 set_default_plot_size(21cm ,16cm)

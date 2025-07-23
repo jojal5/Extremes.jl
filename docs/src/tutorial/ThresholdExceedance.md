@@ -4,7 +4,7 @@
 The stationary [`ThresholdExceedance`](@ref) model is illustrated using the daily rainfall accumulations at a location in south-west England from 1914 to 1962. This dataset was studied by Coles (2001) in Chapter 4. The daily rainfall are assume  **independent and identically distributed**.
 
 ```@setup rain
-using Extremes, Dates, DataFrames, Distributions, Gadfly
+using Extremes, ExtremePlots, Dates, DataFrames, Distributions, Gadfly
 ```
 
 The *Extremes.jl* package supports maximum likelihood inference, Bayesian inference and inference based on the probability weigthed moments. For the GEV parameter estimation, the following functions can be used:
@@ -33,7 +33,7 @@ plot(data, x=:Date, y=:Rainfall, Geom.point, Theme(discrete_highlight_color=c->n
 
 ## Threshold selection
 
-A suitable threshold for the Peaks-Over-Threshold model can be chosen by examining the mean residual life plot. The mean residual life is expected to be a linear function of the threshold when the latter is high enough. The mean residual life plot can be plotted with the [`mrlplot`](@ref) function:
+A suitable threshold for the Peaks-Over-Threshold model can be chosen by examining the mean residual life plot. The mean residual life is expected to be a linear function of the threshold when the latter is high enough. The mean residual life plot can be plotted with the `mrlplot` function of ExtremePlots.jl:
 ```@example rain
 set_default_plot_size(14cm ,8cm) # hide
 mrlplot(data[:,:Rainfall])
@@ -115,14 +115,14 @@ cint(fm)[2]
 
 ### Diagnostic plots
 
-Several diagnostic plots for assessing the accuracy of the fitted GP distribution to the rainfall data are can be shown with the [`diagnosticplots`](@ref) function:
+Several diagnostic plots for assessing the accuracy of the fitted GP distribution to the rainfall data are can be shown with the `diagnosticplots` function:
 
 ```@example rain
 set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm)
 ```
 
-The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
+The diagnostic plots consist in the probability plot (upper left panel), the quantile plot (upper right panel), the density plot (lower left panel) and the return level plot (lower right panel). These plots can be displayed separately using respectively the `probplot` `qqplot`, `histplot` and `returnlevelplot` functions.
 
 
 ### Return level estimation
@@ -206,7 +206,7 @@ p2 = plot(y = Extremes.shape(fm), Geom.line,
 vstack(p1, p2)
 ```
 
-Several diagnostic plots for assessing the accuracy of the fitted GP distribution to the rainfall data are can be shown with the [`diagnosticplots`](@ref) function:
+Several diagnostic plots for assessing the accuracy of the fitted GP distribution to the rainfall data are can be shown with the `diagnosticplots` function:
 ```@example rain
 set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm)

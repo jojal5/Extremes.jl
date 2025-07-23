@@ -14,7 +14,7 @@ where ``(X₂,β₂)`` and ``(X₃,β₃)`` are respectively the design matrix a
 The non-stationary [`ThresholdExceedance`](@ref) model is illustrated using the daily rainfall accumulations at a location in south-west England from 1914 to 1962, studied by Coles (2001) in Chapter 6.
 
 ```@setup rainfall
-using Extremes, DataFrames, Dates, Distributions, Gadfly, Statistics
+using Extremes, ExtremePlots, DataFrames, Dates, Distributions, Gadfly, Statistics
 ```
 
 ### Load the data
@@ -65,21 +65,21 @@ cint(fm₁)[2]
 
 ### Diagnostic plots
 
-Several diagnostic plots for assessing the accuracy of the GP model fitted to the rainfall data can be shown with the [`diagnosticplots`](@ref) function:
+Several diagnostic plots for assessing the accuracy of the GP model fitted to the rainfall data can be shown with the `diagnosticplots` function of ExtremePlots.jl:
 
 ```@example rainfall
 set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm₁)
 ```
 
-The diagnostic plots consist in the residual probability plot (upper left panel), the residual quantile plot (upper right panel) and the residual density plot (lower left panel) of the standardized data (see Chapter 6 of Coles, 2001). These plots can be displayed separately using respectively the [`probplot`](@ref), [`qqplot`](@ref), [`histplot`](@ref) and [`returnlevelplot`](@ref) functions.
+The diagnostic plots consist in the residual probability plot (upper left panel), the residual quantile plot (upper right panel) and the residual density plot (lower left panel) of the standardized data (see Chapter 6 of Coles, 2001). These plots can be displayed separately using respectively the `probplot`, `qqplot`, `histplot` and `returnlevelplot` functions.
 
 
 ### Return level estimation
 
 Since the model parameters vary in time, the quantiles also vary in time. Therefore, a *T*-year return level can be estimated for each year. This set of return levels are referred to as *effective return levels* as proposed by Katz *et al.* (2002)[^1].
 
-The 100-year effective return levels for the `fm₁` model can be computed using the [`returnlevel`](@ref) function:
+The 100-year effective return levels for the `fm₁` model can be computed using the `returnlevel` function:
 ```@repl rainfall
 nobs = size(data,1)
 nobsperblock = 365
@@ -138,7 +138,7 @@ fm = gpfitbayes(df, :Exceedance, logscalecovid = [:Year])
 
 [^1]: Katz, R. W., M. B. Parlange, and P. Naveau (2002), Statistics of extremes in hydrology, Adv. Water Resour., 25, 1287–1304.
 
-The model fit can be assessed with the diagnostic plots using the function [`diagnosticplots`](@ref):
+The model fit can be assessed with the diagnostic plots using the function `diagnosticplots`:
 ```@example rainfall
 set_default_plot_size(21cm ,16cm)
 diagnosticplots(fm)
