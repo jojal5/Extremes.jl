@@ -3,9 +3,9 @@
 
 Probability plot
 """
-function probplot(fm::AbstractFittedExtremeValueModel)::Plot
+function probplot(fm::AbstractFittedExtremeValueModel; major_label_font_size=20pt, minor_label_font_size=16pt)
 
-    if getcovariatenumber(fm.model) > 0
+    if Extremes.getcovariatenumber(fm.model) > 0
         df = probplot_std_data(fm)
         plotTitle = "Residual Probability Plot"
     else
@@ -13,9 +13,9 @@ function probplot(fm::AbstractFittedExtremeValueModel)::Plot
         plotTitle = "Probability Plot"
     end
 
-    return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
+    return Gadfly.plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
         Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title(plotTitle),
-        Theme(discrete_highlight_color=c->nothing))
+        Gadfly.Theme(discrete_highlight_color=c->nothing, major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
 
 end
 
@@ -27,9 +27,9 @@ Quantile-Quantile plot
 
 See also [`qqplotci`](@ref).   
 """
-function qqplot(fm::AbstractFittedExtremeValueModel)::Plot
+function qqplot(fm::AbstractFittedExtremeValueModel; major_label_font_size=20pt, minor_label_font_size=16pt)
 
-    if getcovariatenumber(fm.model) > 0
+    if Extremes.getcovariatenumber(fm.model) > 0
         df = qqplot_std_data(fm)
         plotTitle = "Residual Quantile Plot"
     else
@@ -37,9 +37,9 @@ function qqplot(fm::AbstractFittedExtremeValueModel)::Plot
         plotTitle = "Quantile Plot"
     end
 
-    return plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
+    return Gadfly.plot(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="red", style=:dash),
         Guide.xlabel("Model"), Guide.ylabel("Empirical"), Guide.title(plotTitle),
-        Theme(discrete_highlight_color=c->nothing))
+        Gadfly.Theme(discrete_highlight_color=c->nothing, major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
 
 end
 
@@ -67,9 +67,9 @@ qqplotci(fm)
 ```
  
 """
-function qqplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05)::Plot
+function qqplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05; major_label_font_size=20pt, minor_label_font_size=16pt)
     @assert 0 < α < 1 "the level should be in (0,1)." 
-    @assert getcovariatenumber(fm.model) == 0 "adding confidence intervals is currently only available for stationary models."
+    @assert Extremes.getcovariatenumber(fm.model) == 0 "adding confidence intervals is currently only available for stationary models."
 
     df = qqplot_data(fm)
 
@@ -88,10 +88,10 @@ function qqplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05)::Plot
     df[:,:Sup] = q_sup
 
     l1 = layer(df, x=:Model, y=:Empirical, Geom.point, Geom.abline(color="black", style=:dash), 
-        Theme(default_color="black", discrete_highlight_color=c->nothing))
-    l2 = layer(df, x=:Model, ymin=:Inf, ymax=:Sup, Geom.ribbon, Theme(lowlight_color=c->"lightgray"))
-    
-    return plot(l1,l2, Guide.xlabel("Model"), Guide.ylabel("Empirical"))
+        Gadfly.Theme(default_color="black", discrete_highlight_color=c->nothing, major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
+    l2 = layer(df, x=:Model, ymin=:Inf, ymax=:Sup, Geom.ribbon, Gadfly.Theme(lowlight_color=c->"lightgray", major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
+
+    return Gadfly.plot(l1,l2, Guide.xlabel("Model"), Guide.ylabel("Empirical"))
 end
 
 
@@ -101,17 +101,17 @@ end
 
 Return level plot
 """
-function returnlevelplot(fm::AbstractFittedExtremeValueModel)::Plot
+function returnlevelplot(fm::AbstractFittedExtremeValueModel; major_label_font_size=20pt, minor_label_font_size=16pt)
 
-    if getcovariatenumber(fm.model) > 0
+    if Extremes.getcovariatenumber(fm.model) > 0
         @warn "this graphic is not optimized for non-stationary model; plot ignored."
         return plot()
     else
         df = returnlevelplot_data(fm)
-        l1 = layer(df, x=:Period, y=:Level,Geom.line, Theme(default_color="red", line_style=[:dash]))
+        l1 = layer(df, x=:Period, y=:Level,Geom.line, Gadfly.Theme(default_color="red", line_style=[:dash], major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
         l2 = layer(df, x=:Period, y=:Data, Geom.point)
-        return plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"),
-            Guide.title("Return Level Plot"), Theme(discrete_highlight_color=c->nothing))
+        return Gadfly.plot(l1,l2, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"),
+            Guide.title("Return Level Plot"), Gadfly.Theme(discrete_highlight_color=c->nothing, major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
     end
 end
 
@@ -138,9 +138,9 @@ fm = gevfit(y)
 returnlevelplotci(fm)
 ```
 """
-function returnlevelplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05)::Plot
+function returnlevelplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05; major_label_font_size=20pt, minor_label_font_size=16pt)
     @assert 0 < α < 1 "the level should be in (0,1)." 
-    @assert getcovariatenumber(fm.model) == 0 "adding confidence intervals is currently only available for stationary models."
+    @assert Extremes.getcovariatenumber(fm.model) == 0 "adding confidence intervals is currently only available for stationary models."
 
     df = returnlevelplot_data(fm)
 
@@ -158,11 +158,11 @@ function returnlevelplotci(fm::AbstractFittedExtremeValueModel, α::Real=.05)::P
     df[:,:Inf] = q_inf
     df[:,:Sup] = q_sup
 
-    l1 = layer(df, x=:Period, y=:Level, Geom.line, Theme(default_color="black", line_style=[:dash]))
-    l2 = layer(df, x=:Period, y=:Data, Geom.point, Theme(default_color="black", discrete_highlight_color=c->nothing))
-    l3 = layer(df, x=:Period, ymin=:Inf, ymax=:Sup, Geom.ribbon, Theme(lowlight_color=c->"lightgray"))
+    l1 = layer(df, x=:Period, y=:Level, Geom.line, Gadfly.Theme(default_color="black", line_style=[:dash], major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
+    l2 = layer(df, x=:Period, y=:Data, Geom.point, Gadfly.Theme(default_color="black", discrete_highlight_color=c->nothing, major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
+    l3 = layer(df, x=:Period, ymin=:Inf, ymax=:Sup, Geom.ribbon, Gadfly.Theme(lowlight_color=c->"lightgray", major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
 
-    return plot(l1,l2,l3, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"),
+    return Gadfly.plot(l1,l2,l3, Scale.x_log10, Guide.xlabel("Return Period"), Guide.ylabel("Return Level"),
         Guide.title("Return Level Plot"))
 
 end
@@ -174,9 +174,9 @@ end
 
 Histogram plot
 """
-function histplot(fm::AbstractFittedExtremeValueModel)::Plot
+function histplot(fm::AbstractFittedExtremeValueModel; major_label_font_size=20pt, minor_label_font_size=16pt)
 
-    if getcovariatenumber(fm.model) > 0
+    if Extremes.getcovariatenumber(fm.model) > 0
         df = histplot_std_data(fm)
         plotTitle = "Residual Density Plot"
     else
@@ -184,10 +184,10 @@ function histplot(fm::AbstractFittedExtremeValueModel)::Plot
         plotTitle = "Density Plot"
     end
 
-    h = layer(df[:h], x = :Data, Geom.histogram(bincount=df[:nbin], density=true))
-    d = layer(df[:d], x = :DataRange, y = :Density, Geom.line, Theme(default_color="red") )
+    h = layer(df[:h], x = :Data, Geom.histogram(bincount=df[:nbin], density=true), Gadfly.Theme(major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
+    d = layer(df[:d], x = :DataRange, y = :Density, Geom.line, Gadfly.Theme(default_color="red", major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
 
-    return plot(d,h, Coord.cartesian(xmin = df[:xmin], xmax = df[:xmax]), Guide.xlabel("Data"), Guide.ylabel("Density"), Guide.title(plotTitle))
+    return Gadfly.plot(d,h, Gadfly.Coord.cartesian(xmin = df[:xmin], xmax = df[:xmax]), Guide.xlabel("Data"), Guide.ylabel("Density"), Guide.title(plotTitle), Gadfly.Theme(major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
 
 end
 
@@ -197,19 +197,20 @@ end
 
 Diagnostic plots
 """
-function diagnosticplots(fm::AbstractFittedExtremeValueModel)::Gadfly.Compose.Context
+function diagnosticplots(fm::AbstractFittedExtremeValueModel; title="", major_label_font_size=20pt, minor_label_font_size=16pt)::Gadfly.Compose.Context
 
     f1 = probplot(fm)
     f2 = qqplot(fm)
     f3 = histplot(fm)
 
-    if getcovariatenumber(fm.model) > 0
-        f4 = plot()
+    if Extremes.getcovariatenumber(fm.model) > 0
+        f4 = Gadfly.plot()
     else
         f4 = returnlevelplot(fm)
     end
 
-    return gridstack([f1 f2; f3 f4])
+    return Gadfly.title(gridstack([f1 f2; f3 f4]), title, Gadfly.Compose.fontsize(major_label_font_size), fill(colorant"lightgray"))
+
 end
 
 
@@ -220,12 +221,12 @@ Mean residual plot
 
 See also [`mrlplot_data`](@ref).
 """
-function mrlplot(y::Vector{<:Real}, steps::Int=100)::Plot
+function mrlplot(y::Vector{<:Real}, steps::Int=100; major_label_font_size=20pt, minor_label_font_size=16pt)::Plot
 
     df = mrlplot_data(y, steps)
 
-    p = plot(df, x = :Threshold, y = :mrl, ymin = :lbound, ymax = :ubound,
-        Geom.line, Geom.ribbon, Guide.ylabel("Mean Residual Life"))
+    p = Gadfly.plot(df, x = :Threshold, y = :mrl, ymin = :lbound, ymax = :ubound,
+        Geom.line, Geom.ribbon, Guide.ylabel("Mean Residual Life"), Gadfly.Theme(major_label_font_size=major_label_font_size, minor_label_font_size=minor_label_font_size))
 
     return p
 end
